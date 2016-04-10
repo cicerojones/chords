@@ -15,7 +15,7 @@
 ;; (first post_tonal_overtone.data.set_class_data/tetrachords-tn)
 #+END_SRC
 ** load data from babel
-*** test dyads
+*** test def-ing dyads as constant
 #+BEGIN_SRC clojure
 (def ^:const dyads-tn '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6)))
 #+END_SRC
@@ -25,7 +25,7 @@
 #+END_SRC
 #+RESULTS:
 | 0 | 2 |
-*** load all sets
+*** def all sets into the current (user?) ns
 #+BEGIN_SRC clojure
 ;(def ^:const dyads-tn '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6)))
 
@@ -463,24 +463,27 @@
               ;;:password ""
               })
 #+END_SRC
-
+** describe the tables of this db
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 \dt
 #+END_SRC
 
 #+RESULTS:
-| List of relations |                   |       |       |
-|-------------------+-------------------+-------+-------|
-| Schema            | Name              | Type  | Owner |
-| public            | chord_event       | table | a     |
-| public            | dyad_events       | table | a     |
-| public            | hexachord_events  | table | a     |
-| public            | monochord_events  | table | a     |
-| public            | pcs_event         | table | a     |
-| public            | pentachord_events | table | a     |
-| public            | tetrachord_events | table | a     |
-| public            | trichord_events   | table | a     |
-
+| List of relations |                           |       |       |
+|-------------------+---------------------------+-------+-------|
+| Schema            | Name                      | Type  | Owner |
+| public            | chord_event               | table | a     |
+| public            | dyad_events               | table | a     |
+| public            | hexachord_events          | table | a     |
+| public            | hexachord_events_stamped  | table | a     |
+| public            | monochord_events          | table | a     |
+| public            | pcs_event                 | table | a     |
+| public            | pentachord_events         | table | a     |
+| public            | tetrachord_events         | table | a     |
+| public            | tetrachord_events_stamped | table | a     |
+| public            | trichord_events           | table | a     |
+| public            | trichord_events_stamped   | table | a     |
+** select all from simple chord events
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 select * from monochord_events;
 select * from dyad_events;
@@ -505,11 +508,11 @@ select * from hexachord_events;
 | chord_id | midi1 | midi2 | midi3 | midi4 | midi5 | midi6 |
 |        1 |    59 |    61 |    64 |    67 |    70 |    71 |
 ** use the YeSQL-Clojure function from sql insert chords
-
+*** functions as returned when evaluating yesql code
 #+BEGIN_SRC clojure
 "(#'cdb1.core/insert-monochords<! #'cdb1.core/insert-dyads<! #'cdb1.core/insert-trichords<! #'cdb1.core/insert-tetrachords<! #'cdb1.core/insert-pentachords<! #'cdb1.core/insert-hexachords<!)"
 #+END_SRC
-
+*** use insert-tetrachords
 #+BEGIN_SRC clojure 
 (cdb1.core/insert-tetrachords<! {:midi1 57 :midi2 63 :midi3 64 :midi4 67})
 #+END_SRC
@@ -549,7 +552,16 @@ select * from hexachord_events;
 #+RESULTS:
 |  0 |  1 |  4 |  6 |
 | 36 | 49 | 76 | 66 |
+
+#+BEGIN_SRC clojure :results output
+(user/voice-and-transpose-rand-set tetrachords (rand-int 11))
+#+END_SRC
+
+#+RESULTS:
+: ((0 2 5 7) (48 38 41 43) 8 (56 46 49 51))
+
 ** destructure a voiced random chord into the database
+*** 
 #+BEGIN_SRC clojure
 (def chord-ds (user/voice-rand-set tetrachords))
 #+END_SRC
@@ -598,9 +610,7 @@ select * from hexachord_events;
 
 #+RESULTS:
 | :chord_id | 3 | :midi1 | 48 | :midi2 | 75 | :midi3 | 65 | :midi4 | 80 |
-
-
-
+*** insert the result of calling up a (simple) random tetrachord (with destructure)
 #+BEGIN_SRC clojure
 (let [[pcs midis] (user/voice-rand-set tetrachords)
       [midi1 midi2 midi3 midi4] midis]
@@ -610,8 +620,401 @@ select * from hexachord_events;
 #+RESULTS:
 | :chord_id | 4 | :midi1 | 48 | :midi2 | 49 | :midi3 | 63 | :midi4 | 42 |
 ** destructure a voiced random chord into the database
+Call voice random set with tetrachord and insert the results straight
+into the simple tetrachord database
 #+BEGIN_SRC clojure
 (let [[pcs midis] (user/voice-rand-set tetrachords)
       [midi1 midi2 midi3 midi4] midis]
   (cdb1.core/insert-tetrachords<! {:midi1 midi1 :midi2 midi2 :midi3 midi3 :midi4 midi4}))
+#+END_SRC
+* expand database table columns
+** create tables with timestamp columns
+*** select now
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+SELECT now();
+#+END_SRC
+
+#+RESULTS:
+| now                           |
+|-------------------------------|
+| 2016-04-08 22:48:54.351379-04 |
+*** look at various timezone formatting options
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+select timestamp '2014-01-2 00:30:00' AS a, 
+timestamp '2014-01-2 00:30:00' AT TIME ZONE 'UTC' AS b,  
+timestamp '2014-01-2 00:30:00' AT TIME ZONE 'UTC' AT TIME ZONE 'PST' AS c, 
+timestamp '2014-01-2 00:30:00' AT TIME ZONE 'PST' AS d
+
+#+END_SRC
+
+#+RESULTS:
+| a                   | b                      | c                   | d                      |
+|---------------------+------------------------+---------------------+------------------------|
+| 2014-01-02 00:30:00 | 2014-01-01 19:30:00-05 | 2014-01-01 16:30:00 | 2014-01-02 03:30:00-05 |
+*** simple timezone
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+select now() AT TIME ZONE 'PST'
+#+END_SRC
+
+
+
+#+RESULTS:
+| timezone                   |
+|----------------------------|
+| 2016-04-08 18:52:34.663367 |
+
+
+#+END_SRC
+*** compute intervals
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+SELECT now() AS date1, current_date - 100 AS date2
+#+END_SRC
+
+#+RESULTS:
+| date1                         |      date2 |
+|-------------------------------+------------|
+| 2016-04-08 22:37:46.972654-04 | 2015-12-30 |
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+SELECT now()::date + 100 AS date1, current_date - 100 AS date2
+#+END_SRC
+
+#+RESULTS:
+|      date1 |      date2 |
+|------------+------------|
+| 2016-07-17 | 2015-12-30 |
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+SELECT now()::date + 100 AS date1, current_date - INTERVAL '100 days' AS date2
+#+END_SRC
+
+#+RESULTS:
+|      date1 | date2               |
+|------------+---------------------|
+| 2016-07-17 | 2015-12-30 00:00:00 |
+*** create table with timestamp column
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE hexachord_events_stamped (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+
+
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+INSERT INTO hexachord_events_stamped (midi1, midi2, midi3, midi4, midi5, midi6)  
+VALUES (60, 61, 62, 63, 64, 66)
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+SELECT * FROM hexachord_events_stamped
+#+END_SRC
+
+#+RESULTS:
+| chord_id | chord_inserted             | midi1 | midi2 | midi3 | midi4 | midi5 | midi6 |
+|----------+----------------------------+-------+-------+-------+-------+-------+-------|
+|        1 | 2016-04-08 23:01:47.892927 |    60 |    61 |    62 |    63 |    64 |    66 |
+*** create table with timestamp and setclass string
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE tetrachord_events_stamped (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+setclass text,
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int)
+
+
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+INSERT INTO tetrachord_events_stamped (setclass, midi1, midi2, midi3, midi4)
+VALUES ('0134', 60, 61, 63, 64)
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+select * FROM tetrachord_events_stamped
+#+END_SRC
+
+#+RESULTS:
+| chord_id | chord_inserted             | setclass | midi1 | midi2 | midi3 | midi4 |
+|----------+----------------------------+----------+-------+-------+-------+-------|
+|        1 | 2016-04-08 23:05:33.917363 |     0134 |    60 |    61 |    63 |    64 |
+* consider how to design tables to hold all the relevant chord data
+** pid, timestamp, setclass ('xxxx' format), tlevel, midis
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE trichord_events_stamped (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+setclass text,
+tlevel int,
+midi1 int, 
+midi2 int, 
+midi3 int)
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+insert into trichord_events_stamped (setclass, tlevel, midi1, midi2, midi3)
+VALUES ('013', 7, 67, 68, 70)
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+insert into trichord_events_stamped (setclass, tlevel, midi1, midi2, midi3)
+VALUES (013, 7, 67, 68, 70)
+#+END_SRC
+
+#+RESULTS:
+| INSERT 0 1 |
+|------------|
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+select * FROM trichord_events_stamped
+#+END_SRC
+
+#+RESULTS:
+| chord_id | chord_inserted             | setclass | tlevel | midi1 | midi2 | midi3 |
+|----------+----------------------------+----------+--------+-------+-------+-------|
+|        1 | 2016-04-08 23:10:23.865445 |      013 |      7 |    67 |    68 |    70 |
+|        2 | 2016-04-09 10:53:32.253909 |       13 |      7 |    67 |    68 |    70 |
+** consider 'setclass', un-transposed 'midis' as list, tlevel, transposed 'midis'
+#+BEGIN_SRC clojure :results output
+(user/voice-and-transpose-rand-set tetrachords (rand-int 11))
+#+END_SRC
+
+#+RESULTS:
+: ((0 1 5 6) (72 37 53 78) 3 (75 40 56 81))
+
+#+BEGIN_SRC clojure
+(map (fn[x]
+   (if (.startsWith (str x) "(quote ") 
+     (apply str "'" (rest x)) 
+     x)) "'0123'")
+#+END_SRC
+
+#+RESULTS:
+: (\' \0 \1 \2 \3 \')
+* can't write single quoted strings from clojure?
+** ask on Zulip?
+** separate table for PC set
+#+BEGIN_SRC clojure
+(let [[pcs midis] (user/voice-rand-set tetrachords)
+      [midi1 midi2 midi3 midi4] midis
+      [pc1 pc2 pc3 pc4] pcs]
+  (cdb1.core/insert-tetrachords<! {:midi1 midi1 :midi2 midi2 :midi3 midi3 :midi4 midi4}))
+#+END_SRC
+* create chord and pc tables
+** tables
+*** drop *chord_events
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+DROP TABLE monochord_events; 
+DROP TABLE trichord_events; 
+DROP TABLE tetrachord_events;
+DROP TABLE pentachord_events;
+DROP TABLE hexachord_events;
+#+END_SRC
+
+#+RESULTS:
+| DROP TABLE |
+|------------|
+| DROP TABLE |
+| DROP TABLE |
+| DROP TABLE |
+| DROP TABLE |
+*** old create *chord_events
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE monochord_events (chord_id serial PRIMARY KEY, midi1 int);
+CREATE TABLE dyad_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int);
+CREATE TABLE trichord_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int, midi3 int);
+CREATE TABLE tetrachord_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int, midi3 int, midi4 int);
+CREATE TABLE pentachord_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int, midi3 int, midi4 int, midi5 int);
+CREATE TABLE hexachord_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int, midi3 int, midi4 int, midi5 int, midi6 int);
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+** create pc_ and *chord_ events
+*** new create monochord_events and with timestamp 
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE monochord_events (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pc_monochord_events (
+pc_id int REFERENCES monochord_events (chord_id),
+pc_inserted timestamp REFERENCES monochord_events (chord_inserted),
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+*** new create dyad_events with timestamp 
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE dyad_events (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pc_dyad_events (
+pc_id int REFERENCES dyad_events (chord_id),
+pc_inserted timestamp REFERENCES dyad_events (chord_inserted),
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+*** new create trichord_events with timestamp 
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE trichord_events (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pc_trichord_events (
+pc_id int REFERENCES trichord_events (chord_id),
+pc_inserted timestamp REFERENCES trichord_events (chord_inserted),
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+*** new create tetrachord_events with timestamp 
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE tetrachord_events (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pc_tetrachord_events (
+pc_id int REFERENCES tetrachord_events (chord_id),
+pc_inserted timestamp REFERENCES tetrachord_events (chord_inserted),
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+*** new create pentachord_events with timestamp 
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pentachord_events (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pc_pentachord_events (
+pc_id int REFERENCES pentachord_events (chord_id),
+pc_inserted timestamp REFERENCES pentachord_events (chord_inserted),
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+*** new create hexachord_events with timestamp 
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE hexachord_events (
+chord_id serial PRIMARY KEY, 
+chord_inserted timestamp default current_timestamp, 
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
+#+END_SRC
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+CREATE TABLE pc_hexachord_events (
+pc_id int REFERENCES hexachord_events (chord_id),
+pc_inserted timestamp REFERENCES hexachord_events (chord_inserted),
+midi1 int, 
+midi2 int, 
+midi3 int, 
+midi4 int, 
+midi5 int, 
+midi6 int)
+
 #+END_SRC
