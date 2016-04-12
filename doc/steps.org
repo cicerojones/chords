@@ -26,8 +26,9 @@
 #+RESULTS:
 | 0 | 2 |
 *** def all sets into the current (user?) ns
+**** as lists
 #+BEGIN_SRC clojure
-;(def ^:const dyads-tn '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6)))
+(def ^:const dyads-tn '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6)))
 
 (def ^:const trichords-tn '((0 1 2) (0 1 3) (0 2 3) (0 1 4) (0 3 4) (0 1 5) (0 4 5) (0 1 6) (0 5 6) (0 2 4) (0 2 5) (0 3 5) (0 2 6) (0 4 6) (0 2 7) (0 3 6) (0 3 7) (0 4 7) (0 4 8)))
 
@@ -376,14 +377,363 @@
 #+END_SRC
 
 #+RESULTS:
-: #'user/trichords-tn#'user/tetrachords-tn#'user/pentachords-tn#'user/hexachords-tn#'user/dyads#'user/trichords#'user/tetrachords#'user/pentachords#'user/hexachords#'user/cmajtriads#'user/nested-transposed-tetrachords
+: #'user/dyads-tn#'user/trichords-tn#'user/tetrachords-tn#'user/pentachords-tn#'user/hexachords-tn#'user/dyads#'user/trichords#'user/tetrachords#'user/pentachords#'user/hexachords#'user/cmajtriads#'user/nested-transposed-tetrachords
+
+
 
 #+BEGIN_SRC clojure
 (rand-nth tetrachords-tn)
 #+END_SRC
 
 #+RESULTS:
-| 0 | 2 | 4 | 7 |
+| 0 | 1 | 3 | 7 |
+**** as vectors
+#+BEGIN_SRC clojure
+(def ^:const dyads-tn [[0 1] [0 2] [0 3] [0 4] [0 5] [0 6]])
+
+(def ^:const trichords-tn [[0 1 2] [0 1 3] [0 2 3] [0 1 4] [0 3 4] [0 1 5] [0 4 5] [0 1 6] [0 5 6] [0 2 4] [0 2 5] [0 3 5] [0 2 6] [0 4 6] [0 2 7] [0 3 6] [0 3 7] [0 4 7] [0 4 8]])
+
+(def ^:const tetrachords-tn [[0 1 2 3]
+			   [0 1 2 4] 
+			   [0 2 3 4] 
+			   [0 1 3 4] 
+			   [0 1 2 5] 
+			   [0 3 4 5] 
+			   [0 1 2 6] 
+			   [0 4 5 6] 
+			   [0 1 2 7] 
+			   [0 1 4 5] 
+			   [0 1 5 6] 
+			   [0 1 6 7] 
+			   [0 2 3 5] 
+			   [0 1 3 5] 
+			   [0 2 4 5] 
+			   [0 2 3 6] 
+			   [0 3 4 6] 
+			   [0 1 3 6] 
+			   [0 3 5 6] 
+			   [0 2 3 7] 
+			   [0 4 5 7] 
+			   [0 1 4 6] 
+			   [0 2 5 6] 
+			   [0 1 5 7] 
+			   [0 2 6 7] 
+			   [0 3 4 7] 
+			   [0 1 4 7] 
+			   [0 3 6 7] 
+			   [0 1 4 8] 
+			   [0 3 4 8] 
+			   [0 1 5 8] 
+			   [0 2 4 6] 
+			   [0 2 4 7] 
+			   [0 3 5 7] 
+			   [0 2 5 7] 
+			   [0 2 4 8] 
+			   [0 2 6 8] 
+			   [0 3 5 8] 
+			   [0 2 5 8] 
+			   [0 3 6 8] 
+			   [0 3 6 9] 
+			   [0 1 3 7] 
+			   [0 4 6 7]])
+
+(def ^:const pentachords-tn [[0 1 2 3 4] 
+			   [0 1 2 3 5] 
+			   [0 2 3 4 5] 
+			   [0 1 2 4 5] 
+			   [0 1 3 4 5] 
+			   [0 1 2 3 6] 
+			   [0 3 4 5 6] 
+			   [0 1 2 3 7] 
+			   [0 4 5 6 7] 
+			   [0 1 2 5 6] 
+			   [0 1 4 5 6] 
+			   [0 1 2 6 7] 
+			   [0 1 5 6 7] 
+			   [0 2 3 4 6] 
+			   [0 1 2 4 6] 
+			   [0 2 4 5 6] 
+			   [0 1 3 4 6] 
+			   [0 2 3 5 6] 
+			   [0 2 3 4 7] 
+			   [0 3 4 5 7] 
+			   [0 1 3 5 6] 
+			   [0 1 2 4 8] 
+			   [0 2 3 4 8] 
+			   [0 1 2 5 7] 
+			   [0 2 5 6 7] 
+			   [0 1 2 6 8] 
+			   [0 1 3 4 7] 
+			   [0 3 4 6 7] 
+			   [0 1 3 4 8] 
+			   [0 1 4 5 7] 
+			   [0 2 3 6 7] 
+			   [0 1 3 6 7] 
+			   [0 1 4 6 7] 
+			   [0 1 3 7 8] 
+			   [0 1 5 7 8] 
+			   [0 1 4 5 8] 
+			   [0 3 4 7 8] 
+			   [0 1 4 7 8] 
+			   [0 2 3 5 7] 
+			   [0 2 4 5 7] 
+			   [0 1 3 5 7] 
+			   [0 2 4 6 7] 
+			   [0 2 3 5 8] 
+			   [0 3 5 6 8] 
+			   [0 2 4 5 8] 
+			   [0 3 4 6 8] 
+			   [0 1 3 5 8] 
+			   [0 3 5 7 8] 
+			   [0 2 3 6 8] 
+			   [0 2 5 6 8] 
+			   [0 1 3 6 8] 
+			   [0 2 5 7 8] 
+			   [0 1 4 6 8] 
+			   [0 2 4 7 8] 
+			   [0 1 3 6 9] 
+			   [0 2 3 6 9] 
+			   [0 1 4 6 9] 
+			   [0 1 4 7 9] 
+			   [0 2 4 6 8] 
+			   [0 2 4 6 9] 
+			   [0 2 4 7 9] 
+			   [0 1 2 4 7] 
+			   [0 3 5 6 7] 
+			   [0 3 4 5 8] 
+			   [0 1 2 5 8] 
+			   [0 3 6 7 8] ] )
+
+(def ^:const hexachords-tn [[0 1 2 3 4 5] 
+			  [0 1 2 3 4 6] 
+			  [0 2 3 4 5 6] 
+			  [0 1 2 3 5 6] 
+			  [0 1 3 4 5 6] 
+			  [0 1 2 4 5 6] 
+			  [0 1 2 3 6 7] 
+			  [0 1 4 5 6 7] 
+			  [0 1 2 5 6 7] 
+			  [0 1 2 6 7 8] 
+			  [0 2 3 4 5 7] 
+			  [0 1 2 3 5 7] 
+			  [0 2 4 5 6 7] 
+			  [0 1 3 4 5 7] 
+			  [0 2 3 4 6 7] 
+			  [0 1 2 4 5 7] 
+			  [0 2 3 5 6 7] 
+			  [0 1 2 4 6 7] 
+			  [0 1 3 5 6 7] 
+			  [0 1 3 4 6 7] 
+			  [0 1 3 4 5 8] 
+			  [0 3 4 5 7 8] 
+			  [0 1 2 4 5 8] 
+			  [0 3 4 6 7 8] 
+			  [0 1 4 5 6 8] 
+			  [0 2 3 4 7 8] 
+			  [0 1 2 4 7 8] 
+			  [0 1 4 6 7 8] 
+			  [0 1 2 5 7 8] 
+			  [0 1 3 6 7 8] 
+			  [0 1 3 4 7 8] 
+			  [0 1 4 5 7 8] 
+			  [0 1 4 5 8 9] 
+			  [0 2 3 4 6 8] 
+			  [0 2 4 5 6 8] 
+			  [0 1 2 4 6 8] 
+			  [0 2 4 6 7 8] 
+			  [0 2 3 5 6 8] 
+			  [0 1 3 4 6 8] 
+			  [0 2 4 5 7 8] 
+			  [0 1 3 5 6 8] 
+			  [0 2 3 5 7 8] 
+			  [0 1 3 5 7 8] 
+			  [0 1 3 4 6 9] 
+			  [0 2 3 5 6 9] 
+			  [0 1 3 5 6 9] 
+			  [0 1 3 6 8 9] 
+			  [0 1 3 6 7 9] 
+			  [0 2 3 6 8 9] 
+			  [0 1 3 5 8 9] 
+			  [0 1 4 6 8 9] 
+			  [0 2 4 5 7 9] 
+			  [0 2 3 5 7 9] 
+			  [0 2 4 6 7 9] 
+			  [0 1 3 5 7 9] 
+			  [0 2 4 6 8 9] 
+			  [0 2 4 6 8 10] 
+			  [0 1 2 3 4 7] 
+			  [0 3 4 5 6 7] 
+			  [0 1 2 3 4 8] 
+			  [0 1 2 3 7 8] 
+			  [0 2 3 4 5 8] 
+			  [0 3 4 5 6 8] 
+			  [0 1 2 3 5 8] 
+			  [0 3 5 6 7 8] 
+			  [0 1 2 3 6 8] 
+			  [0 2 5 6 7 8] 
+			  [0 1 2 3 6 9] 
+			  [0 1 2 5 6 8] 
+			  [0 2 3 6 7 8] 
+			  [0 1 2 5 6 9] 
+			  [0 1 2 5 8 9] 
+			  [0 2 3 4 6 9] 
+			  [0 1 2 4 6 9] 
+			  [0 2 4 5 6 9] 
+			  [0 1 2 4 7 9] 
+			  [0 2 3 4 7 9] 
+			  [0 1 2 5 7 9] 
+			  [0 1 3 4 7 9] 
+			  [0 1 4 6 7 9] ] )
+
+;TnI-types
+(def ^:const dyads [[0 1] [0 2] [0 3] [0 4] [0 5] [0 6]])
+
+(def ^:const trichords [[0 1 2] [0 1 3] [0 1 4] [0 1 5] [0 1 6] [0 2 4] [0 2 5] [0 2 6] [0 2 7] [0 3 6] [0 3 7] [0 4 8]])
+
+(def ^:const tetrachords [[0 1 2 3] 
+			[0 1 2 4] 
+			[0 1 3 4] 
+			[0 1 2 5] 
+			[0 1 2 6] 
+			[0 1 2 7] 
+			[0 1 4 5] 
+			[0 1 5 6] 
+			[0 1 6 7] 
+			[0 2 3 5] 
+			[0 1 3 5] 
+			[0 2 3 6] 
+			[0 1 3 6] 
+			[0 2 3 7] 
+			[0 1 3 7] 
+			[0 1 4 6] 
+			[0 1 5 7] 
+			[0 3 4 7] 
+			[0 1 4 7] 
+			[0 1 4 8] 
+			[0 1 5 8] 
+			[0 2 4 6] 
+			[0 2 4 7] 
+			[0 2 5 7] 
+			[0 2 4 8] 
+			[0 2 6 8] 
+			[0 3 5 8] 
+			[0 2 5 8] 
+			[0 3 6 9] ])
+
+(def ^:const pentachords [[0 1 2 3 4] 
+			[0 1 2 3 5] 
+			[0 1 2 4 5] 
+			[0 1 2 3 6] 
+			[0 1 2 3 7] 
+			[0 1 2 5 6] 
+			[0 1 2 6 7] 
+			[0 2 3 4 6] 
+			[0 1 2 4 6] 
+			[0 1 3 4 6] 
+			[0 2 3 4 7] 
+			[0 1 3 5 6] 
+			[0 1 2 4 8] 
+			[0 1 2 5 7] 
+			[0 1 2 6 8] 
+			[0 1 3 4 7] 
+			[0 1 3 4 8] 
+			[0 1 4 5 7] 
+			[0 1 3 6 7] 
+			[0 1 3 7 8] 
+			[0 1 4 5 8] 
+			[0 1 4 7 8] 
+			[0 2 3 5 7] 
+			[0 1 3 5 7] 
+			[0 2 3 5 8] 
+			[0 2 4 5 8] 
+			[0 1 3 5 8] 
+			[0 2 3 6 8] 
+			[0 1 3 6 8] 
+			[0 1 4 6 8] 
+			[0 1 3 6 9] 
+			[0 1 4 6 9] 
+			[0 2 4 6 8] 
+			[0 2 4 6 9] 
+			[0 2 4 7 9] 
+			[0 1 2 4 7] 
+			[0 3 4 5 8] 
+			[0 1 2 5 8]])
+
+(def ^:const hexachords [[0 1 2 3 4 5] 
+		       [0 1 2 3 4 6] 
+		       [0 1 2 3 5 6] 
+		       [0 1 2 4 5 6] 
+		       [0 1 2 3 6 7] 
+		       [0 1 2 5 6 7] 
+		       [0 1 2 6 7 8] 
+		       [0 2 3 4 5 7] 
+		       [0 1 2 3 5 7] 
+		       [0 1 3 4 5 7] 
+		       [0 1 2 4 5 7] 
+		       [0 1 2 4 6 7] 
+		       [0 1 3 4 6 7] 
+		       [0 1 3 4 5 8] 
+		       [0 1 2 4 5 8] 
+		       [0 1 4 5 6 8] 
+		       [0 1 2 4 7 8] 
+		       [0 1 2 5 7 8] 
+		       [0 1 3 4 7 8] 
+		       [0 1 4 5 8 9] 
+		       [0 2 3 4 6 8] 
+		       [0 1 2 4 6 8] 
+		       [0 2 3 5 6 8] 
+		       [0 1 3 4 6 8] 
+		       [0 1 3 5 6 8] 
+		       [0 1 3 5 7 8] 
+		       [0 1 3 4 6 9] 
+		       [0 1 3 5 6 9] 
+		       [0 1 3 6 8 9] 
+		       [0 1 3 6 7 9] 
+		       [0 1 3 5 8 9] 
+		       [0 2 4 5 7 9] 
+		       [0 2 3 5 7 9] 
+		       [0 1 3 5 7 9] 
+		       [0 2 4 6 8 10] 
+		       [0 1 2 3 4 7] 
+		       [0 1 2 3 4 8] 
+		       [0 1 2 3 7 8] 
+		       [0 2 3 4 5 8] 
+		       [0 1 2 3 5 8] 
+		       [0 1 2 3 6 8] 
+		       [0 1 2 3 6 9] 
+		       [0 1 2 5 6 8] 
+		       [0 1 2 5 6 9] 
+		       [0 2 3 4 6 9] 
+		       [0 1 2 4 6 9] 
+		       [0 1 2 4 7 9] 
+		       [0 1 2 5 7 9] 
+		       [0 1 3 4 7 9] 
+		       [0 1 4 6 7 9] ] )
+
+;; ((((0 4 7) (0 4 19) (0 4 31))
+;;   ((0 16 7) (0 16 19) (0 16 31))
+;;   ((0 28 7) (0 28 19) (0 28 31)))
+;;  (((12 4 7) (12 4 19) (12 4 31))
+;;   ((12 16 7) (12 16 19) (12 16 31))
+;;   ((12 28 7) (12 28 19) (12 28 31)))
+;;  (((24 4 7) (24 4 19) (24 4 31))
+;;   ((24 16 7) (24 16 19) (24 16 31))
+;;   ((24 28 7) (24 28 19) (24 28 31))))
+
+
+;; ((((48 52 55) (48 52 67) (48 52 79))
+;;   ((48 64 55) (48 64 67) (48 64 79))
+;;   ((48 76 55) (48 76 67) (48 76 79)))
+;;  (((60 52 55) (60 52 67) (60 52 79))
+;;   ((60 64 55) (60 64 67) (60 64 79))
+;;   ((60 76 55) (60 76 67) (60 76 79)))
+;;  (((72 52 55) (72 52 67) (72 52 79))
+;;   ((72 64 55) (72 64 67) (72 64 79))
+;;   ((72 76 55) (72 76 67) (72 76 79))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/dyads-tn#'user/trichords-tn#'user/tetrachords-tn#'user/pentachords-tn#'user/hexachords-tn#'user/dyads#'user/trichords#'user/tetrachords#'user/pentachords#'user/hexachords
 
 ** use overtone code (or anything not loaded by default)
 *** what's "loaded"
@@ -610,6 +960,8 @@ select * from hexachord_events;
 
 #+RESULTS:
 | :chord_id | 3 | :midi1 | 48 | :midi2 | 75 | :midi3 | 65 | :midi4 | 80 |
+
+
 *** insert the result of calling up a (simple) random tetrachord (with destructure)
 #+BEGIN_SRC clojure
 (let [[pcs midis] (user/voice-rand-set tetrachords)
@@ -1018,3 +1370,717 @@ midi5 int,
 midi6 int)
 
 #+END_SRC
+* create tables for static pc-sets a la Forte
+** drops
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+drop table trichords;
+drop table tetrachords;
+drop table pentachords;
+drop table hexachords;
+#+END_SRC
+
+#+RESULTS:
+| DROP TABLE |
+|------------|
+| DROP TABLE |
+| DROP TABLE |
+| DROP TABLE |
+
+** table design with a default of 0 for pc1
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+create table trichords (set_id serial primary key, comment text, pc1 int default 0, pc2 int, pc3 int);
+create table tetrachords (set_id serial primary key, comment text, pc1 int default 0, pc2 int, pc3 int, pc4 int);
+create table pentachords (set_id serial primary key, comment text, pc1 int default 0, pc2 int, pc3 int, pc4 int, pc5 int);
+create table hexachords (set_id serial primary key, comment text, pc1 int default 0, pc2 int, pc3 int, pc4 int, pc5 int, pc6 int);
+#+END_SRC
+
+#+RESULTS:
+| CREATE TABLE |
+|--------------|
+| CREATE TABLE |
+| CREATE TABLE |
+| CREATE TABLE |
+** insert into
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+INSERT INTO trichords (pc2, pc3) VALUES (1, 2)
+#+END_SRC
+** fix
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+INSERT INTO tetrachords (midi2, midi3, midi4) VALUES (0, 1, 2, 3)
+#+END_SRC
+** fix
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+INSERT INTO pentachords (midi1, midi2, midi3, midi4, midi5) VALUES (0, 1, 2, 3, 4)
+#+END_SRC
+** fix
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+INSERT INTO hexachords (midi1, midi2, midi3, midi4, midi5, midi6) VALUES (0, 1, 2, 3, 4, 5)
+#+END_SRC
+* use korma for db interactions
+** use korma.db to 'defdb' a connection to postgres
+#+BEGIN_SRC clojure
+(use 'korma.db)
+
+(defdb prod (postgres {:db "heroku_psql_tutorial"
+                       :user "a"
+                       :host "localhost"
+                       :port "5432"
+                       :delimiters ""}))
+#+END_SRC
+
+#+RESULTS:
+: nil{:pool #delay[{:status :pending, :val nil} 0x5b7acf94], :options {:naming {:keys #function[clojure.core/identity], :fields #function[clojure.core/identity]}, :delimiters [nil nil], :alias-delimiter " AS ", :subprotocol "postgresql"}}
+
+- declare your entities before defining?
+#+BEGIN_SRC clojure
+(declare trichord-sets ;trichord-voicings 
+)
+#+END_SRC
+** entities
+*** --trichords with default pc1 zero field
+#+BEGIN_SRC clojure
+; (use 'korma.core)
+(defentity trichord-sets
+  (pk :set_id)
+  (table :trichords)
+  (entity-fields :pc1 :pc2 :pc3))
+#+END_SRC
+
+#+RESULTS:
+: #'user/trichord-sets
+*** trichords entity without default pc1 zero field
+#+BEGIN_SRC clojure
+; (use 'korma.core)
+(defentity trichord-sets
+  (pk :set_id)
+  (table :trichords)
+  (entity-fields :pc2 :pc3))
+#+END_SRC
+
+#+RESULTS:
+: #'user/trichord-sets
+*** 
+#+BEGIN_SRC clojure
+; (use 'korma.core)
+(defentity tetrachord-sets
+  (pk :set_id)
+  (table :tetrachords)
+  (entity-fields :pc1 :pc2 :pc3 :pc4))
+#+END_SRC
+
+#+RESULTS:
+: #'user/tetrachord-sets
+
+*** 
+#+BEGIN_SRC clojure
+; (use 'korma.core)
+(defentity pentachord-sets
+  (pk :set_id)
+  (table :pentachords)
+  (entity-fields :pc1 :pc2 :pc3 :pc4 :pc5))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pentachord-sets
+
+*** 
+#+BEGIN_SRC clojure
+; (use 'korma.core)
+(defentity hexachord-sets
+  (pk :set_id)
+  (table :hexachords)
+  (entity-fields :pc1 :pc2 :pc3 :pc4 :pc5 :pc6))
+#+END_SRC
+
+#+RESULTS:
+: #'user/hexachord-sets
+
+** korma insert into the trichord entity
+#+BEGIN_SRC clojure
+(insert trichord-sets (values {:pc2 1 :pc3 2}))
+#+END_SRC
+
+#+RESULTS:
+| :set_id | 1 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 |
+
+#+BEGIN_SRC clojure
+(insert trichord-sets (values {:pc2 1 :pc3 3}))
+#+END_SRC
+
+#+RESULTS:
+| :set_id | 2 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 |
+
+
+
+#+BEGIN_SRC clojure
+(insert trichord-sets (values {:pc1 0 :pc2 1 :pc3 4}))
+#+END_SRC
+
+#+RESULTS:
+| :set_id | 3 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 |
+* destructing and 'for' sequence
+** trying to destructure trichord var
+#+BEGIN_SRC clojure :results output
+(println (count trichords)
+         (count trichords-tn))
+#+END_SRC
+
+#+RESULTS:
+: 12 19
+
+#+BEGIN_SRC clojure
+(first trichords)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+
+#+BEGIN_SRC clojure
+
+#+END_SRC
+** using 'for' sequence comprehensions
+#+BEGIN_SRC clojure
+(for [zero [0 12 24]
+      one [1 13 25]
+      three [3 15 27]]
+       [zero one three])
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  3 |
+|  0 |  1 | 15 |
+|  0 |  1 | 27 |
+|  0 | 13 |  3 |
+|  0 | 13 | 15 |
+|  0 | 13 | 27 |
+|  0 | 25 |  3 |
+|  0 | 25 | 15 |
+|  0 | 25 | 27 |
+| 12 |  1 |  3 |
+| 12 |  1 | 15 |
+| 12 |  1 | 27 |
+| 12 | 13 |  3 |
+| 12 | 13 | 15 |
+| 12 | 13 | 27 |
+| 12 | 25 |  3 |
+| 12 | 25 | 15 |
+| 12 | 25 | 27 |
+| 24 |  1 |  3 |
+| 24 |  1 | 15 |
+| 24 |  1 | 27 |
+| 24 | 13 |  3 |
+| 24 | 13 | 15 |
+| 24 | 13 | 27 |
+| 24 | 25 |  3 |
+| 24 | 25 | 15 |
+| 24 | 25 | 27 |
+
+#+BEGIN_SRC clojure
+(count (for [zero [0 12 24]
+      one [1 13 25]
+      three [3 15 27]]
+       [zero one three]))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+;; (for [pcset [[0 1 2] [0 1 3]]
+;;       n [0 12 24 36 48 60]]
+;;   (map #(+ n pcset) pcset))
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC clojure
+(map #(+ 2 %) [0 1 2])
+#+END_SRC
+
+#+RESULTS:
+| 2 | 3 | 4 |
+
+#+BEGIN_SRC clojure
+(for [n (range 3)]
+  (map #(+ n %) [0 1 2]))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+| 1 | 2 | 3 |
+| 2 | 3 | 4 |
+
+#+BEGIN_SRC clojure
+(for [n (range 3)
+      pcset [[0 1 2] [0 1 3]]]
+  (map #(+ n %) pcset))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+| 0 | 1 | 3 |
+| 1 | 2 | 3 |
+| 1 | 2 | 4 |
+| 2 | 3 | 4 |
+| 2 | 3 | 5 |
+
+#+BEGIN_SRC clojure
+(for [pcset [[0 1 2] [0 1 3]]
+      n (range 3)]
+  (map #(+ n %) pcset))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+| 1 | 2 | 3 |
+| 2 | 3 | 4 |
+| 0 | 1 | 3 |
+| 1 | 2 | 4 |
+| 2 | 3 | 5 |
+
+#+BEGIN_SRC clojure
+(for [pcset [[0 1 2] [0 1 3]]
+      
+      n (range 3)]
+  (map #(+ n %) pcset))
+#+END_SRC
+** for loop and destructure pcs from trichord sets
+#+BEGIN_SRC clojure
+(for [set trichords]
+  (let [[a b c] set]
+    c))
+#+END_SRC
+
+#+RESULTS:
+| 2 | 3 | 4 | 5 | 6 | 4 | 5 | 6 | 7 | 6 | 7 | 8 |
+
+#+BEGIN_SRC clojure
+(for [set trichords]
+  (let [[a b c] set]
+    {:a a :b b :c c}))
+#+END_SRC
+
+#+RESULTS:
+| :a | 0 | :b | 1 | :c | 2 |
+| :a | 0 | :b | 1 | :c | 3 |
+| :a | 0 | :b | 1 | :c | 4 |
+| :a | 0 | :b | 1 | :c | 5 |
+| :a | 0 | :b | 1 | :c | 6 |
+| :a | 0 | :b | 2 | :c | 4 |
+| :a | 0 | :b | 2 | :c | 5 |
+| :a | 0 | :b | 2 | :c | 6 |
+| :a | 0 | :b | 2 | :c | 7 |
+| :a | 0 | :b | 3 | :c | 6 |
+| :a | 0 | :b | 3 | :c | 7 |
+| :a | 0 | :b | 4 | :c | 8 |
+* loop over pc_set vars and insert into set entity
+** trichords
+#+BEGIN_SRC clojure
+(for [set trichords]
+  (let [[a b c] set]
+    (insert trichord-sets (values {:pc1 a :pc2 b :pc3 c}))))
+#+END_SRC
+
+#+RESULTS:
+| :set_id |  1 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 |
+| :set_id |  2 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 |
+| :set_id |  3 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 |
+| :set_id |  4 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 5 |
+| :set_id |  5 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 6 |
+| :set_id |  6 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 |
+| :set_id |  7 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 5 |
+| :set_id |  8 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 6 |
+| :set_id |  9 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 7 |
+| :set_id | 10 | :comment | nil | :pc1 | 0 | :pc2 | 3 | :pc3 | 6 |
+| :set_id | 11 | :comment | nil | :pc1 | 0 | :pc2 | 3 | :pc3 | 7 |
+| :set_id | 12 | :comment | nil | :pc1 | 0 | :pc2 | 4 | :pc3 | 8 |
+
+| 2 | 3 | 4 | 5 | 6 | 4 | 5 | 6 | 7 | 6 | 7 | 8 |
+
+#+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
+select * from trichords;
+#+END_SRC
+
+#+RESULTS:
+| set_id | comment | pc1 | pc2 | pc3 |
+|--------+---------+-----+-----+-----|
+|      1 |         |   0 |   1 |   2 |
+|      2 |         |   0 |   1 |   3 |
+|      3 |         |   0 |   1 |   4 |
+|      4 |         |   0 |   1 |   5 |
+|      5 |         |   0 |   1 |   6 |
+|      6 |         |   0 |   2 |   4 |
+|      7 |         |   0 |   2 |   5 |
+|      8 |         |   0 |   2 |   6 |
+|      9 |         |   0 |   2 |   7 |
+|     10 |         |   0 |   3 |   6 |
+|     11 |         |   0 |   3 |   7 |
+|     12 |         |   0 |   4 |   8 |
+** tetrachords
+#+BEGIN_SRC clojure
+(for [set tetrachords]
+  (let [[a b c d] set]
+    (insert tetrachord-sets (values {:pc1 a :pc2 b :pc3 c :pc4 d}))))
+#+END_SRC
+
+#+RESULTS:
+| :set_id |  1 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 |
+| :set_id |  2 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 |
+| :set_id |  3 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 |
+| :set_id |  4 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 |
+| :set_id |  5 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 6 |
+| :set_id |  6 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 7 |
+| :set_id |  7 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 5 |
+| :set_id |  8 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 5 | :pc4 | 6 |
+| :set_id |  9 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 6 | :pc4 | 7 |
+| :set_id | 10 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 5 |
+| :set_id | 11 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 |
+| :set_id | 12 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 6 |
+| :set_id | 13 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 6 |
+| :set_id | 14 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 7 |
+| :set_id | 15 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 7 |
+| :set_id | 16 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 6 |
+| :set_id | 17 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 5 | :pc4 | 7 |
+| :set_id | 18 | :comment | nil | :pc1 | 0 | :pc2 | 3 | :pc3 | 4 | :pc4 | 7 |
+| :set_id | 19 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 7 |
+| :set_id | 20 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 8 |
+| :set_id | 21 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 5 | :pc4 | 8 |
+| :set_id | 22 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 6 |
+| :set_id | 23 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 7 |
+| :set_id | 24 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 5 | :pc4 | 7 |
+| :set_id | 25 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 8 |
+| :set_id | 26 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 6 | :pc4 | 8 |
+| :set_id | 27 | :comment | nil | :pc1 | 0 | :pc2 | 3 | :pc3 | 5 | :pc4 | 8 |
+| :set_id | 28 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 5 | :pc4 | 8 |
+| :set_id | 29 | :comment | nil | :pc1 | 0 | :pc2 | 3 | :pc3 | 6 | :pc4 | 9 |
+** pentachords
+#+BEGIN_SRC clojure
+(for [set pentachords]
+  (let [[a b c d e] set]
+    (insert pentachord-sets (values {:pc1 a :pc2 b :pc3 c :pc4 d :pc5 e}))))
+#+END_SRC
+
+#+RESULTS:
+| :set_id |  1 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 4 |
+| :set_id |  2 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 5 |
+| :set_id |  3 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 5 |
+| :set_id |  4 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 6 |
+| :set_id |  5 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 7 |
+| :set_id |  6 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 6 |
+| :set_id |  7 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 6 | :pc5 | 7 |
+| :set_id |  8 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 |
+| :set_id |  9 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 6 |
+| :set_id | 10 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 |
+| :set_id | 11 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 4 | :pc5 | 7 |
+| :set_id | 12 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 6 |
+| :set_id | 13 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 8 |
+| :set_id | 14 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 7 |
+| :set_id | 15 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 6 | :pc5 | 8 |
+| :set_id | 16 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 7 |
+| :set_id | 17 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 8 |
+| :set_id | 18 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 5 | :pc5 | 7 |
+| :set_id | 19 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 6 | :pc5 | 7 |
+| :set_id | 20 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 7 | :pc5 | 8 |
+| :set_id | 21 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 5 | :pc5 | 8 |
+| :set_id | 22 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 7 | :pc5 | 8 |
+| :set_id | 23 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 5 | :pc5 | 7 |
+| :set_id | 24 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 7 |
+| :set_id | 25 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 5 | :pc5 | 8 |
+| :set_id | 26 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 5 | :pc5 | 8 |
+| :set_id | 27 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 8 |
+| :set_id | 28 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 6 | :pc5 | 8 |
+| :set_id | 29 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 6 | :pc5 | 8 |
+| :set_id | 30 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 6 | :pc5 | 8 |
+| :set_id | 31 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 6 | :pc5 | 9 |
+| :set_id | 32 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 6 | :pc5 | 9 |
+| :set_id | 33 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 6 | :pc5 | 8 |
+| :set_id | 34 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 6 | :pc5 | 9 |
+| :set_id | 35 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 7 | :pc5 | 9 |
+| :set_id | 36 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 7 |
+| :set_id | 37 | :comment | nil | :pc1 | 0 | :pc2 | 3 | :pc3 | 4 | :pc4 | 5 | :pc5 | 8 |
+| :set_id | 38 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 8 |
+** hexachords
+#+BEGIN_SRC clojure
+(for [set hexachords]
+  (let [[a b c d e f] set]
+    (insert hexachord-sets (values {:pc1 a :pc2 b :pc3 c :pc4 d :pc5 e :pc6 f}))))
+#+END_SRC
+
+#+RESULTS:
+| :set_id |  1 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 4 | :pc6 |  5 |
+| :set_id |  2 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 4 | :pc6 |  6 |
+| :set_id |  3 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 5 | :pc6 |  6 |
+| :set_id |  4 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 5 | :pc6 |  6 |
+| :set_id |  5 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 6 | :pc6 |  7 |
+| :set_id |  6 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 6 | :pc6 |  7 |
+| :set_id |  7 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 6 | :pc5 | 7 | :pc6 |  8 |
+| :set_id |  8 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 4 | :pc5 | 5 | :pc6 |  7 |
+| :set_id |  9 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 5 | :pc6 |  7 |
+| :set_id | 10 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 5 | :pc6 |  7 |
+| :set_id | 11 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 5 | :pc6 |  7 |
+| :set_id | 12 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 6 | :pc6 |  7 |
+| :set_id | 13 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 | :pc6 |  7 |
+| :set_id | 14 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 5 | :pc6 |  8 |
+| :set_id | 15 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 5 | :pc6 |  8 |
+| :set_id | 16 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 5 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 17 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 7 | :pc6 |  8 |
+| :set_id | 18 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 7 | :pc6 |  8 |
+| :set_id | 19 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 7 | :pc6 |  8 |
+| :set_id | 20 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 5 | :pc5 | 8 | :pc6 |  9 |
+| :set_id | 21 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 22 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 23 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 5 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 24 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 25 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 26 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 7 | :pc6 |  8 |
+| :set_id | 27 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 | :pc6 |  9 |
+| :set_id | 28 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 6 | :pc6 |  9 |
+| :set_id | 29 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 6 | :pc5 | 8 | :pc6 |  9 |
+| :set_id | 30 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 6 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 31 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 8 | :pc6 |  9 |
+| :set_id | 32 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 5 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 33 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 5 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 34 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 5 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 35 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 4 | :pc4 | 6 | :pc5 | 8 | :pc6 | 10 |
+| :set_id | 36 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 4 | :pc6 |  7 |
+| :set_id | 37 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 4 | :pc6 |  8 |
+| :set_id | 38 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 7 | :pc6 |  8 |
+| :set_id | 39 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 4 | :pc5 | 5 | :pc6 |  8 |
+| :set_id | 40 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 5 | :pc6 |  8 |
+| :set_id | 41 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 42 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 3 | :pc5 | 6 | :pc6 |  9 |
+| :set_id | 43 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 6 | :pc6 |  8 |
+| :set_id | 44 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 6 | :pc6 |  9 |
+| :set_id | 45 | :comment | nil | :pc1 | 0 | :pc2 | 2 | :pc3 | 3 | :pc4 | 4 | :pc5 | 6 | :pc6 |  9 |
+| :set_id | 46 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 6 | :pc6 |  9 |
+| :set_id | 47 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 4 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 48 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 2 | :pc4 | 5 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 49 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 7 | :pc6 |  9 |
+| :set_id | 50 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 6 | :pc5 | 7 | :pc6 |  9 |
+* create voicings versions of pc_sets
+** 
+#+BEGIN_SRC clojure
+(for [pcset trichords
+      n (range 12)]
+  (map #(+ n %) pcset))
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  2 |
+|  1 |  2 |  3 |
+|  2 |  3 |  4 |
+|  3 |  4 |  5 |
+|  4 |  5 |  6 |
+|  5 |  6 |  7 |
+|  6 |  7 |  8 |
+|  7 |  8 |  9 |
+|  8 |  9 | 10 |
+|  9 | 10 | 11 |
+| 10 | 11 | 12 |
+| 11 | 12 | 13 |
+|  0 |  1 |  3 |
+|  1 |  2 |  4 |
+|  2 |  3 |  5 |
+|  3 |  4 |  6 |
+|  4 |  5 |  7 |
+|  5 |  6 |  8 |
+|  6 |  7 |  9 |
+|  7 |  8 | 10 |
+|  8 |  9 | 11 |
+|  9 | 10 | 12 |
+| 10 | 11 | 13 |
+| 11 | 12 | 14 |
+|  0 |  1 |  4 |
+|  1 |  2 |  5 |
+|  2 |  3 |  6 |
+|  3 |  4 |  7 |
+|  4 |  5 |  8 |
+|  5 |  6 |  9 |
+|  6 |  7 | 10 |
+|  7 |  8 | 11 |
+|  8 |  9 | 12 |
+|  9 | 10 | 13 |
+| 10 | 11 | 14 |
+| 11 | 12 | 15 |
+|  0 |  1 |  5 |
+|  1 |  2 |  6 |
+|  2 |  3 |  7 |
+|  3 |  4 |  8 |
+|  4 |  5 |  9 |
+|  5 |  6 | 10 |
+|  6 |  7 | 11 |
+|  7 |  8 | 12 |
+|  8 |  9 | 13 |
+|  9 | 10 | 14 |
+| 10 | 11 | 15 |
+| 11 | 12 | 16 |
+|  0 |  1 |  6 |
+|  1 |  2 |  7 |
+|  2 |  3 |  8 |
+|  3 |  4 |  9 |
+|  4 |  5 | 10 |
+|  5 |  6 | 11 |
+|  6 |  7 | 12 |
+|  7 |  8 | 13 |
+|  8 |  9 | 14 |
+|  9 | 10 | 15 |
+| 10 | 11 | 16 |
+| 11 | 12 | 17 |
+|  0 |  2 |  4 |
+|  1 |  3 |  5 |
+|  2 |  4 |  6 |
+|  3 |  5 |  7 |
+|  4 |  6 |  8 |
+|  5 |  7 |  9 |
+|  6 |  8 | 10 |
+|  7 |  9 | 11 |
+|  8 | 10 | 12 |
+|  9 | 11 | 13 |
+| 10 | 12 | 14 |
+| 11 | 13 | 15 |
+|  0 |  2 |  5 |
+|  1 |  3 |  6 |
+|  2 |  4 |  7 |
+|  3 |  5 |  8 |
+|  4 |  6 |  9 |
+|  5 |  7 | 10 |
+|  6 |  8 | 11 |
+|  7 |  9 | 12 |
+|  8 | 10 | 13 |
+|  9 | 11 | 14 |
+| 10 | 12 | 15 |
+| 11 | 13 | 16 |
+|  0 |  2 |  6 |
+|  1 |  3 |  7 |
+|  2 |  4 |  8 |
+|  3 |  5 |  9 |
+|  4 |  6 | 10 |
+|  5 |  7 | 11 |
+|  6 |  8 | 12 |
+|  7 |  9 | 13 |
+|  8 | 10 | 14 |
+|  9 | 11 | 15 |
+| 10 | 12 | 16 |
+| 11 | 13 | 17 |
+|  0 |  2 |  7 |
+|  1 |  3 |  8 |
+|  2 |  4 |  9 |
+|  3 |  5 | 10 |
+|  4 |  6 | 11 |
+|  5 |  7 | 12 |
+|  6 |  8 | 13 |
+|  7 |  9 | 14 |
+|  8 | 10 | 15 |
+|  9 | 11 | 16 |
+| 10 | 12 | 17 |
+| 11 | 13 | 18 |
+|  0 |  3 |  6 |
+|  1 |  4 |  7 |
+|  2 |  5 |  8 |
+|  3 |  6 |  9 |
+|  4 |  7 | 10 |
+|  5 |  8 | 11 |
+|  6 |  9 | 12 |
+|  7 | 10 | 13 |
+|  8 | 11 | 14 |
+|  9 | 12 | 15 |
+| 10 | 13 | 16 |
+| 11 | 14 | 17 |
+|  0 |  3 |  7 |
+|  1 |  4 |  8 |
+|  2 |  5 |  9 |
+|  3 |  6 | 10 |
+|  4 |  7 | 11 |
+|  5 |  8 | 12 |
+|  6 |  9 | 13 |
+|  7 | 10 | 14 |
+|  8 | 11 | 15 |
+|  9 | 12 | 16 |
+| 10 | 13 | 17 |
+| 11 | 14 | 18 |
+|  0 |  4 |  8 |
+|  1 |  5 |  9 |
+|  2 |  6 | 10 |
+|  3 |  7 | 11 |
+|  4 |  8 | 12 |
+|  5 |  9 | 13 |
+|  6 | 10 | 14 |
+|  7 | 11 | 15 |
+|  8 | 12 | 16 |
+|  9 | 13 | 17 |
+| 10 | 14 | 18 |
+| 11 | 15 | 19 |
+** 
+#+BEGIN_SRC clojure
+(def trichord-transpositions-plus12 
+(for [pcset trichords
+      n (range 12)]
+  (map #(+ n %) pcset)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/trichord-transpositions-plus12
+
+#+BEGIN_SRC clojure
+(rand-nth trichord-transpositions-plus12)
+#+END_SRC
+
+#+RESULTS:
+| 5 | 8 | 11 |
+
+#+BEGIN_SRC clojure
+(for [pc [0 1 2]
+      n [0 12 24]]
+(+ pc n))
+  
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 1 | 13 | 25 | 2 | 14 | 26 |
+
+#+BEGIN_SRC clojure
+(for [n [0 12 24]
+      pc [[0 1 2]]]
+  (map #(+ n %) pc))
+  
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  2 |
+| 12 | 13 | 14 |
+| 24 | 25 | 26 |
+
+#+BEGIN_SRC clojure
+(for [a [[0 1 2] [0 1 3]]]
+  (for [n a] a))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2) | (0 1 2) | (0 1 2) |
+| (0 1 3) | (0 1 3) | (0 1 3) |
+
+#+BEGIN_SRC clojure
+(for [a [[0 1 2] [0 1 3]]]
+  (for [n a] a))
+#+END_SRC
+
+add to x the result of multiplying n by 12, where n ranges from 1 to 5
+
+#+BEGIN_SRC clojure
+(partition 9 (for [x (range 12)
+      n [0 12 24 36 48 60 72 84 96]]
+(+ x n)))
+#+END_SRC
+
+#+RESULTS:
+|  0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 |  96 |
+|  1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 |  97 |
+|  2 | 14 | 26 | 38 | 50 | 62 | 74 | 86 |  98 |
+|  3 | 15 | 27 | 39 | 51 | 63 | 75 | 87 |  99 |
+|  4 | 16 | 28 | 40 | 52 | 64 | 76 | 88 | 100 |
+|  5 | 17 | 29 | 41 | 53 | 65 | 77 | 89 | 101 |
+|  6 | 18 | 30 | 42 | 54 | 66 | 78 | 90 | 102 |
+|  7 | 19 | 31 | 43 | 55 | 67 | 79 | 91 | 103 |
+|  8 | 20 | 32 | 44 | 56 | 68 | 80 | 92 | 104 |
+|  9 | 21 | 33 | 45 | 57 | 69 | 81 | 93 | 105 |
+| 10 | 22 | 34 | 46 | 58 | 70 | 82 | 94 | 106 |
+| 11 | 23 | 35 | 47 | 59 | 71 | 83 | 95 | 107 |
+
