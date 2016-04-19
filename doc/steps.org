@@ -1,3 +1,4 @@
+#+STARTUP:  indent
 * follow Heroku tutorial
 ** preliminaries
 ** with a repl started
@@ -2083,4 +2084,800 @@ add to x the result of multiplying n by 12, where n ranges from 1 to 5
 |  9 | 21 | 33 | 45 | 57 | 69 | 81 | 93 | 105 |
 | 10 | 22 | 34 | 46 | 58 | 70 | 82 | 94 | 106 |
 | 11 | 23 | 35 | 47 | 59 | 71 | 83 | 95 | 107 |
+* play
+** use overtone
+*** require and prefix overtone and korma functions
+#+BEGIN_SRC clojure
+(require '[overtone.live :as o]
+         '[korma.core :as k])
+#+END_SRC
+
+#+RESULTS:
+: nil
+*** simply 'use sampled-piano and live
+This is a blocking call--can you put it on a thread to execute behind
+the scenes and not lock up the repl?
+#+BEGIN_SRC clojure
+(use 'overtone.live)
+(use 'overtone.inst.sampled-piano)
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+** make sound, import sound, record sound
+*** play piano chords using doseq and sampled-piano
+  #+BEGIN_SRC clojure :session getting-started :tangle yes
+(defn play-piano-chord [a-chord]
+        (doseq [note a-chord] (sampled-piano note)))
+
+
+ #+END_SRC
+
+  #+RESULTS:
+  : #'user/play-piano-chordnil
+#+BEGIN_SRC clojure
+(play-piano-chord [60 64 67])
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+*** use sample to load a sample
+
+
+  #+RESULTS:
+  : #'user/floot
+
+
+
+#+RESULTS:
+: overtone.samples.freesound.FreesoundSample
+
+#+BEGIN_SRC clojure
+(def pang (sample "/Applications/SuperCollider/SuperCollider.app/Contents/Resources/sounds/pang-short.wav"))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pang
+
+#+BEGIN_SRC clojure
+(type pang)
+#+END_SRC
+
+#+RESULTS:
+: overtone.sc.sample.PlayableSample
+*** use load-sample to load a sample into a buffer--whaddya do with a buffer?
+#+BEGIN_SRC clojure
+(def pang-buf (load-sample "/Applications/SuperCollider/SuperCollider.app/Contents/Resources/sounds/pang-short.wav"))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pang-buf
+
+#+BEGIN_SRC clojure
+(type pang-buf)
+#+END_SRC
+
+#+RESULTS:
+: overtone.sc.sample.Sample
+
+#+BEGIN_SRC clojure
+(defsynth reverb-on-left []
+  (let [dry (play-buf 1 pang-buf)
+    wet (free-verb dry 1)]
+    (out 0 [wet dry])))
+
+#+END_SRC
+
+#+RESULTS:
+: #<synth: reverb-on-left>
+
+#+BEGIN_SRC clojure
+(reverb-on-left)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: user/reverb-on-left 42>
+*** make a recording of some played sound
+#+BEGIN_SRC clojure
+(play-piano-chord (range 48 72 5))
+;; (48 53 58 63 68)
+(recording-start "~/Desktop/five-fourths.wav")
+;; make some noise. i.e.
+
+;; stop recording
+#+END_SRC
+
+#+RESULTS:
+: nil:recording-started
+
+#+BEGIN_SRC clojure
+(recording-stop)
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Desktop/five-fourths.wav
+*** load recording back as a playable-sample (and play)
+#+BEGIN_SRC clojure
+(def fivefourths (sample "~/Desktop/five-fourths.wav"))
+#+END_SRC
+#+RESULTS:
+: #'user/fivefourths
+
+#+BEGIN_SRC clojure
+(fivefourths)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtone.sc.saddd/stereo-player 81>
+*** load recording back into a buffer with load-sample
+#+BEGIN_SRC clojure
+(def fivefourthss (load-sample "~/Desktop/five-fourths.wav"))
+#+END_SRC
+
+#+RESULTS:
+: #'user/fivefourthss
+
+#+END_SRC
+*** save sound in a buffer into a file
+#+BEGIN_SRC clojure
+(buffer-save b "~/Desktop/bong.wav") 
+#+END_SRC
+** timing
+*** sleep a thread to create an execution delay
+#+BEGIN_SRC clojure
+(Thread/sleep 1000)
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+#+BEGIN_SRC clojure :results output
+(time (let [a (range 1e7)]
+              (last a)))
+#+END_SRC
+
+#+RESULTS:
+: "Elapsed time: 1099.191 msecs"
+*** make a recording using Thread sleeping
+#+BEGIN_SRC clojure
+
+;; (48 53 58 63 68)
+(recording-start "~/Desktop/five-fourths.wav")
+;; make some noise. i.e.
+
+;; stop recording
+#+END_SRC
+
+#+RESULTS:
+: :recording-started
+
+#+BEGIN_SRC clojure
+(do (Thread/sleep 3000) (play-piano-chord (range 48 72 5)))
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+#+BEGIN_SRC clojure
+(recording-stop)
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Desktop/five-fourths.wav
+*** try to play buffer back from an offset
+**** calculate offset for 1.5 secs
+#+BEGIN_SRC clojure
+(* 44100 1.5)
+#+END_SRC
+
+#+RESULTS:
+: 66150.0
+**** a play-buf ugen
+#+BEGIN_SRC clojure
+(play-buf 1 fivefourthss)
+#+END_SRC
+
+#+RESULTS:
+: #<sc-ugen: play-buf:ar [0]>
+**** a synth to "play" a play-buf ugen
+#+BEGIN_SRC clojure
+(defsynth foths [] (out 0 [my_fourths_playbuffer]))
+(foths)
+#+END_SRC
+
+#+RESULTS:
+: #<synth: foths>#<synth-node[loading]: user/foths 127>
+**** convenient function for playing a buffer
+#+BEGIN_SRC clojure
+(mono-partial-player 92 )
+#+END_SRC
+
+#+BEGIN_SRC clojure
+;; deprecated?
+(mono-player 92)
+#+END_SRC
+*** use freesound samples in buffers
+**** load a sample into a buffer and print associated info
+#+BEGIN_SRC clojure
+(def floot (freesound 154237))
+(floot)
+#+END_SRC
+
+#+RESULTS:
+: #'user/floot#<synth-node[loading]: overtoddd/stereo-partial-player 470>
+**** getting info from freesound samples--:filesize 775361 :duration 4.38873
+#+BEGIN_SRC clojure
+(freesound-info 154237)
+#+END_SRC
+
+:analysis_frames https://www.freesound.org/data/analysis/154/154237_2626346_frames.json
+:duration 4.38873
+:filesize 775361
+:bitrate 1380
+
+#+RESULTS:
+| :description | This is an  Instrumental sample of a Transverse-Flute playing an C in the 4th Octave. The attack and sustain of the note is Tenuto and Non-Vibrato. The tuning frequency (concert pitch) used is 442 and the dynamic intention is of  mezzoforte. This sample belongs to a Multisample pack\r\n\r\nOrchestral Instrument: Transverse-Flute\r\nInstrument: Aerophone\r\nAerophone: Woodwind\r\nNote: C\r\nOctave: 4\r\nConcert Pitch: 442Hz\r\nDynamic: mezzoforte\r\nAttack: Tenuto\r\nSustain: Non-Vibrato\r\nMicrophone: Zoom-H2N\r\nMicrophone Setup: XY |
+
+| :samplerate | 44100.0 |
+
+#+BEGIN_SRC clojure
+(for [[a b] (freesound-info 154237)]
+            (println a b))
+:description This is an  Instrumental sample of a Transverse-Flute playing an C in the 4th Octave. The attack and sustain of the note is Tenuto and Non-Vibrato. The tuning frequency (concert pitch) used is 442 and the dynamic intention is of  mezzoforte. This sample belongs to a Multisample pack
+
+Orchestral Instrument: Transverse-Flute
+Instrument: Aerophone
+Aerophone: Woodwind
+Note: C
+Octave: 4
+Concert Pitch: 442Hz
+Dynamic: mezzoforte
+Attack: Tenuto
+Sustain: Non-Vibrato
+Microphone: Zoom-H2N
+Microphone Setup: XY
+:samplerate 44100.0
+:tags [flute multisample zoom-h2n non-vibrato tenuto mezzoforte c-4 woodwind aerophone transverse-flute]
+:analysis_stats https://www.freesound.org/apiv2/sounds/154237/analysis/
+:bookmark https://www.freesound.org/apiv2/sounds/154237/bookmark/
+:previews {:preview-lq-ogg https://www.freesound.org/data/previews/154/154237_2626346-lq.ogg, :preview-lq-mp3 https://www.freesound.org/data/previews/154/154237_2626346-lq.mp3, :preview-hq-ogg https://www.freesound.org/data/previews/154/154237_2626346-hq.ogg, :preview-hq-mp3 https://www.freesound.org/data/previews/154/154237_2626346-hq.mp3}
+:channels 2
+:license http://creativecommons.org/licenses/by-nc/3.0/
+:avg_rating 5.0
+:images {:waveform_l https://www.freesound.org/data/displays/154/154237_2626346_wave_L.png, :waveform_m https://www.freesound.org/data/displays/154/154237_2626346_wave_M.png, :spectral_m https://www.freesound.org/data/displays/154/154237_2626346_spec_M.jpg, :spectral_l https://www.freesound.org/data/displays/154/154237_2626346_spec_L.jpg}
+:name Transverse-Flute C-4 Tenuto Non-Vibrato
+:comments https://www.freesound.org/apiv2/sounds/154237/comments/
+:username Carlos_Vaquero
+:type wav
+:created 2012-05-03T18:01:30.369
+:analysis_frames https://www.freesound.org/data/analysis/154/154237_2626346_frames.json
+:duration 4.38873
+:num_downloads 250
+:rate https://www.freesound.org/apiv2/sounds/154237/rate/
+:analysis No descriptors specified. You should indicate which descriptors you want with the 'descriptors' request parameter.
+:id 154237
+:comment https://www.freesound.org/apiv2/sounds/154237/comment/
+:url https://www.freesound.org/people/Carlos_Vaquero/sounds/154237/
+:filesize 775361
+:bitrate 1380
+:similar_sounds https://www.freesound.org/apiv2/sounds/154237/similar/
+:num_comments 0
+:bitdepth 16
+:geotag nil
+:download https://www.freesound.org/apiv2/sounds/154237/download/
+:pack https://www.freesound.org/apiv2/packs/9548/
+:num_ratings 1
+#+END_SRC
+**** freesound-sample num-frames
+***** debug this
+#+BEGIN_SRC clojure
+(def fl-buf (freesound-sample 154237))
+
+(num-frames fl-buf)
+
+(defsynth fl-short [] (out 0 (play-buf 1 fl-buf :start-pos 96771)))
+(fl-short)
+
+(buffer-save fl-buf "~/Desktop/floots1.wav" :start-frame 96771)
+
+(buffer-save fl-buf "~/Desktop/floots2.wav" "wav" "int16" 44100 96771)
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(def fl-buf (freesound-sample 154237))
+#+END_SRC
+
+#+BEGIN_SRC clojure :results output
+(let [buf fl-buf]
+  (println (buffer-info buf)
+           (num-frames buf)
+	   (buffer-id buf)))
+#+END_SRC
+#+RESULTS:
+: #<buffer-info: 4.388730s stereo 91> 193543 91
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(defsynth fl-short [] (out 0 (play-buf 1 fl-buf :start-pos 96771)))
+(fl-short)
+#+END_SRC
+
+#+RESULTS:
+: #<synth: fl-short>#<synth-node[loading]: user/fl-short 496>
+
+#+BEGIN_SRC clojure
+(mono-partial-player 91 :start 0.63)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtoneddd/mono-partial-player 493>
+#+BEGIN_SRC clojure
+(buffer-save fl-buf "~/Desktop/floots1.wav" :start-frame 96771)
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(buffer-save fl-buf "~/Desktop/floots2.wav" "wav" "int16" 44100 96771)
+#+END_SRC
+
+#+RESULTS:
+: :buffer-saved
+
+#+BEGIN_SRC clojure
+(buffer-save  "~/Desktop/foths5.wav"
+             ;; :header "wav"
+             ;; :samples "int32"
+             :n-frames 1000
+             :start-frame 1
+             )
+#+END_SRC
+**** load-sample a wav file from disk into a buffer
+#+BEGIN_SRC clojure
+(def my_fourths_playbuffer1 (load-sample "~/Desktop/five-fourths.wav"))
+#+END_SRC
+
+#+RESULTS:
+: #'user/my_fourths_playbuffer1
+
+#+BEGIN_SRC clojure :results output
+(println (buffer-info my_fourths_playbuffer1)
+(num-frames my_fourths_playbuffer1)
+(buffer-id my_fourths_playbuffer1))
+#+END_SRC
+
+#+RESULTS:
+: #<buffer-info: 8.916463s stereo 92> 393216 92
+**** define a synth to play back buffer from given start-position
+#+BEGIN_SRC clojure
+(defsynth foths1 [] (out 0 (play-buf 1 my_fourths_playbuffer1 :start-pos 66150)))
+(foths1)
+#+END_SRC
+
+#+RESULTS:
+: #<synth: foths1>#<synth-node[loading]: user/foths1 132>
+**** create a second ugen for buffer playback
+#+BEGIN_SRC clojure
+(def my_fourths_playbuffer2 (play-buf
+                             :num-channels 1
+                             :bufnum 92
+                             :rate 1.0
+			     :trigger 1.0
+			     :start-pos 66510
+			     :loop 0
+			     :action 0))
+#+END_SRC
+
+#+RESULTS:
+: #'user/my_fourths_playbuffer2
+
+#+BEGIN_SRC clojure
+(type my_fourths_playbuffer2)
+#+END_SRC
+
+#+RESULTS:
+: overtone.sc.machinery.ugen.sc_ugen.SCUGen
+
+#+BEGIN_SRC clojure
+(defsynth foths2 [] (out 0 [my_fourths_playbuffer2]))
+(foths2)
+#+END_SRC
+
+#+RESULTS:
+: #<synth: foths2>#<synth-node[loading]: user/foths2 191>
+
+#+BEGIN_SRC clojure :results output
+(let [bf (rand-int 93)]
+  (defsynth foths2 [] (out 0 (play-buf :num-channels 1 :bufnum bf)))
+  (println bf)
+  (foths2))
+
+
+#+END_SRC
+
+#+RESULTS:
+: 68
+**** writing to disk a number of frames of a buffer--buffer-save
+#+BEGIN_SRC clojure
+(buffer-save my_fourths_playbuffer1 "~/Desktop/foths5.wav"
+             ;; :header "wav"
+             ;; :samples "int32"
+             :n-frames 1000
+             :start-frame 1
+             )
+#+END_SRC
+
+#+RESULTS:
+: :buffer-saved
+**** does not write the expected number of frames?
+**** use :start-pos in mono-partial-player 
+#+BEGIN_SRC clojure
+(mono-player 92 :start-pos 366510 :loop? 0)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtone.sc.sample/mono-player 197>nil
+**** various miscellaneous buffers
+#+BEGIN_SRC clojure
+(buffer? my_fourths_playbuffer1)
+#+END_SRC
+
+#+RESULTS:
+: true
+
+#+BEGIN_SRC clojure
+(def my_fourths_playbuffer3 (load-sample "~/Desktop/foths3.wav"))
+(buffer-id my_fourths_playbuffer3)
+#+END_SRC
+
+#+RESULTS:
+: #'user/my_fourths_playbuffer399
+
+#+BEGIN_SRC clojure :results output
+(println (buffer-info my_fourths_playbuffer3)
+(num-frames my_fourths_playbuffer3)
+(buffer-id my_fourths_playbuffer3))
+#+END_SRC
+
+#+RESULTS:
+: #<buffer-info: 8.916463s stereo 99> 393216 99
+** idiomatic overtone timing functions
+*** overtone.live/apply-by
+overtone.live/apply-by
+([ms-time f args* argseq])
+  Ahead-of-schedule function appliction. Works identically to
+   apply, except that it takes an additional initial argument:
+   ms-time. If ms-time is in the future, function application is delayed
+   until *apply-ahead* ms before that time, if ms-time is in the past
+   function application is immediate.
+
+   If you wish to apply at a specific time rather than slightly before
+   it, see apply-at.
+
+   Can be used to implement the 'temporal recursion' pattern. This is
+   where a function has a call to apply-by at its tail:
+
+   (defn foo
+     [t freq]
+     (at t (my-synth freq))
+     (let [next-t (+ t 200)
+           next-f (+ freq 100]
+       (apply-by next-t #'foo [next-t next-f])))
+
+   (foo (now) 100)
+
+   The fn foo is written in a recursive style, yet the recursion is
+   scheduled for application 200ms in the future. By passing a function
+   using #'foo syntax instead of the symbole foo, when later called by
+   the scheduler it will lookup based on the symbol rather than using
+   the instance of the function defined earlier. This allows us to
+   redefine foo whilst the temporal recursion is continuing to execute.
+
+   Note that by using apply-by, we can schedule events to happen at
+   exactly time t within the body of the fn, as the scheduled recursion
+   of the fn itself happens ahead of t. apply-by is therefore typically
+   used in conjunction with the at macro for scheduling SuperCollider
+   server events.
+
+   To stop an executing temporal recursion pattern, either redefine the
+   function to not call itself, or use (stop).
+*** overtone.live/apply-at
+([ms-time f args* argseq])
+  Scheduled function appliction. Works identically to apply, except
+   that it takes an additional initial argument: ms-time. If ms-time is
+   in the future, function application is delayed until that time, if
+   ms-time is in the past function application is immediate.
+
+   If you wish to apply slightly before specific time rather than
+   exactly at it, see apply-by.
+
+   Can be used to implement the 'temporal recursion' pattern. This is
+   where a function has a call to apply-at at its tail:
+
+   (defn foo
+     [t val]
+     (println val)
+     (let [next-t (+ t 200)]
+       (apply-at next-t #'foo [next-t (inc val)])))
+
+   (foo (now) 0) ;=> 0, 1, 2, 3...
+
+   The fn foo is written in a recursive style, yet the recursion is
+   scheduled for application 200ms in the future. By passing a function
+   using #'foo syntax instead of the symbole foo, when later called by
+   the scheduler it will lookup based on the symbol rather than using
+   the instance of the function defined earlier. This allows us to
+   redefine foo whilst the temporal recursion is continuing to execute.
+
+   To stop an executing temporal recursion pattern, either redefine the
+   function to not call itself, or use (stop).
+*** clojure.core/apply
+([f args] [f x args] [f x y args] [f x y z args] [f a b c d & args])
+  Applies fn f to the argument list formed by prepending intervening
+  arguments to args.
+#+BEGIN_SRC clojure
+(apply + 1 [2])
+#+END_SRC
+
+#+RESULTS:
+: 3
+
+*** 
+#+BEGIN_SRC clojure
+   (defn foo
+     [t val]
+     (println val)
+     (let [next-t (+ t 200)]
+       (apply-at next-t #'foo [next-t (inc val)])))
+
+   (foo (now) 0)
+#+END_SRC
+
+#+RESULTS:
+: #'user/foo#<ScheduledJob id: 1, created-at: Mon 10:12:26s, initial-delay: 200, desc: "Overtone delayed fn", scheduled? true>
+
+** stop playing everything
+#+BEGIN_SRC clojure
+(stop)
+#+END_SRC
+
+** record and stop
+#+BEGIN_SRC clojure
+(defn record-and-stop [start-time duration]
+  (recording-start "~/Desktop/new.wav")
+  (play-piano-chord (range 48 72 5))
+  (Thread/sleep duration)
+  (recording-stop))
+#+END_SRC
+
+#+RESULTS:
+: #'user/record-and-stop
+
+#+BEGIN_SRC clojure
+(record-and-stop (now) 4000)
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Desktop/new.wav
+
+#+BEGIN_SRC clojure
+(def counter (atom 0))
+
+@counter
+#+END_SRC
+
+#+RESULTS:
+: #'user/counter0
+
+#+BEGIN_SRC clojure
+(swap! counter inc)
+
+#+END_SRC
+
+#+RESULTS:
+: 2
+
+#+BEGIN_SRC clojure
+(str "stuff" @counter ".wav")
+#+END_SRC
+
+#+RESULTS:
+: stuff2.wav
+
+#+BEGIN_SRC clojure
+(str "stuff" (swap! counter inc) ".wav")
+#+END_SRC
+
+#+RESULTS:
+: stuff4.wav
+
+#+BEGIN_SRC clojure
+(def sc012 [[0 1 2][1 2 3]])
+#+END_SRC
+
+#+RESULTS:
+: #'user/sc012
+
+#+BEGIN_SRC clojure
+(
+#+END_SRC
+* collection of octaves of pcs
+
+** 9 octaves
+#+BEGIN_SRC clojure
+(def zeros (vec (range 0 108 12)))
+(def ones (vec (range 1 108 12)))
+(def twos (vec (range 2 108 12)))
+(def threes (vec (range 3 108 12)))
+(def fours (vec (range 4 108 12)))
+(def fives (vec (range 5 108 12)))
+(def sixes (vec (range 6 108 12)))
+(def sevens (vec (range 7 108 12)))
+(def eights (vec (range 8 108 12)))
+(def nines (vec (range 9 108 12)))
+(def tens (vec (range 10 108 12)))
+(def elevens (vec (range 11 108 12)))
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/zeros#'user/ones#'user/twos#'user/threes#'user/fours#'user/fives#'user/sixes#'user/sevens#'user/eights#'user/nines#'user/tens#'user/elevens
+
+#+BEGIN_SRC clojure
+(count zeros)
+#+END_SRC
+
+#+RESULTS:
+: 9
+
+#+BEGIN_SRC clojure
+(count (for [a zeros b twos]  [a b]))
+#+END_SRC
+
+#+RESULTS:
+: 81
+
+#+BEGIN_SRC clojure
+(count (for [a zeros b twos c threes]  [a b c]))
+#+END_SRC
+
+#+RESULTS:
+: 729
+
+#+BEGIN_SRC clojure
+(count (for [a zeros b twos c threes d fours]  [a b c]))
+#+END_SRC
+
+#+RESULTS:
+: 6561
+
+** piano range 21-108
+#+BEGIN_SRC clojure
+(def pc0 (vec (range 24 108 12)))
+(def pc1 (vec (range 25 108 12)))
+(def pc2 (vec (range 26 108 12)))
+(def pc3 (vec (range 27 108 12)))
+(def pc4 (vec (range 28 108 12)))
+(def pc5 (vec (range 29 108 12)))
+(def pc6 (vec (range 30 108 12)))
+(def pc7 (vec (range 31 108 12)))
+(def pc8 (vec (range 32 108 12)))
+(def pc9 (vec (range 21 108 12)))
+(def pc10 (vec (range 22 108 12)))
+(def pc11 (vec (range 23 108 12)))
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/pc0#'user/pc1#'user/pc2#'user/pc3#'user/pc4#'user/pc5#'user/pc6#'user/pc7#'user/pc8#'user/pc9#'user/pc10#'user/pc11
+
+#+BEGIN_SRC clojure
+pc11
+#+END_SRC
+
+#+RESULTS:
+| 23 | 35 | 47 | 59 | 71 | 83 | 95 | 107 |
+
+** 
+#+BEGIN_SRC clojure
+(for [a ["a" "b" "c"] b ["a" "b" "c"] c ["a" "b" "c"]] [a b c])
+#+END_SRC
+
+#+RESULTS:
+| a | a | a |
+| a | a | b |
+| a | a | c |
+| a | b | a |
+| a | b | b |
+| a | b | c |
+| a | c | a |
+| a | c | b |
+| a | c | c |
+| b | a | a |
+| b | a | b |
+| b | a | c |
+| b | b | a |
+| b | b | b |
+| b | b | c |
+| b | c | a |
+| b | c | b |
+| b | c | c |
+| c | a | a |
+| c | a | b |
+| c | a | c |
+| c | b | a |
+| c | b | b |
+| c | b | c |
+| c | c | a |
+| c | c | b |
+| c | c | c |
+
+#+BEGIN_SRC clojure
+(count (for [a ["a" "b" "c"] b ["a" "b" "c"] c ["a" "b" "c"]] [a b c]))
+#+END_SRC
+
+
+#+RESULTS:
+: 27
+
+#+BEGIN_SRC clojure
+(count trichords-tn)
+#+END_SRC
+
+#+RESULTS:
+: 19
+
+** make a sequencer function to play single line melodies at 60bpms
+#+BEGIN_SRC clojure
+(defn sequencer [midis]
+  (map #(do (Thread/sleep 1000) (sampled-piano %)) midis))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer
+
+#+BEGIN_SRC clojure
+(sequencer [48 59])
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 67> #<synth-node(loading): overtone.inst.973/sampled-piano 68>)
+
+#+BEGIN_SRC clojure
+(sequencer (range 21 108 11))
+(sequencer (range 21 108 7))
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 69> #<synth-node(live): overtone.inst.973/sampled-piano 70> #<synth-node(live): overtone.inst.973/sampled-piano 71> #<synth-node(live): overtone.inst.973/sampled-piano 72> #<synth-node(live): overtone.inst.973/sampled-piano 73> #<synth-node(live): overtone.inst.973/sampled-piano 74> #<synth-node(live): overtone.inst.973/sampled-piano 75> #<synth-node(loading): overtone.inst.973/sampled-piano 76>)
+
+#+BEGIN_SRC clojure
+(defn chord-sequencer [midis]
+  (map #(do (Thread/sleep 1000) (play-piano-chord %)) midis))
+#+END_SRC
+
+#+RESULTS:
+: #'user/chord-sequencer
+
+#+BEGIN_SRC clojure
+(chord-sequencer [[24 59 74] [25 60 75]])
+#+END_SRC
+
+#+RESULTS:
+
+
+#+BEGIN_SRC clojure
+(defn chord-sequencer-fn [ms]
+  (fn [midis] (map #(do (Thread/sleep ms) (play-piano-chord %)) midis)))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+((chord-sequencer-fn 2000) [[24 59 74] [25 60 75]])
+#+END_SRC
+
+#+RESULTS:
+
 
