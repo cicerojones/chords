@@ -1,22 +1,22 @@
 #+STARTUP:  indent
 * follow Heroku tutorial
 ** preliminaries
-** with a repl started
-*** "resolve" the jdbc namespace
+*** with a repl started
+**** "resolve" the jdbc namespace
 #+BEGIN_SRC clojure
 (require '[clojure.java.jdbc :as sql])
 #+END_SRC
 
 #+RESULTS:
 : nil
-*** load data from a local file
+**** load data from a local file
 #+BEGIN_SRC clojure
 (load "data/set_class_data")
 ;; (first *tetrachords*) ;(0 1 2 3)
 ;; (first post_tonal_overtone.data.set_class_data/tetrachords-tn)
 #+END_SRC
-** load data from babel
-*** test def-ing dyads as constant
+*** load data from babel
+**** test def-ing dyads as constant
 #+BEGIN_SRC clojure
 (def ^:const dyads-tn '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6)))
 #+END_SRC
@@ -26,8 +26,8 @@
 #+END_SRC
 #+RESULTS:
 | 0 | 2 |
-*** def all sets into the current (user?) ns
-**** as lists
+**** def all sets into the current (user?) ns
+***** as lists
 #+BEGIN_SRC clojure
 (def ^:const dyads-tn '((0 1) (0 2) (0 3) (0 4) (0 5) (0 6)))
 
@@ -388,7 +388,7 @@
 
 #+RESULTS:
 | 0 | 1 | 3 | 7 |
-**** as vectors
+***** as vectors
 #+BEGIN_SRC clojure
 (def ^:const dyads-tn [[0 1] [0 2] [0 3] [0 4] [0 5] [0 6]])
 
@@ -825,6 +825,21 @@
 | Schema            | Name                      | Type  | Owner |
 | public            | chord_event               | table | a     |
 | public            | dyad_events               | table | a     |
+| public            | hexachord_events_stamped  | table | a     |
+| public            | hexachords                | table | a     |
+| public            | pcs_event                 | table | a     |
+| public            | pentachords               | table | a     |
+| public            | tetrachord_events_stamped | table | a     |
+| public            | tetrachords               | table | a     |
+| public            | trichord_events_stamped   | table | a     |
+| public            | trichords                 | table | a     |
+
+
+| List of relations |                           |       |       |
+|-------------------+---------------------------+-------+-------|
+| Schema            | Name                      | Type  | Owner |
+| public            | chord_event               | table | a     |
+| public            | dyad_events               | table | a     |
 | public            | hexachord_events          | table | a     |
 | public            | hexachord_events_stamped  | table | a     |
 | public            | monochord_events          | table | a     |
@@ -836,7 +851,7 @@
 | public            | trichord_events_stamped   | table | a     |
 ** select all from simple chord events
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
-select * from monochord_events;
+-- select * from monochord_events;
 select * from dyad_events;
 select * from trichord_events;
 select * from tetrachord_events;
@@ -845,6 +860,11 @@ select * from hexachord_events;
 #+END_SRC
 
 #+RESULTS:
+| chord_id | midi1 | midi2 |
+|----------+-------+-------|
+
+
+
 | chord_id | midi1 |       |       |       |       |       |
 |----------+-------+-------+-------+-------+-------+-------|
 |        1 |    60 |       |       |       |       |       |
@@ -912,7 +932,7 @@ select * from hexachord_events;
 : ((0 2 5 7) (48 38 41 43) 8 (56 46 49 51))
 
 ** destructure a voiced random chord into the database
-*** 
+*** select a random tetrachord for manipulation
 #+BEGIN_SRC clojure
 (def chord-ds (user/voice-rand-set tetrachords))
 #+END_SRC
@@ -952,7 +972,7 @@ select * from hexachord_events;
 
 #+RESULTS:
 | :midi1 | 48 | :midi2 | 75 | :midi3 | 65 | :midi4 | 80 |
-
+*** completely destructure and insert the stored chord
 #+BEGIN_SRC clojure
 (let [[pcs midis] chord-ds
       [midi1 midi2 midi3 midi4] midis]
@@ -961,7 +981,6 @@ select * from hexachord_events;
 
 #+RESULTS:
 | :chord_id | 3 | :midi1 | 48 | :midi2 | 75 | :midi3 | 65 | :midi4 | 80 |
-
 
 *** insert the result of calling up a (simple) random tetrachord (with destructure)
 #+BEGIN_SRC clojure
@@ -1009,9 +1028,14 @@ timestamp '2014-01-2 00:30:00' AT TIME ZONE 'PST' AS d
 select now() AT TIME ZONE 'PST'
 #+END_SRC
 
-
-
 #+RESULTS:
+| timezone                   |
+|----------------------------|
+| 2016-04-19 12:02:25.210338 |
+
+
+
+
 | timezone                   |
 |----------------------------|
 | 2016-04-08 18:52:34.663367 |
@@ -1188,6 +1212,7 @@ select * FROM trichord_events_stamped
 *** drop *chord_events
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 DROP TABLE monochord_events; 
+DROP TABLE dyad_events;
 DROP TABLE trichord_events; 
 DROP TABLE tetrachord_events;
 DROP TABLE pentachord_events;
@@ -1201,7 +1226,8 @@ DROP TABLE hexachord_events;
 | DROP TABLE |
 | DROP TABLE |
 | DROP TABLE |
-*** old create *chord_events
+| DROP TABLE |
+*** old create *chord_events (deprecated--see with timestamp versions)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE monochord_events (chord_id serial PRIMARY KEY, midi1 int);
 CREATE TABLE dyad_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int);
@@ -1214,12 +1240,17 @@ CREATE TABLE hexachord_events (chord_id serial PRIMARY KEY, midi1 int, midi2 int
 #+RESULTS:
 | CREATE TABLE |
 |--------------|
-** create pc_ and *chord_ events
+| CREATE TABLE |
+| CREATE TABLE |
+| CREATE TABLE |
+| CREATE TABLE |
+| CREATE TABLE |
+** create pc_ and *chord_ events individually (with timestamps)
 *** new create monochord_events and with timestamp 
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE monochord_events (
 chord_id serial PRIMARY KEY, 
-chord_inserted timestamp default current_timestamp, 
+time_chord_inserted timestamp default current_timestamp, 
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1232,7 +1263,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pc_monochord_events (
 pc_id int REFERENCES monochord_events (chord_id),
-pc_inserted timestamp REFERENCES monochord_events (chord_inserted),
+time_pc_inserted timestamp REFERENCES monochord_events (chord_inserted),
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1245,7 +1276,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE dyad_events (
 chord_id serial PRIMARY KEY, 
-chord_inserted timestamp default current_timestamp, 
+time_chord_inserted timestamp default current_timestamp, 
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1258,7 +1289,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pc_dyad_events (
 pc_id int REFERENCES dyad_events (chord_id),
-pc_inserted timestamp REFERENCES dyad_events (chord_inserted),
+time_pc_inserted timestamp REFERENCES dyad_events (time_chord_inserted),
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1271,7 +1302,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE trichord_events (
 chord_id serial PRIMARY KEY, 
-chord_inserted timestamp default current_timestamp, 
+time_chord_inserted timestamp default current_timestamp, 
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1284,7 +1315,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pc_trichord_events (
 pc_id int REFERENCES trichord_events (chord_id),
-pc_inserted timestamp REFERENCES trichord_events (chord_inserted),
+time_pc_inserted timestamp REFERENCES trichord_events (time_chord_inserted),
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1297,7 +1328,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE tetrachord_events (
 chord_id serial PRIMARY KEY, 
-chord_inserted timestamp default current_timestamp, 
+time_chord_inserted timestamp default current_timestamp, 
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1310,7 +1341,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pc_tetrachord_events (
 pc_id int REFERENCES tetrachord_events (chord_id),
-pc_inserted timestamp REFERENCES tetrachord_events (chord_inserted),
+time_pc_inserted timestamp REFERENCES tetrachord_events (time_chord_inserted),
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1323,7 +1354,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pentachord_events (
 chord_id serial PRIMARY KEY, 
-chord_inserted timestamp default current_timestamp, 
+time_chord_inserted timestamp default current_timestamp, 
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1336,7 +1367,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pc_pentachord_events (
 pc_id int REFERENCES pentachord_events (chord_id),
-pc_inserted timestamp REFERENCES pentachord_events (chord_inserted),
+time_pc_inserted timestamp REFERENCES pentachord_events (time_chord_inserted),
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1349,7 +1380,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE hexachord_events (
 chord_id serial PRIMARY KEY, 
-chord_inserted timestamp default current_timestamp, 
+time_chord_inserted timestamp default current_timestamp, 
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1362,7 +1393,7 @@ midi6 int)
 #+BEGIN_SRC sql :engine postgresql :database heroku_psql_tutorial
 CREATE TABLE pc_hexachord_events (
 pc_id int REFERENCES hexachord_events (chord_id),
-pc_inserted timestamp REFERENCES hexachord_events (chord_inserted),
+time_pc_inserted timestamp REFERENCES hexachord_events (time_chord_inserted),
 midi1 int, 
 midi2 int, 
 midi3 int, 
@@ -1431,8 +1462,7 @@ INSERT INTO hexachords (midi1, midi2, midi3, midi4, midi5, midi6) VALUES (0, 1, 
 
 #+RESULTS:
 : nil{:pool #delay[{:status :pending, :val nil} 0x5b7acf94], :options {:naming {:keys #function[clojure.core/identity], :fields #function[clojure.core/identity]}, :delimiters [nil nil], :alias-delimiter " AS ", :subprotocol "postgresql"}}
-
-- declare your entities before defining?
+** declare your entities before defining?
 #+BEGIN_SRC clojure
 (declare trichord-sets ;trichord-voicings 
 )
@@ -1460,7 +1490,7 @@ INSERT INTO hexachords (midi1, midi2, midi3, midi4, midi5, midi6) VALUES (0, 1, 
 
 #+RESULTS:
 : #'user/trichord-sets
-*** 
+*** tetrachord entity
 #+BEGIN_SRC clojure
 ; (use 'korma.core)
 (defentity tetrachord-sets
@@ -1472,7 +1502,7 @@ INSERT INTO hexachords (midi1, midi2, midi3, midi4, midi5, midi6) VALUES (0, 1, 
 #+RESULTS:
 : #'user/tetrachord-sets
 
-*** 
+*** pentachord entity
 #+BEGIN_SRC clojure
 ; (use 'korma.core)
 (defentity pentachord-sets
@@ -1484,7 +1514,7 @@ INSERT INTO hexachords (midi1, midi2, midi3, midi4, midi5, midi6) VALUES (0, 1, 
 #+RESULTS:
 : #'user/pentachord-sets
 
-*** 
+*** hexachord entity
 #+BEGIN_SRC clojure
 ; (use 'korma.core)
 (defentity hexachord-sets
@@ -1857,7 +1887,7 @@ select * from trichords;
 | :set_id | 49 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 3 | :pc4 | 4 | :pc5 | 7 | :pc6 |  9 |
 | :set_id | 50 | :comment | nil | :pc1 | 0 | :pc2 | 1 | :pc3 | 4 | :pc4 | 6 | :pc5 | 7 | :pc6 |  9 |
 * create voicings versions of pc_sets
-** 
+** transpose all trichords in with a 'for'
 #+BEGIN_SRC clojure
 (for [pcset trichords
       n (range 12)]
@@ -2009,12 +2039,12 @@ select * from trichords;
 |  9 | 13 | 17 |
 | 10 | 14 | 18 |
 | 11 | 15 | 19 |
-** 
+** strain to organize pitch collections with 'for'
 #+BEGIN_SRC clojure
 (def trichord-transpositions-plus12 
-(for [pcset trichords
-      n (range 12)]
-  (map #(+ n %) pcset)))
+  (for [pcset trichords
+        n (range 12)]
+    (map #(+ n %) pcset)))
 #+END_SRC
 
 #+RESULTS:
@@ -2064,7 +2094,7 @@ select * from trichords;
 #+END_SRC
 
 add to x the result of multiplying n by 12, where n ranges from 1 to 5
-
+** naturally create a vector of octave-equivalent pcs by partitioning a 'for' loop
 #+BEGIN_SRC clojure
 (partition 9 (for [x (range 12)
       n [0 12 24 36 48 60 72 84 96]]
@@ -3215,7 +3245,6 @@ tris
 | 96 | 97 | 99 |
 
 * make a sequencer function to play single line melodies at 60bpms
-
 ** sequencer
 Note, are or how are these functions that sleep blocking??
 #+BEGIN_SRC clojure
@@ -3278,6 +3307,10 @@ Note, are or how are these functions that sleep blocking??
 #+RESULTS:
 : '(#<synth-node(live): overtone.inst.973/sampled-piano 137> #<synth-node(live): overtone.inst.973/sampled-piano 138> #<synth-node(loading): overtone.inst.973/sampled-piano 139>)
 
+#+BEGIN_SRC clojure
+(defn chord-sequencer-fn-print [ms]
+  (fn [midis] (map #(do (println midis) (Thread/sleep ms) (play-piano-chord %)) midis)))
+#+END_SRC
 ** mapping octave requirement predicates over sets
 #+BEGIN_SRC clojure
 (map (fn [vov] (every? #(< % 36) vov)) [[24 36 48] [0 1 3]])
@@ -3521,6 +3554,7 @@ is called from the repl
 (chord-sequencer happy-tris)
 #+END_SRC
 
+** play random orderings of "happy-trichords" var
 #+BEGIN_SRC clojure
 (shuffle [0 1 2])
 #+END_SRC
@@ -3543,4 +3577,439 @@ is called from the repl
 
 #+RESULTS:
 
+
+#+BEGIN_SRC clojure
+(count happy-tris)
+#+END_SRC
+
+#+RESULTS:
+: 180
+
+#+BEGIN_SRC clojure
+(chord-sequencer (take 45 (shuffle happy-tris)))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+((chord-sequencer-fn 2500) (take 180 (shuffle happy-tris)))
+#+END_SRC
+
+#+RESULTS:
+
+still blocking when you finally dereference it
+#+BEGIN_SRC clojure
+(def future-wrapped (future ((chord-sequencer-fn 2500) (take 5 (shuffle happy-tris)))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/future-wrapped
+
+#+BEGIN_SRC clojure
+@future-wrapped
+#+END_SRC
+
+* maps
+** basic maps 
+#+BEGIN_SRC clojure
+;; fails
+(hash-map [:a 0 :b 1 :c 2])
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(hash-map :a 0 :b 1 :c 2)
+#+END_SRC
+
+#+RESULTS:
+| :c | 2 | :b | 1 | :a | 0 |
+** convert a vector of keys and values to an official map
+#+BEGIN_SRC clojure
+(apply hash-map [:a 0 :b 1 :c 2])
+#+END_SRC
+
+#+RESULTS:
+| :c | 2 | :b | 1 | :a | 0 |
+** interleave a vector of keys with a vector of values
+#+BEGIN_SRC clojure
+(interleave [:a :b :c :d :e] [0 1 2 3 4])
+#+END_SRC
+
+#+RESULTS:
+| :a | 0 | :b | 1 | :c | 2 | :d | 3 | :e | 4 |
+
+#+BEGIN_SRC clojure
+(apply hash-map (interleave [:a :b :c :d :e] [0 1 2 3 4]))
+#+END_SRC
+
+#+RESULTS:
+| :e | 4 | :c | 2 | :b | 1 | :d | 3 | :a | 0 |
+
+#+BEGIN_SRC clojure
+(take 10 (repeat []))
+#+END_SRC
+** setup a map with default values (nil)
+#+BEGIN_SRC clojure
+(interleave [:a :b :c :d :e] (take 5 (repeat nil)))
+#+END_SRC
+
+#+RESULTS:
+| :a | nil | :b | nil | :c | nil | :d | nil | :e | nil |
+
+
+
+#+RESULTS:
+: pc[0 1 2]
+** convert strings to vectors (with join)
+#+BEGIN_SRC clojure
+(str "pc" (str [0 1 2]))
+#+END_SRC
+
+#+RESULTS:
+: pc[0 1 2]
+
+#+BEGIN_SRC clojure
+(clojure.string/join [0 1 2])
+#+END_SRC
+
+#+RESULTS:
+: 012
+
+
+#+BEGIN_SRC clojure
+(str "pc-" (clojure.string/join [0 1 2]))
+#+END_SRC
+
+#+RESULTS:
+: pc-012
+** create a function for turning lists of vectors into string names
+#+BEGIN_SRC clojure
+((fn [pcsets] (map #(str "pc-" (clojure.string/join %)) pcsets)) (take 3 trichords))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(defn stringify-set [pcsets] (map #(str "pc-" (clojure.string/join %)) pcsets))
+#+END_SRC
+
+#+RESULTS:
+: #'user/stringify-set
+
+#+BEGIN_SRC clojure
+(stringify-set trichords)
+#+END_SRC
+
+#+RESULTS:
+| pc-012 | pc-013 | pc-014 | pc-015 | pc-016 | pc-024 | pc-025 | pc-026 | pc-027 | pc-036 | pc-037 | pc-048 |
+** create a list of trichords converted to keywords
+#+BEGIN_SRC clojure
+(def trichord-keys (map keyword ((fn [pcsets] (map #(str "pc-" (clojure.string/join %)) pcsets)) trichords)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/trichord-keys
+
+#+BEGIN_SRC clojure
+trichord-keys
+#+END_SRC
+
+#+RESULTS:
+| :pc-012 | :pc-013 | :pc-014 | :pc-015 | :pc-016 | :pc-024 | :pc-025 | :pc-026 | :pc-027 | :pc-036 | :pc-037 | :pc-048 |
+** create the map of trichord keys with trichord values
+#+BEGIN_SRC clojure
+(apply hash-map (interleave trichord-keys trichords))
+#+END_SRC
+
+#+RESULTS:
+| :pc-016 | (0 1 6) | :pc-012 | (0 1 2) | :pc-027 | (0 2 7) | :pc-024 | (0 2 4) | :pc-025 | (0 2 5) | :pc-013 | (0 1 3) | :pc-026 | (0 2 6) | :pc-037 | (0 3 7) | :pc-048 | (0 4 8) | :pc-015 | (0 1 5) | :pc-014 | (0 1 4) | :pc-036 | (0 3 6) |
+** use map destructuring
+#+BEGIN_SRC clojure
+(let [[k v] {:pc-016 [0 1 6]}] v)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(let [[k v] [[0 1 3][0 1 4]]] (list v k))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 4 |
+| 0 | 1 | 3 |
+
+#+BEGIN_SRC clojure
+(let [[k v] [{:pc-016 [0 1 6]}]] v)
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+#+BEGIN_SRC clojure
+(let [{a :pc-016} {:pc-016 [0 1 6]}] a)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 6 |
+** for loops over pc-sets
+#+BEGIN_SRC clojure
+(take 3 (for [a pc0 
+      b pc1 
+      c pc3]
+  [a b c]))
+#+END_SRC
+
+#+RESULTS:
+| 24 | 25 | 27 |
+| 24 | 25 | 39 |
+| 24 | 25 | 51 |
+
+
+
+#+BEGIN_SRC clojure
+;; fails
+(for [a [[0 1 2 4] [0 2 3 5]]]
+  (for [[w x y z] a]
+    (list z x y w)))
+
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(for [set [[0 1 3] [0 2 4]]]
+  (let [[a b c] set]
+    c))
+#+END_SRC
+
+#+RESULTS:
+| 3 | 4 |
+
+#+BEGIN_SRC clojure
+(for [a [[0 1 2 4] [0 2 3 5]]]
+  (let [[w x y z] a]
+    (list z x y w)))
+
+#+END_SRC
+
+#+RESULTS:
+| 4 | 1 | 2 | 0 |
+| 5 | 2 | 3 | 0 |
+
+#+BEGIN_SRC clojure
+(for [a [[0 1 2 4] [0 2 3 5]]]
+  (let [[w x y z] a]
+    (vector (range w 48 12) (range x 48 12) (range y 48 12) (range z 48 12))))
+
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36) | (1 13 25 37) | (2 14 26 38) | (4 16 28 40) |
+| (0 12 24 36) | (2 14 26 38) | (3 15 27 39) | (5 17 29 41) |
+
+#+BEGIN_SRC clojure
+(first (for [a [[0 1 2 4] [0 2 3 5]]]
+  (let [[w x y z] a]
+    (vector (range w 48 12) (range x 48 12) (range y 48 12) (range z 48 12)))))
+
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 |
+| 1 | 13 | 25 | 37 |
+| 2 | 14 | 26 | 38 |
+| 4 | 16 | 28 | 40 |
+
+#+BEGIN_SRC clojure
+(for [[a b] {:z 1}]
+  [b a])
+
+#+END_SRC
+
+#+RESULTS:
+| 1 | :z |
+
+#+BEGIN_SRC clojure
+(for [[a b c] {"dis" 1 "dat" 2}]
+  a)
+
+#+END_SRC
+
+#+RESULTS:
+| dis | dat |
+
+#+BEGIN_SRC clojure
+(for [[a b c] '("dis" 1 "dat")]
+  a)
+
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(let [[x y z] [0 24 36]]
+  (- z x))
+#+END_SRC
+
+#+RESULTS:
+: 36
+
+#+BEGIN_SRC clojure
+(for [[x y z] [0 24 36]]
+  (- z x))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(for [[x y] (list [:a 1] [:b 2] [:c 3])] y)
+#+END_SRC
+
+#+RESULTS:
+| 1 | 2 | 3 |
+
+#+BEGIN_SRC clojure
+(for [[x y] [[:a 1] [:b 2] [:c 3]]] y)
+#+END_SRC
+
+#+RESULTS:
+| 1 | 2 | 3 |
+
+#+BEGIN_SRC clojure
+(for [[x y z] [[0 1 2] [0 1 3] [0 1 4]]] z)
+#+END_SRC
+
+#+RESULTS:
+| 2 | 3 | 4 |
+
+#+BEGIN_SRC clojure
+(for [[x y z] [[[0 1 2] [0 1 3] [0 1 4]]]] z)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 4 |
+
+#+BEGIN_SRC clojure
+(map #(+ 12 %) [0 1 3])
+#+END_SRC
+
+#+RESULTS:
+| 12 | 13 | 15 |
+
+#+BEGIN_SRC clojure
+(for [n (range 12)]
+  (map #(+ n %) [0 1 3]))
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  3 |
+|  1 |  2 |  4 |
+|  2 |  3 |  5 |
+|  3 |  4 |  6 |
+|  4 |  5 |  7 |
+|  5 |  6 |  8 |
+|  6 |  7 |  9 |
+|  7 |  8 | 10 |
+|  8 |  9 | 11 |
+|  9 | 10 | 12 |
+| 10 | 11 | 13 |
+| 11 | 12 | 14 |
+
+#+BEGIN_SRC clojure
+(defn tn0-11 [args]
+(for [n (range 12)]
+  (map #(+ n %) args)))
+
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/tn0-11
+#+BEGIN_SRC clojure
+(tn0-11 [0 1 4])
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  4 |
+|  1 |  2 |  5 |
+|  2 |  3 |  6 |
+|  3 |  4 |  7 |
+|  4 |  5 |  8 |
+|  5 |  6 |  9 |
+|  6 |  7 | 10 |
+|  7 |  8 | 11 |
+|  8 |  9 | 12 |
+|  9 | 10 | 13 |
+| 10 | 11 | 14 |
+| 11 | 12 | 15 |
+
+
+#+BEGIN_SRC clojure
+(for [[x y z] [[[0 1 2] [0 1 3] [0 1 4]]]] [(tn0-11 x) (tn0-11 y) (tn0-11 z)])
+#+END_SRC
+
+#+RESULTS:
+| ((0 1 2) (1 2 3) (2 3 4) (3 4 5) (4 5 6) (5 6 7) (6 7 8) (7 8 9) (8 9 10) (9 10 11) (10 11 12) (11 12 13)) | ((0 1 3) (1 2 4) (2 3 5) (3 4 6) (4 5 7) (5 6 8) (6 7 9) (7 8 10) (8 9 11) (9 10 12) (10 11 13) (11 12 14)) | ((0 1 4) (1 2 5) (2 3 6) (3 4 7) (4 5 8) (5 6 9) (6 7 10) (7 8 11) (8 9 12) (9 10 13) (10 11 14) (11 12 15)) |
+
+#+BEGIN_SRC clojure
+(for [[x y z] (take 3 (vector trichords)) ] [(tn0-11 x) (tn0-11 y) (tn0-11 z)])
+#+END_SRC
+
+#+RESULTS:
+| ((0 1 2) (1 2 3) (2 3 4) (3 4 5) (4 5 6) (5 6 7) (6 7 8) (7 8 9) (8 9 10) (9 10 11) (10 11 12) (11 12 13)) | ((0 1 3) (1 2 4) (2 3 5) (3 4 6) (4 5 7) (5 6 8) (6 7 9) (7 8 10) (8 9 11) (9 10 12) (10 11 13) (11 12 14)) | ((0 1 4) (1 2 5) (2 3 6) (3 4 7) (4 5 8) (5 6 9) (6 7 10) (7 8 11) (8 9 12) (9 10 13) (10 11 14) (11 12 15)) |
+
+#+BEGIN_SRC clojure
+(for [[x y z] (take 3 (vector trichords)) ] (map #(tn0-11 %) [x y z]))
+#+END_SRC
+
+#+RESULTS:
+| ((0 1 2) (1 2 3) (2 3 4) (3 4 5) (4 5 6) (5 6 7) (6 7 8) (7 8 9) (8 9 10) (9 10 11) (10 11 12) (11 12 13)) | ((0 1 3) (1 2 4) (2 3 5) (3 4 6) (4 5 7) (5 6 8) (6 7 9) (7 8 10) (8 9 11) (9 10 12) (10 11 13) (11 12 14)) | ((0 1 4) (1 2 5) (2 3 6) (3 4 7) (4 5 8) (5 6 9) (6 7 10) (7 8 11) (8 9 12) (9 10 13) (10 11 14) (11 12 15)) |
+
+#+BEGIN_SRC clojure :results output
+(clojure.pprint/cl-format true "~{~{~a ~%~}~}" deepnest)
+#+END_SRC
+
+#+RESULTS:
+: ((0 1 2) (1 2 3) (2 3 4) (3 4 5) (4 5 6) (5 6 7) (6 7 8) (7 8 9) (8 9 10) (9 10 11) (10 11 12) (11 12 13)) 
+: ((0 1 3) (1 2 4) (2 3 5) (3 4 6) (4 5 7) (5 6 8) (6 7 9) (7 8 10) (8 9 11) (9 10 12) (10 11 13) (11 12 14)) 
+: ((0 1 4) (1 2 5) (2 3 6) (3 4 7) (4 5 8) (5 6 9) (6 7 10) (7 8 11) (8 9 12) (9 10 13) (10 11 14) (11 12 15)) 
+
+#+BEGIN_SRC clojure
+(map (fn [arg] arg) trichords)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+| 0 | 1 | 3 |
+| 0 | 1 | 4 |
+| 0 | 1 | 5 |
+| 0 | 1 | 6 |
+| 0 | 2 | 4 |
+| 0 | 2 | 5 |
+| 0 | 2 | 6 |
+| 0 | 2 | 7 |
+| 0 | 3 | 6 |
+| 0 | 3 | 7 |
+| 0 | 4 | 8 |
+
+#+BEGIN_SRC clojure
+(map #(tn0-11 %) trichords)
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2) | (1 2 3) | (2 3 4)  | (3 4 5)  | (4 5 6)  | (5 6 7)  | (6 7 8)   | (7 8 9)   | (8 9 10)  | (9 10 11) | (10 11 12) | (11 12 13) |
+| (0 1 3) | (1 2 4) | (2 3 5)  | (3 4 6)  | (4 5 7)  | (5 6 8)  | (6 7 9)   | (7 8 10)  | (8 9 11)  | (9 10 12) | (10 11 13) | (11 12 14) |
+| (0 1 4) | (1 2 5) | (2 3 6)  | (3 4 7)  | (4 5 8)  | (5 6 9)  | (6 7 10)  | (7 8 11)  | (8 9 12)  | (9 10 13) | (10 11 14) | (11 12 15) |
+| (0 1 5) | (1 2 6) | (2 3 7)  | (3 4 8)  | (4 5 9)  | (5 6 10) | (6 7 11)  | (7 8 12)  | (8 9 13)  | (9 10 14) | (10 11 15) | (11 12 16) |
+| (0 1 6) | (1 2 7) | (2 3 8)  | (3 4 9)  | (4 5 10) | (5 6 11) | (6 7 12)  | (7 8 13)  | (8 9 14)  | (9 10 15) | (10 11 16) | (11 12 17) |
+| (0 2 4) | (1 3 5) | (2 4 6)  | (3 5 7)  | (4 6 8)  | (5 7 9)  | (6 8 10)  | (7 9 11)  | (8 10 12) | (9 11 13) | (10 12 14) | (11 13 15) |
+| (0 2 5) | (1 3 6) | (2 4 7)  | (3 5 8)  | (4 6 9)  | (5 7 10) | (6 8 11)  | (7 9 12)  | (8 10 13) | (9 11 14) | (10 12 15) | (11 13 16) |
+| (0 2 6) | (1 3 7) | (2 4 8)  | (3 5 9)  | (4 6 10) | (5 7 11) | (6 8 12)  | (7 9 13)  | (8 10 14) | (9 11 15) | (10 12 16) | (11 13 17) |
+| (0 2 7) | (1 3 8) | (2 4 9)  | (3 5 10) | (4 6 11) | (5 7 12) | (6 8 13)  | (7 9 14)  | (8 10 15) | (9 11 16) | (10 12 17) | (11 13 18) |
+| (0 3 6) | (1 4 7) | (2 5 8)  | (3 6 9)  | (4 7 10) | (5 8 11) | (6 9 12)  | (7 10 13) | (8 11 14) | (9 12 15) | (10 13 16) | (11 14 17) |
+| (0 3 7) | (1 4 8) | (2 5 9)  | (3 6 10) | (4 7 11) | (5 8 12) | (6 9 13)  | (7 10 14) | (8 11 15) | (9 12 16) | (10 13 17) | (11 14 18) |
+| (0 4 8) | (1 5 9) | (2 6 10) | (3 7 11) | (4 8 12) | (5 9 13) | (6 10 14) | (7 11 15) | (8 12 16) | (9 13 17) | (10 14 18) | (11 15 19) |
+
+** "vectors are functions of their indices"
+#+BEGIN_SRC clojure
+([[0 1 2] [0 1 3] [0 1 4]] 1)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 3 |
 
