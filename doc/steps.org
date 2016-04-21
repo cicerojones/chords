@@ -4004,7 +4004,304 @@ trichord-keys
 | (0 3 6) | (1 4 7) | (2 5 8)  | (3 6 9)  | (4 7 10) | (5 8 11) | (6 9 12)  | (7 10 13) | (8 11 14) | (9 12 15) | (10 13 16) | (11 14 17) |
 | (0 3 7) | (1 4 8) | (2 5 9)  | (3 6 10) | (4 7 11) | (5 8 12) | (6 9 13)  | (7 10 14) | (8 11 15) | (9 12 16) | (10 13 17) | (11 14 18) |
 | (0 4 8) | (1 5 9) | (2 6 10) | (3 7 11) | (4 8 12) | (5 9 13) | (6 10 14) | (7 11 15) | (8 12 16) | (9 13 17) | (10 14 18) | (11 15 19) |
+** 
+#+BEGIN_SRC clojure
+(map #(+ 12 %) [0 1 2])
+#+END_SRC
 
+#+RESULTS:
+| 12 | 13 | 14 |
+
+#+BEGIN_SRC clojure
+(range 2 108 12)
+#+END_SRC
+
+#+RESULTS:
+| 2 | 14 | 26 | 38 | 50 | 62 | 74 | 86 | 98 |
+
+
+#+BEGIN_SRC clojure
+(for [n (range 3)] [(range n 108 12)])
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36 48 60 72 84 96) |
+| (1 13 25 37 49 61 73 85 97) |
+| (2 14 26 38 50 62 74 86 98) |
+
+#+BEGIN_SRC clojure
+[{:0 [0 12 24 36 48 60 72 84 96]}
+{:1 [1 13 25 37 49 61 73 85 97]}]
+#+END_SRC
+
+#+RESULTS:
+| :0 | (0 12 24 36 48 60 72 84 96) |
+| :1 | (1 13 25 37 49 61 73 85 97) |
+
+
+#+BEGIN_SRC clojure
+(for [n (range 3)] [:n (range n 108 12)])
+#+END_SRC
+
+#+RESULTS:
+| :n | (0 12 24 36 48 60 72 84 96) |
+| :n | (1 13 25 37 49 61 73 85 97) |
+| :n | (2 14 26 38 50 62 74 86 98) |
+
+
+#+BEGIN_SRC clojure
+(for [n (range 3)] [(vector (keyword (str n)) (range n 108 12))])
+#+END_SRC
+
+#+RESULTS:
+| (:0 (0 12 24 36 48 60 72 84 96)) |
+| (:1 (1 13 25 37 49 61 73 85 97)) |
+| (:2 (2 14 26 38 50 62 74 86 98)) |
+
+#+BEGIN_SRC clojure
+(def pc-octaves (for [n (range 12)] [(vector (keyword (str n)) (range n 108 12))]))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pc-octaves
+
+#+BEGIN_SRC clojure
+((keyword (str 0)) pc-octaves)
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+
+#+BEGIN_SRC clojure
+(:one {:one [1]})
+#+END_SRC
+
+#+RESULTS:
+| 1 |
+
+#+BEGIN_SRC clojure
+(def pc-octaves (for [n (range 12)] [(hash-map (keyword (str n)) (range n 108 12))]))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pc-octaves
+
+#+BEGIN_SRC clojure
+pc-octaves
+#+END_SRC
+
+#+RESULTS:
+| (:0 (0 12 24 36 48 60 72 84 96))    |
+| (:1 (1 13 25 37 49 61 73 85 97))    |
+| (:2 (2 14 26 38 50 62 74 86 98))    |
+| (:3 (3 15 27 39 51 63 75 87 99))    |
+| (:4 (4 16 28 40 52 64 76 88 100))   |
+| (:5 (5 17 29 41 53 65 77 89 101))   |
+| (:6 (6 18 30 42 54 66 78 90 102))   |
+| (:7 (7 19 31 43 55 67 79 91 103))   |
+| (:8 (8 20 32 44 56 68 80 92 104))   |
+| (:9 (9 21 33 45 57 69 81 93 105))   |
+| (:10 (10 22 34 46 58 70 82 94 106)) |
+| (:11 (11 23 35 47 59 71 83 95 107)) |
+
+
+#+BEGIN_SRC clojure
+(hash-map (keyword (str 1)) (range 1 108 12))
+#+END_SRC
+
+#+RESULTS:
+| :1 | (1 13 25 37 49 61 73 85 97) |
+
+#+BEGIN_SRC clojure
+(:1 (hash-map (keyword (str 1)) (range 1 108 12)))
+#+END_SRC
+
+#+RESULTS:
+| 1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 | 97 |
+
+#+BEGIN_SRC clojure
+(def pc-octaves (for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pc-octaves
+
+#+BEGIN_SRC clojure
+pc-octaves
+#+END_SRC
+
+#+RESULTS:
+| :0  | (0 12 24 36 48 60 72 84 96)   |
+| :1  | (1 13 25 37 49 61 73 85 97)   |
+| :2  | (2 14 26 38 50 62 74 86 98)   |
+| :3  | (3 15 27 39 51 63 75 87 99)   |
+| :4  | (4 16 28 40 52 64 76 88 100)  |
+| :5  | (5 17 29 41 53 65 77 89 101)  |
+| :6  | (6 18 30 42 54 66 78 90 102)  |
+| :7  | (7 19 31 43 55 67 79 91 103)  |
+| :8  | (8 20 32 44 56 68 80 92 104)  |
+| :9  | (9 21 33 45 57 69 81 93 105)  |
+| :10 | (10 22 34 46 58 70 82 94 106) |
+| :11 | (11 23 35 47 59 71 83 95 107) |
+
+#+BEGIN_SRC clojure
+(map :1 pc-octaves)
+#+END_SRC
+
+#+RESULTS:
+| 1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 | 97 |
+
+#+BEGIN_SRC clojure
+(type pc-octaves)
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.LazySeq
+
+#+BEGIN_SRC clojure
+(flatten (for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12))))
+#+END_SRC
+
+#+RESULTS:
+| :0  | (0 12 24 36 48 60 72 84 96)   |
+| :1  | (1 13 25 37 49 61 73 85 97)   |
+| :2  | (2 14 26 38 50 62 74 86 98)   |
+| :3  | (3 15 27 39 51 63 75 87 99)   |
+| :4  | (4 16 28 40 52 64 76 88 100)  |
+| :5  | (5 17 29 41 53 65 77 89 101)  |
+| :6  | (6 18 30 42 54 66 78 90 102)  |
+| :7  | (7 19 31 43 55 67 79 91 103)  |
+| :8  | (8 20 32 44 56 68 80 92 104)  |
+| :9  | (9 21 33 45 57 69 81 93 105)  |
+| :10 | (10 22 34 46 58 70 82 94 106) |
+| :11 | (11 23 35 47 59 71 83 95 107) |
+
+#+BEGIN_SRC clojure
+(for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12)))
+#+END_SRC
+
+#+RESULTS:
+| :0  | (0 12 24 36 48 60 72 84 96)   |
+| :1  | (1 13 25 37 49 61 73 85 97)   |
+| :2  | (2 14 26 38 50 62 74 86 98)   |
+| :3  | (3 15 27 39 51 63 75 87 99)   |
+| :4  | (4 16 28 40 52 64 76 88 100)  |
+| :5  | (5 17 29 41 53 65 77 89 101)  |
+| :6  | (6 18 30 42 54 66 78 90 102)  |
+| :7  | (7 19 31 43 55 67 79 91 103)  |
+| :8  | (8 20 32 44 56 68 80 92 104)  |
+| :9  | (9 21 33 45 57 69 81 93 105)  |
+| :10 | (10 22 34 46 58 70 82 94 106) |
+| :11 | (11 23 35 47 59 71 83 95 107) |
+
+#+BEGIN_SRC clojure
+(defn rec [n] (cond (zero? n) () :else (cons n (rec (dec n)))))
+(rec 3)
+#+END_SRC
+
+#+RESULTS:
+: #'user/rec(3 2 1)
+
+#+BEGIN_SRC clojure
+(defn rec [n]
+  (cond
+    (zero? n) ()
+    :else (cons (keyword (str n)) (rec (dec n)))))
+
+(rec 3)
+#+END_SRC
+
+#+RESULTS:
+: #'user/rec(:3 :2 :1)
+
+#+BEGIN_SRC clojure
+(into {} (for [n (range 12)] [(keyword (str n)) (range n 108 12)]))
+#+END_SRC
+
+#+RESULTS:
+| :11 | (11 23 35 47 59 71 83 95 107) | :10 | (10 22 34 46 58 70 82 94 106) | :0 | (0 12 24 36 48 60 72 84 96) | :4 | (4 16 28 40 52 64 76 88 100) | :7 | (7 19 31 43 55 67 79 91 103) | :1 | (1 13 25 37 49 61 73 85 97) | :8 | (8 20 32 44 56 68 80 92 104) | :9 | (9 21 33 45 57 69 81 93 105) | :2 | (2 14 26 38 50 62 74 86 98) | :5 | (5 17 29 41 53 65 77 89 101) | :3 | (3 15 27 39 51 63 75 87 99) | :6 | (6 18 30 42 54 66 78 90 102) |
+
+#+BEGIN_SRC clojure
+(def pc-octaves (into {} (for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12)))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/pc-octaves
+
+#+BEGIN_SRC clojure
+((keyword (str 0)) pc-octaves)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
+
+#+BEGIN_SRC clojure
+(:0 pc-octaves)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
+
+#+BEGIN_SRC clojure
+(let [[a b c] [0 1 3]]
+ ((keyword (str a)) pc-octaves))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
+
+#+BEGIN_SRC clojure
+(let [[a b c] [0 1 3]] (vector ((keyword (str a)) pc-octaves) ((keyword (str b)) pc-octaves) ((keyword (str c)) pc-octaves)))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
+| 1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 | 97 |
+| 3 | 15 | 27 | 39 | 51 | 63 | 75 | 87 | 99 |
+
+
+#+BEGIN_SRC clojure
+(into [] ((keyword (str 0)) pc-octaves))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
+
+#+BEGIN_SRC clojure
+(for [n [0 1 2]] (keyword (str n)))
+#+END_SRC
+
+#+RESULTS:
+| :0 | :1 | :2 |
+
+
+#+BEGIN_SRC clojure
+(vector (for [n [0 1 3]] (into [] ((keyword (str n)) pc-octaves))))
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (3 15 27 39 51 63 75 87 99) |
+
+#+BEGIN_SRC clojure
+(into [] (for [n [0 1 3]] (into [] ((keyword (str n)) pc-octaves))))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
+| 1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 | 97 |
+| 3 | 15 | 27 | 39 | 51 | 63 | 75 | 87 | 99 |
+* create a macro?
+** for requires a vector for its binding in user:1
+#+BEGIN_SRC clojure
+(for (into [] (interleave ['a 'b 'c] [[0 1 2] [1 2 3] [2 3 4]])) [a b c])
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(defmacro cartes [arg] (list 'for (into [] (interleave ['a 'b 'c] [[0 1 2] [1 2 3] [2 3 4]]))
+#+END_SRC
 ** "vectors are functions of their indices"
 #+BEGIN_SRC clojure
 ([[0 1 2] [0 1 3] [0 1 4]] 1)
