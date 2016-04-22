@@ -3260,7 +3260,7 @@ Note, are or how are these functions that sleep blocking??
 #+END_SRC
 
 #+RESULTS:
-: '(#<synth-node(live): overtone.inst.973/sampled-piano 67> #<synth-node(loading): overtone.inst.973/sampled-piano 68>)
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 2375> #<synth-node(loading): overtone.inst.973/sampled-piano 2376>)
 
 #+BEGIN_SRC clojure
 (sequencer (range 21 108 11))
@@ -3316,6 +3316,9 @@ Note, are or how are these functions that sleep blocking??
 (map (fn [vov] (every? #(< % 36) vov)) [[24 36 48] [0 1 3]])
 #+END_SRC
 
+#+RESULTS:
+| false | true |
+
 #+BEGIN_SRC clojure
 (let [args [0 24 36]]
   (cond (every? #(< % 36) args) args))
@@ -3328,6 +3331,8 @@ Note, are or how are these functions that sleep blocking??
 (let [args [[0 24 36] [37 38 39]]
   (cond (every? #(< % 36) args) args))
 #+END_SRC
+
+#+RESULTS:
 
 #+BEGIN_SRC clojure :results output
 (for [args [[0 24 36] [37 38 39]]] (cond (every? #(> % 36) args) (println "booya")))
@@ -3549,6 +3554,188 @@ is called from the repl
 #+BEGIN_SRC clojure
 (remove nil? happy-tris)
 #+END_SRC
+
+#+RESULTS:
+| 48 | 37 | 39 |
+| 48 | 37 | 51 |
+| 48 | 37 | 63 |
+| 48 | 37 | 75 |
+| 48 | 37 | 87 |
+| 48 | 37 | 99 |
+| 48 | 49 | 39 |
+| 48 | 49 | 51 |
+| 48 | 49 | 63 |
+| 48 | 49 | 75 |
+| 48 | 49 | 87 |
+| 48 | 49 | 99 |
+| 48 | 61 | 39 |
+| 48 | 61 | 51 |
+| 48 | 61 | 63 |
+| 48 | 61 | 75 |
+| 48 | 61 | 87 |
+| 48 | 61 | 99 |
+| 48 | 73 | 39 |
+| 48 | 73 | 51 |
+| 48 | 73 | 63 |
+| 48 | 73 | 75 |
+| 48 | 73 | 87 |
+| 48 | 73 | 99 |
+| 48 | 85 | 39 |
+| 48 | 85 | 51 |
+| 48 | 85 | 63 |
+| 48 | 85 | 75 |
+| 48 | 85 | 87 |
+| 48 | 85 | 99 |
+| 48 | 97 | 39 |
+| 48 | 97 | 51 |
+| 48 | 97 | 63 |
+| 48 | 97 | 75 |
+| 48 | 97 | 87 |
+| 48 | 97 | 99 |
+| 60 | 37 | 39 |
+| 60 | 37 | 51 |
+| 60 | 37 | 63 |
+| 60 | 37 | 75 |
+| 60 | 37 | 87 |
+| 60 | 37 | 99 |
+| 60 | 49 | 39 |
+| 60 | 49 | 51 |
+| 60 | 49 | 63 |
+| 60 | 49 | 75 |
+| 60 | 49 | 87 |
+| 60 | 49 | 99 |
+| 60 | 61 | 39 |
+| 60 | 61 | 51 |
+| 60 | 61 | 63 |
+| 60 | 61 | 75 |
+| 60 | 61 | 87 |
+| 60 | 61 | 99 |
+| 60 | 73 | 39 |
+| 60 | 73 | 51 |
+| 60 | 73 | 63 |
+| 60 | 73 | 75 |
+| 60 | 73 | 87 |
+| 60 | 73 | 99 |
+| 60 | 85 | 39 |
+| 60 | 85 | 51 |
+| 60 | 85 | 63 |
+| 60 | 85 | 75 |
+| 60 | 85 | 87 |
+| 60 | 85 | 99 |
+| 60 | 97 | 39 |
+| 60 | 97 | 51 |
+| 60 | 97 | 63 |
+| 60 | 97 | 75 |
+| 60 | 97 | 87 |
+| 60 | 97 | 99 |
+| 72 | 37 | 39 |
+| 72 | 37 | 51 |
+| 72 | 37 | 63 |
+| 72 | 37 | 75 |
+| 72 | 37 | 87 |
+| 72 | 37 | 99 |
+| 72 | 49 | 39 |
+| 72 | 49 | 51 |
+| 72 | 49 | 63 |
+| 72 | 49 | 75 |
+| 72 | 49 | 87 |
+| 72 | 49 | 99 |
+| 72 | 61 | 39 |
+| 72 | 61 | 51 |
+| 72 | 61 | 63 |
+| 72 | 61 | 75 |
+| 72 | 61 | 87 |
+| 72 | 61 | 99 |
+| 72 | 73 | 39 |
+| 72 | 73 | 51 |
+| 72 | 73 | 63 |
+| 72 | 73 | 75 |
+| 72 | 73 | 87 |
+| 72 | 73 | 99 |
+| 72 | 85 | 39 |
+| 72 | 85 | 51 |
+| 72 | 85 | 63 |
+| 72 | 85 | 75 |
+| 72 | 85 | 87 |
+| 72 | 85 | 99 |
+| 72 | 97 | 39 |
+| 72 | 97 | 51 |
+| 72 | 97 | 63 |
+| 72 | 97 | 75 |
+| 72 | 97 | 87 |
+| 72 | 97 | 99 |
+| 84 | 37 | 39 |
+| 84 | 37 | 51 |
+| 84 | 37 | 63 |
+| 84 | 37 | 75 |
+| 84 | 37 | 87 |
+| 84 | 37 | 99 |
+| 84 | 49 | 39 |
+| 84 | 49 | 51 |
+| 84 | 49 | 63 |
+| 84 | 49 | 75 |
+| 84 | 49 | 87 |
+| 84 | 49 | 99 |
+| 84 | 61 | 39 |
+| 84 | 61 | 51 |
+| 84 | 61 | 63 |
+| 84 | 61 | 75 |
+| 84 | 61 | 87 |
+| 84 | 61 | 99 |
+| 84 | 73 | 39 |
+| 84 | 73 | 51 |
+| 84 | 73 | 63 |
+| 84 | 73 | 75 |
+| 84 | 73 | 87 |
+| 84 | 73 | 99 |
+| 84 | 85 | 39 |
+| 84 | 85 | 51 |
+| 84 | 85 | 63 |
+| 84 | 85 | 75 |
+| 84 | 85 | 87 |
+| 84 | 85 | 99 |
+| 84 | 97 | 39 |
+| 84 | 97 | 51 |
+| 84 | 97 | 63 |
+| 84 | 97 | 75 |
+| 84 | 97 | 87 |
+| 84 | 97 | 99 |
+| 96 | 37 | 39 |
+| 96 | 37 | 51 |
+| 96 | 37 | 63 |
+| 96 | 37 | 75 |
+| 96 | 37 | 87 |
+| 96 | 37 | 99 |
+| 96 | 49 | 39 |
+| 96 | 49 | 51 |
+| 96 | 49 | 63 |
+| 96 | 49 | 75 |
+| 96 | 49 | 87 |
+| 96 | 49 | 99 |
+| 96 | 61 | 39 |
+| 96 | 61 | 51 |
+| 96 | 61 | 63 |
+| 96 | 61 | 75 |
+| 96 | 61 | 87 |
+| 96 | 61 | 99 |
+| 96 | 73 | 39 |
+| 96 | 73 | 51 |
+| 96 | 73 | 63 |
+| 96 | 73 | 75 |
+| 96 | 73 | 87 |
+| 96 | 73 | 99 |
+| 96 | 85 | 39 |
+| 96 | 85 | 51 |
+| 96 | 85 | 63 |
+| 96 | 85 | 75 |
+| 96 | 85 | 87 |
+| 96 | 85 | 99 |
+| 96 | 97 | 39 |
+| 96 | 97 | 51 |
+| 96 | 97 | 63 |
+| 96 | 97 | 75 |
+| 96 | 97 | 87 |
+| 96 | 97 | 99 |
 
 #+BEGIN_SRC clojure
 (chord-sequencer happy-tris)
@@ -4004,7 +4191,7 @@ trichord-keys
 | (0 3 6) | (1 4 7) | (2 5 8)  | (3 6 9)  | (4 7 10) | (5 8 11) | (6 9 12)  | (7 10 13) | (8 11 14) | (9 12 15) | (10 13 16) | (11 14 17) |
 | (0 3 7) | (1 4 8) | (2 5 9)  | (3 6 10) | (4 7 11) | (5 8 12) | (6 9 13)  | (7 10 14) | (8 11 15) | (9 12 16) | (10 13 17) | (11 14 18) |
 | (0 4 8) | (1 5 9) | (2 6 10) | (3 7 11) | (4 8 12) | (5 9 13) | (6 10 14) | (7 11 15) | (8 12 16) | (9 13 17) | (10 14 18) | (11 15 19) |
-** 
+** basic mapping an adder function over items in a list
 #+BEGIN_SRC clojure
 (map #(+ 12 %) [0 1 2])
 #+END_SRC
@@ -4018,8 +4205,7 @@ trichord-keys
 
 #+RESULTS:
 | 2 | 14 | 26 | 38 | 50 | 62 | 74 | 86 | 98 |
-
-
+** returning a vector of lists (of ranged/stepped numbers) from a 'for' loop
 #+BEGIN_SRC clojure
 (for [n (range 3)] [(range n 108 12)])
 #+END_SRC
@@ -4028,7 +4214,7 @@ trichord-keys
 | (0 12 24 36 48 60 72 84 96) |
 | (1 13 25 37 49 61 73 85 97) |
 | (2 14 26 38 50 62 74 86 98) |
-
+** embedding two maps in a vector--a saga towards 'into'
 #+BEGIN_SRC clojure
 [{:0 [0 12 24 36 48 60 72 84 96]}
 {:1 [1 13 25 37 49 61 73 85 97]}]
@@ -4214,7 +4400,7 @@ pc-octaves
 
 #+RESULTS:
 : #'user/rec(:3 :2 :1)
-
+** use 'into' to extract top-level forms into a particular collection type
 #+BEGIN_SRC clojure
 (into {} (for [n (range 12)] [(keyword (str n)) (range n 108 12)]))
 #+END_SRC
@@ -4250,7 +4436,7 @@ pc-octaves
 
 #+RESULTS:
 | 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
-
+** extract the list of octave equivalents for a given pc-set
 #+BEGIN_SRC clojure
 (let [[a b c] [0 1 3]] (vector ((keyword (str a)) pc-octaves) ((keyword (str b)) pc-octaves) ((keyword (str c)) pc-octaves)))
 #+END_SRC
@@ -4291,7 +4477,7 @@ pc-octaves
 | 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 | 96 |
 | 1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 | 97 |
 | 3 | 15 | 27 | 39 | 51 | 63 | 75 | 87 | 99 |
-* create a macro?
+* create a macro to accomplish "cartesian expansion"
 ** for requires a vector for its binding in user:1
 #+BEGIN_SRC clojure
 (for (into [] (interleave ['a 'b 'c] [[0 1 2] [1 2 3] [2 3 4]])) [a b c])
@@ -4302,11 +4488,456 @@ pc-octaves
 #+BEGIN_SRC clojure
 (defmacro cartes [arg] (list 'for (into [] (interleave ['a 'b 'c] [[0 1 2] [1 2 3] [2 3 4]]))
 #+END_SRC
-** "vectors are functions of their indices"
+** 
+#+BEGIN_SRC clojure
+(def big-013
+  (let [a [0 12 24 36 48 60 72 84 96] 
+        b [1 13 25 37 49 61 73 85 97]
+        c [3 15 27 39 51 63 75 87 99]]
+    (for [aa a bb b cc c]
+      [aa bb cc])))
+
+(take 3 big-013)
+#+END_SRC
+
+#+RESULTS:
+: #'user/big-013([0 1 3] [0 1 15] [0 1 27])
+
+#+BEGIN_SRC clojure
+(let [a (:0 pc-octaves) b (:1 pc-octaves) c (:4 pc-octaves)] [a b c])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 12 | 24 | 36 | 48 | 60 | 72 | 84 |  96 |
+| 1 | 13 | 25 | 37 | 49 | 61 | 73 | 85 |  97 |
+| 4 | 16 | 28 | 40 | 52 | 64 | 76 | 88 | 100 |
+
+#+BEGIN_SRC clojure
+(for [pcset [[0 1 2] [0 1 3]]]
+  (let [[a b c] pcset] (vector ((keyword (str a)) pc-octaves) ((keyword (str b)) pc-octaves) ((keyword (str c)) pc-octaves))))
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (2 14 26 38 50 62 74 86 98) |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (3 15 27 39 51 63 75 87 99) |
+
+#+BEGIN_SRC clojure
+(for [pcset [[0 1 2] [0 1 3]]]
+  (let [[a b c] pcset] [(into [] ((keyword (str a)) pc-octaves))
+                        (into [] ((keyword (str b)) pc-octaves))
+                        (into [] ((keyword (str c)) pc-octaves))]))
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (2 14 26 38 50 62 74 86 98) |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (3 15 27 39 51 63 75 87 99) |
+** weirdly babel doesn't read the results out into vectors
+#+BEGIN_SRC clojure
+(for [pcset trichords]
+  (let [[a b c] pcset] [(into [] ((keyword (str a)) pc-octaves))
+                        (into [] ((keyword (str b)) pc-octaves))
+                        (into [] ((keyword (str c)) pc-octaves))]))
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97)  | (2 14 26 38 50 62 74 86 98)  |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97)  | (3 15 27 39 51 63 75 87 99)  |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97)  | (4 16 28 40 52 64 76 88 100) |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97)  | (5 17 29 41 53 65 77 89 101) |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97)  | (6 18 30 42 54 66 78 90 102) |
+| (0 12 24 36 48 60 72 84 96) | (2 14 26 38 50 62 74 86 98)  | (4 16 28 40 52 64 76 88 100) |
+| (0 12 24 36 48 60 72 84 96) | (2 14 26 38 50 62 74 86 98)  | (5 17 29 41 53 65 77 89 101) |
+| (0 12 24 36 48 60 72 84 96) | (2 14 26 38 50 62 74 86 98)  | (6 18 30 42 54 66 78 90 102) |
+| (0 12 24 36 48 60 72 84 96) | (2 14 26 38 50 62 74 86 98)  | (7 19 31 43 55 67 79 91 103) |
+| (0 12 24 36 48 60 72 84 96) | (3 15 27 39 51 63 75 87 99)  | (6 18 30 42 54 66 78 90 102) |
+| (0 12 24 36 48 60 72 84 96) | (3 15 27 39 51 63 75 87 99)  | (7 19 31 43 55 67 79 91 103) |
+| (0 12 24 36 48 60 72 84 96) | (4 16 28 40 52 64 76 88 100) | (8 20 32 44 56 68 80 92 104) |
+** def tris-octaves
+#+BEGIN_SRC clojure
+(def tris-octaves
+  (for [pcset trichords]
+    (let [[a b c] pcset] [(into [] ((keyword (str a)) pc-octaves))
+                          (into [] ((keyword (str b)) pc-octaves))
+                          (into [] ((keyword (str c)) pc-octaves))])))
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/tris-octaves([[0 12 24 36 48 60 72 84 96] [1 13 25 37 49 61 73 85 97] [2 14 26 38 50 62 74 86 98]] [[0 12 24 36 48 60 72 84 96] [1 13 25 37 49 61 73 85 97] [3 15 27 39 51 63 75 87 99]] [[0 12 24 36 48 60 72 84 96] [1 13 25 37 49 61 73 85 97] [4 16 28 40 52 64 76 88 100]])
+
+#+BEGIN_SRC clojure
+(take 2 tris-octaves)
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (2 14 26 38 50 62 74 86 98) |
+| (0 12 24 36 48 60 72 84 96) | (1 13 25 37 49 61 73 85 97) | (3 15 27 39 51 63 75 87 99) |
+
+#+BEGIN_SRC clojure
+(take 2 (for [octave-collection tris-octaves]
+  (for [[a b c] octave-collection]
+    [a b c])))
+#+END_SRC
+
+#+RESULTS:
+| (0 12 24) | (1 13 25) | (2 14 26) |
+| (0 12 24) | (1 13 25) | (3 15 27) |
+
+#+BEGIN_SRC clojure
+(def one-octave-collection (first tris-octaves))
+;; one-octave-collection
+  (for [[a b c] one-octave-collection]
+    [b a c])
+#+END_SRC
+
+#+RESULTS:
+: #'user/one-octave-collection([12 0 24] [13 1 25] [14 2 26])
+
+#+BEGIN_SRC clojure
+(def big-012-midi-list
+  (let [[a b c] one-octave-collection]
+    (for [aa a bb b cc c] [aa bb cc])))
+(count big-012-midi-list)
+#+END_SRC
+
+#+RESULTS:
+: #'user/big-012-midi-list729
+
+#+BEGIN_SRC clojure
+(defn big-one [octave-collec] 
+  (for [oc octave-collec]
+    (let [[a b c] oc]
+      (for [aa a bb b cc c] [aa bb cc]))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/big-one
+
+#+BEGIN_SRC clojure
+(count (flatten (big-one (take 2 tris-octaves))))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(def all-trichord-midi-voicings (big-one tris-octaves))
+#+END_SRC
+
+#+RESULTS:
+: #'user/all-trichord-midi-voicings
+** 
+#+BEGIN_SRC clojure
+(def most-happy-tris 
+  (for [args all-trichord-midi-voicings]
+    (cond (every? #(> % 36) args) args)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/most-happy-tris
+
+#+BEGIN_SRC clojure
+(def the-bomb (remove nil? most-happy-tris))
+#+END_SRC
+
+#+RESULTS:
+: #'user/the-bomb
+
+
+#+BEGIN_SRC clojure
+(sequencer (flatten (first all-trichord-midi-voicings))) 
+#+END_SRC
+
+#+RESULTS:
+: 12
+
+* "vectors are functions of their indices"
 #+BEGIN_SRC clojure
 ([[0 1 2] [0 1 3] [0 1 4]] 1)
 #+END_SRC
 
 #+RESULTS:
 | 0 | 1 | 3 |
+
+* quick-steps for restarting
+** use overtone.live and sampled-piano; define trichords as const
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(use 'overtone.live)
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+#+BEGIN_SRC clojure
+(use 'overtone.inst.sampled-piano)
+
+(def ^:const trichords '((0 1 2) (0 1 3) (0 1 4) (0 1 5) (0 1 6) (0 2 4) (0 2 5) (0 2 6) (0 2 7) (0 3 6) (0 3 7) (0 4 8)))
+#+END_SRC
+
+#+RESULTS:
+: nil#'user/trichords
+
+#+BEGIN_SRC clojure
+(sampled-piano)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtone.inst.973/sampled-piano 38>
+
+** create a sequencer function using Thread/sleep in a 'do'
+#+BEGIN_SRC clojure
+(defn sequencer-500 [midis]
+  (map #(do (Thread/sleep 500) (sampled-piano %)) midis))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer-500
+
+#+BEGIN_SRC clojure
+(sequencer-500 [48 59])
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 39> #<synth-node(loading): overtone.inst.973/sampled-piano 40>)
+
+** define the large octave hash-map with zero-indexed PCs as keys
+#+BEGIN_SRC clojure
+(def pc-octaves (into {} (for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12)))))
+(first pc-octaves)
+#+END_SRC
+
+#+RESULTS:
+: #'user/pc-octaves[:11 (11 23 35 47 59 71 83 95 107)]
+
+** 
+#+BEGIN_SRC clojure
+(def tris-octaves
+  (for [pcset trichords]
+    (let [[a b c] pcset] [(into [] ((keyword (str a)) pc-octaves))
+                          (into [] ((keyword (str b)) pc-octaves))
+                          (into [] ((keyword (str c)) pc-octaves))])))
+(first tris-octaves)
+#+END_SRC
+
+#+RESULTS:
+: #'user/tris-octaves[[0 12 24 36 48 60 72 84 96] [1 13 25 37 49 61 73 85 97] [2 14 26 38 50 62 74 86 98]]
+
+** define a nested for loop function to destructure and cartesian product across a set collection
+#+BEGIN_SRC clojure
+(defn big-one [octave-collec] 
+  (for [oc octave-collec]
+    (let [[a b c] oc]
+      (for [aa a bb b cc c] [aa bb cc]))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/big-one
+
+** create all trichord midi voicings
+#+BEGIN_SRC clojure
+(def all-trichord-midi-voicings (big-one tris-octaves))
+#+END_SRC
+
+#+RESULTS:
+: #'user/all-trichord-midi-voicings
+
+#+BEGIN_SRC clojure
+(str (count all-trichord-midi-voicings) " "
+     (count (first all-trichord-midi-voicings)) " "
+     (subvec (vec (first all-trichord-midi-voicings)) 0 9))
+#+END_SRC
+
+#+RESULTS:
+: 12 729 [[0 1 2] [0 1 14] [0 1 26] [0 1 38] [0 1 50] [0 1 62] [0 1 74] [0 1 86] [0 1 98]]
+
+** 12 trichords with 729 distinct voicings, where each voicing comprises 3 notes
+#+BEGIN_SRC clojure
+(str (* 12 729) " " (* 3 729) " " (* 12 3 729))
+#+END_SRC
+
+#+RESULTS:
+: 8748 2187 26244
+
+#+BEGIN_SRC clojure
+(count (flatten all-trichord-midi-voicings))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(take 9 (first (subvec (vec all-trichord-midi-voicings) 0 1)))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 |  2 |
+| 0 | 1 | 14 |
+| 0 | 1 | 26 |
+| 0 | 1 | 38 |
+| 0 | 1 | 50 |
+| 0 | 1 | 62 |
+| 0 | 1 | 74 |
+| 0 | 1 | 86 |
+| 0 | 1 | 98 |
+
+** begin filtering 
+#+BEGIN_SRC clojure
+;;; don't evaluate
+;;  (for 
+[args all-trichord-midi-voicings]
+    (cond (every? #(> % 36) args) args)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/most-happy-tris
+
+** define a sample of 27 chords from an abritrary slice of all voicings
+#+BEGIN_SRC clojure
+(def samp (take 27 (subvec (vec (first (subvec (vec all-trichord-midi-voicings) 0 1))) 343 370)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/samp
+
+#+BEGIN_SRC clojure
+samp
+#+END_SRC
+
+#+RESULTS:
+| 48 | 25 | 14 |
+| 48 | 25 | 26 |
+| 48 | 25 | 38 |
+| 48 | 25 | 50 |
+| 48 | 25 | 62 |
+| 48 | 25 | 74 |
+| 48 | 25 | 86 |
+| 48 | 25 | 98 |
+| 48 | 37 |  2 |
+| 48 | 37 | 14 |
+| 48 | 37 | 26 |
+| 48 | 37 | 38 |
+| 48 | 37 | 50 |
+| 48 | 37 | 62 |
+| 48 | 37 | 74 |
+| 48 | 37 | 86 |
+| 48 | 37 | 98 |
+| 48 | 49 |  2 |
+| 48 | 49 | 14 |
+| 48 | 49 | 26 |
+| 48 | 49 | 38 |
+| 48 | 49 | 50 |
+| 48 | 49 | 62 |
+| 48 | 49 | 74 |
+| 48 | 49 | 86 |
+| 48 | 49 | 98 |
+| 48 | 61 |  2 |
+
+** filter out voicing containing a midi less than 36
+#+BEGIN_SRC clojure
+  (def refined-samp (for [args samp]
+    (cond (every? #(> % 36) args) args)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/refined-samp
+
+** remove nils from refined-samp
+#+BEGIN_SRC clojure
+(def refined-samp (remove nil? refined-samp))
+#+END_SRC
+
+#+RESULTS:
+: #'user/refined-samp
+
+** play the refined-samp segment
+#+BEGIN_SRC clojure
+(sequencer-500 (flatten refined-samp))
+#+END_SRC
+
+#+RESULTS:
+
+** define a function that will select a random segment of a collection
+#+BEGIN_SRC clojure
+;; fails because?
+(defn rand-seq [v length]
+  (let [n (rand-int (dec length))
+        o (+ n length)]
+    (subvec v n o)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/rand-seq
+
+
+#+BEGIN_SRC clojure
+(#(let [start (rand-int %1) end (+ start %2)] (list start end)) 36 3)
+#+END_SRC
+
+#+RESULTS:
+| 20 | 23 |
+
+#+BEGIN_SRC clojure
+(defn rand-seq [v v-length]
+  (let [start (rand-int (dec (count v)))
+        end (+ start v-length)]
+    (subvec v start end)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/rand-seq
+
+** understand ranges and counting--use inc!
+#+BEGIN_SRC clojure
+(#(let [l (range (inc %)) length (count l)] [l length]) (rand-int 10))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2 3 4 5 6) | 7 |
+
+** range returns a sequence of length n, comprising numbers start through n - 1
+#+BEGIN_SRC clojure
+(vector (range 4))
+;; returns
+;; [(0 1 2 3)]
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 | 3 |
+
+#+BEGIN_SRC clojure
+(rand-seq (vec (range 36)) 4)
+#+END_SRC
+
+#+RESULTS:
+| 13 | 14 | 15 | 16 |
+
+
+#+BEGIN_SRC clojure
+(vec refined-samp)
+#+END_SRC
+
+#+RESULTS:
+| 48 | 37 | 38 |
+| 48 | 37 | 50 |
+| 48 | 37 | 62 |
+| 48 | 37 | 74 |
+| 48 | 37 | 86 |
+| 48 | 37 | 98 |
+| 48 | 49 | 38 |
+| 48 | 49 | 50 |
+| 48 | 49 | 62 |
+| 48 | 49 | 74 |
+| 48 | 49 | 86 |
+| 48 | 49 | 98 |
+
+** rand-seq fails if the sequence length is too long for the arbitrary starting point
+#+BEGIN_SRC clojure
+(rand-seq (vec refined-samp) 3) 
+#+END_SRC
+
+#+RESULTS:
+| 48 | 49 | 38 |
+| 48 | 49 | 50 |
+| 48 | 49 | 62 |
+
+
+
+
+
 
