@@ -2145,7 +2145,7 @@ the scenes and not lock up the repl?
  #+END_SRC
 
   #+RESULTS:
-  : #'user/play-piano-chordnil
+  : #'user/play-piano-chord
 #+BEGIN_SRC clojure
 (play-piano-chord [60 64 67])
 #+END_SRC
@@ -2153,17 +2153,7 @@ the scenes and not lock up the repl?
 #+RESULTS:
 : nil
 
-*** use sample to load a sample
-
-
-  #+RESULTS:
-  : #'user/floot
-
-
-
-#+RESULTS:
-: overtone.samples.freesound.FreesoundSample
-
+*** use 'sample' to load a sample (type 'PlayableSample')
 #+BEGIN_SRC clojure
 (def pang (sample "/Applications/SuperCollider/SuperCollider.app/Contents/Resources/sounds/pang-short.wav"))
 #+END_SRC
@@ -2177,7 +2167,17 @@ the scenes and not lock up the repl?
 
 #+RESULTS:
 : overtone.sc.sample.PlayableSample
-*** use load-sample to load a sample into a buffer--whaddya do with a buffer?
+
+
+#+BEGIN_SRC clojure
+;; playback contents of buffer
+(pang)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtoddd/stereo-partial-player 117>
+
+*** use load-sample to load a sample into a buffer (type 'Sample')
 #+BEGIN_SRC clojure
 (def pang-buf (load-sample "/Applications/SuperCollider/SuperCollider.app/Contents/Resources/sounds/pang-short.wav"))
 #+END_SRC
@@ -2191,6 +2191,22 @@ the scenes and not lock up the repl?
 
 #+RESULTS:
 : overtone.sc.sample.Sample
+
+#+BEGIN_SRC clojure
+;; (scope :buf pang-buf)
+#+END_SRC
+
+#+RESULTS:
+
+*** play back contents of a buffer by: 'play-buf' given to 'out' inside a 'defsynth'
+#+BEGIN_SRC clojure
+(defsynth play-pang-buf [] (out 0 (play-buf 1 pang-buf)))
+
+(play-pang-buf)
+#+END_SRC
+
+#+RESULTS:
+: #<synth: play-pang-buf>#<synth-node[loading]: user/play-pang-buf 119>
 
 #+BEGIN_SRC clojure
 (defsynth reverb-on-left []
@@ -2208,8 +2224,16 @@ the scenes and not lock up the repl?
 #+END_SRC
 
 #+RESULTS:
-: #<synth-node[loading]: user/reverb-on-left 42>
-*** make a recording of some played sound
+: #<synth-node[loading]: user/reverb-on-left 118>
+*** record played sound to a file on disk
+
+#+BEGIN_SRC clojure
+(play-piano-chord (range 48 72 5))
+#+END_SRC
+
+#+RESULTS:
+: nil
+
 #+BEGIN_SRC clojure
 (play-piano-chord (range 48 72 5))
 ;; (48 53 58 63 68)
@@ -4656,18 +4680,33 @@ pc-octaves
 #+RESULTS:
 | 0 | 1 | 3 |
 
+* uuid
+#+BEGIN_SRC clojure
+(defn uuid [] (str (java.util.UUID/randomUUID)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/uuid
+
+#+BEGIN_SRC clojure
+(uuid)
+#+END_SRC
+
+#+RESULTS:
+: 0a898966-b54c-41bf-84dd-302363642f06
+
 * quick-steps for restarting
 ** use overtone.live and sampled-piano; define trichords as const
 #+END_SRC
 
-#+BEGIN_SRC clojure
+#+BEGIN_SRC clojure :tangle yes
 (use 'overtone.live)
 #+END_SRC
 
 #+RESULTS:
 : nil
 
-#+BEGIN_SRC clojure
+#+BEGIN_SRC clojure :tangle yes
 (use 'overtone.inst.sampled-piano)
 
 (def ^:const trichords '((0 1 2) (0 1 3) (0 1 4) (0 1 5) (0 1 6) (0 2 4) (0 2 5) (0 2 6) (0 2 7) (0 3 6) (0 3 7) (0 4 8)))
@@ -4684,7 +4723,7 @@ pc-octaves
 : #<synth-node[loading]: overtone.inst.973/sampled-piano 38>
 
 ** create a sequencer function using Thread/sleep in a 'do'
-#+BEGIN_SRC clojure
+#+BEGIN_SRC clojure :tangle yes
 (defn sequencer-500 [midis]
   (map #(do (Thread/sleep 500) (sampled-piano %)) midis))
 #+END_SRC
@@ -4697,10 +4736,10 @@ pc-octaves
 #+END_SRC
 
 #+RESULTS:
-: '(#<synth-node(live): overtone.inst.973/sampled-piano 39> #<synth-node(loading): overtone.inst.973/sampled-piano 40>)
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 41> #<synth-node(loading): overtone.inst.973/sampled-piano 42>)
 
 ** define the large octave hash-map with zero-indexed PCs as keys
-#+BEGIN_SRC clojure
+#+BEGIN_SRC clojure :tangle yes
 (def pc-octaves (into {} (for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12)))))
 (first pc-octaves)
 #+END_SRC
@@ -4708,8 +4747,15 @@ pc-octaves
 #+RESULTS:
 : #'user/pc-octaves[:11 (11 23 35 47 59 71 83 95 107)]
 
-** 
 #+BEGIN_SRC clojure
+(type (for [n (range 12)] (hash-map (keyword (str n)) (range n 108 12))))
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.LazySeq
+
+** 
+#+BEGIN_SRC clojure :tangle yes
 (def tris-octaves
   (for [pcset trichords]
     (let [[a b c] pcset] [(into [] ((keyword (str a)) pc-octaves))
@@ -4722,7 +4768,7 @@ pc-octaves
 : #'user/tris-octaves[[0 12 24 36 48 60 72 84 96] [1 13 25 37 49 61 73 85 97] [2 14 26 38 50 62 74 86 98]]
 
 ** define a nested for loop function to destructure and cartesian product across a set collection
-#+BEGIN_SRC clojure
+#+BEGIN_SRC clojure :tangle yes
 (defn big-one [octave-collec] 
   (for [oc octave-collec]
     (let [[a b c] oc]
@@ -4733,7 +4779,7 @@ pc-octaves
 : #'user/big-one
 
 ** create all trichord midi voicings
-#+BEGIN_SRC clojure
+#+BEGIN_SRC clojure :tangle yes
 (def all-trichord-midi-voicings (big-one tris-octaves))
 #+END_SRC
 
@@ -4749,13 +4795,30 @@ pc-octaves
 #+RESULTS:
 : 12 729 [[0 1 2] [0 1 14] [0 1 26] [0 1 38] [0 1 50] [0 1 62] [0 1 74] [0 1 86] [0 1 98]]
 
-** 12 trichords with 729 distinct voicings, where each voicing comprises 3 notes
+** 12 trichords with 729 distinct voicings, where each voicing comprises 3 notes == 26244
 #+BEGIN_SRC clojure
 (str (* 12 729) " " (* 3 729) " " (* 12 3 729))
 #+END_SRC
 
 #+RESULTS:
 : 8748 2187 26244
+
+#+BEGIN_SRC clojure
+;; play 26244 notes at one note per second (60bpm)
+(/ 26244 60.0)
+#+END_SRC
+
+#+RESULTS:
+: 437.4
+
+
+#+BEGIN_SRC clojure
+;; 437 minutes is about 7 hours and 15 minutes
+(/ (/ 26244 60.0) 60)
+#+END_SRC
+
+#+RESULTS:
+: 7.29
 
 #+BEGIN_SRC clojure
 (count (flatten all-trichord-midi-voicings))
@@ -4837,6 +4900,7 @@ samp
 #+RESULTS:
 : #'user/refined-samp
 
+
 ** remove nils from refined-samp
 #+BEGIN_SRC clojure
 (def refined-samp (remove nil? refined-samp))
@@ -4881,6 +4945,19 @@ samp
 
 #+RESULTS:
 : #'user/rand-seq
+
+#+BEGIN_SRC clojure :tangle yes
+
+(defn rand-seq-debug [v v-length]
+  (let [start (rand-int (dec (count v)))
+        end (+ start v-length)]
+(println (str "START: " start " end: " end))
+    (subvec v start end)))
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/rand-seq-debug
 
 ** understand ranges and counting--use inc!
 #+BEGIN_SRC clojure
@@ -4937,7 +5014,616 @@ samp
 | 48 | 49 | 62 |
 
 
+#+BEGIN_SRC clojure :results output
+(rand-seq-debug (vec refined-samp) 3) 
+#+END_SRC
+
+#+RESULTS:
+: START: 1 end: 4
+
+#+BEGIN_SRC clojure
+(rand-seq-debug (vec refined-samp) 3) 
+;; START: 2 end: 5
+[nil nil nil]
+
+(rand-seq-debug (vec refined-samp) 3) 
+;; START: 9 end: 12
+[nil nil [48 37 38]]
+
+(rand-seq-debug (vec refined-samp) 3) 
+;; START: 21 end: 24
+[[48 49 50] [48 49 62] [48 49 74]]
+#+END_SRC
+
+** 'most-happy-tris'
+#+BEGIN_SRC clojure
+(take 3  (nth (vec all-trichord-midi-voicings) 4))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 |  6 |
+| 0 | 1 | 18 |
+| 0 | 1 | 30 |
+
+#+BEGIN_SRC clojure
+(def most-happy-tris 
+  (for [args all-trichord-midi-voicings]
+    (cond (every? #(> % 36) args) args)))
+
+(def refined-happy-tris (remove nil? most-happy-tris))
+#+END_SRC
+
+
+#+BEGIN_SRC clojure
+(for [args all-trichord-midi-voicings] (count args))
+#+END_SRC
+
+#+RESULTS:
+| 729 | 729 | 729 | 729 | 729 | 729 | 729 | 729 | 729 | 729 | 729 | 729 |
+
+#+BEGIN_SRC clojure
+;; big!
+(def first-of-all-trichord (take 729 (first all-trichord-midi-voicings)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/first-of-all-trichord
+
+#+BEGIN_SRC clojure
+(count first-of-all-trichord)
+#+END_SRC
+
+#+RESULTS:
+: 729
+
+#+BEGIN_SRC clojure
+(take 10 first-of-all-trichord)
+#+END_SRC
+
+#+RESULTS:
+| 0 |  1 |  2 |
+| 0 |  1 | 14 |
+| 0 |  1 | 26 |
+| 0 |  1 | 38 |
+| 0 |  1 | 50 |
+| 0 |  1 | 62 |
+| 0 |  1 | 74 |
+| 0 |  1 | 86 |
+| 0 |  1 | 98 |
+| 0 | 13 |  2 |
+
+#+BEGIN_SRC clojure
+(count (first all-trichord-midi-voicings))
+#+END_SRC
+
+#+RESULTS:
+: 729
+
+
+#+BEGIN_SRC clojure
+(count first-of-all-trichord)
+#+END_SRC
+
+#+RESULTS:
+: 729
+
+** using concat
+#+BEGIN_SRC clojure
+(apply concat [[[0 1 2] [0 1 14]] [[0 1 3] [0 1 15]]])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 |  2 |
+| 0 | 1 | 14 |
+| 0 | 1 |  3 |
+| 0 | 1 | 15 |
+
+#+BEGIN_SRC clojure
+(def nest [[[0 1 2] [0 1 14]] [[0 1 3] [0 1 15]]])
+#+END_SRC
+
+#+RESULTS:
+: #'user/nest
+
+#+BEGIN_SRC clojure
+(apply concat nest)
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 |  2 |
+| 0 | 1 | 14 |
+| 0 | 1 |  3 |
+| 0 | 1 | 15 |
+
+#+BEGIN_SRC clojure
+(count all-trichord-midi-voicings)
+#+END_SRC
+
+#+RESULTS:
+: 12
+
+#+BEGIN_SRC clojure
+(str (count (apply concat all-trichord-midi-voicings)) " " (* 12 729))
+#+END_SRC
+
+#+RESULTS:
+: 8748 8748
+
+#+BEGIN_SRC clojure
+(def flat-tris (apply concat all-trichord-midi-voicings))
+#+END_SRC
+
+#+RESULTS:
+: #'user/flat-tris
+
+#+BEGIN_SRC clojure
+(count flat-tris)
+#+END_SRC
+
+#+RESULTS:
+: 8748
+
+** use special fn with every? and remove to restrict refined list to > 36 midis
+#+BEGIN_SRC clojure
+(remove (fn [arg] (not (every? #(> % 36) arg))) [[0 36 37 1] [37 38 39]])
+#+END_SRC
+
+#+RESULTS:
+| 37 | 38 | 39 |
+
+#+BEGIN_SRC clojure
+(def refined-flat-tris (remove (fn [arg] (not (every? #(> % 36) arg))) flat-tris))
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/refined-flat-tris
+
+
+#+BEGIN_SRC clojure
+(count refined-flat-tris)
+#+END_SRC
+
+#+RESULTS:
+: 2160
+
+
+#+BEGIN_SRC clojure
+(take 81 refined-flat-tris)
+#+END_SRC
+
+#+RESULTS:
+| 48 | 37 | 38 |
+| 48 | 37 | 50 |
+| 48 | 37 | 62 |
+| 48 | 37 | 74 |
+| 48 | 37 | 86 |
+| 48 | 37 | 98 |
+| 48 | 49 | 38 |
+| 48 | 49 | 50 |
+| 48 | 49 | 62 |
+| 48 | 49 | 74 |
+| 48 | 49 | 86 |
+| 48 | 49 | 98 |
+| 48 | 61 | 38 |
+| 48 | 61 | 50 |
+| 48 | 61 | 62 |
+| 48 | 61 | 74 |
+| 48 | 61 | 86 |
+| 48 | 61 | 98 |
+| 48 | 73 | 38 |
+| 48 | 73 | 50 |
+| 48 | 73 | 62 |
+| 48 | 73 | 74 |
+| 48 | 73 | 86 |
+| 48 | 73 | 98 |
+| 48 | 85 | 38 |
+| 48 | 85 | 50 |
+| 48 | 85 | 62 |
+| 48 | 85 | 74 |
+| 48 | 85 | 86 |
+| 48 | 85 | 98 |
+| 48 | 97 | 38 |
+| 48 | 97 | 50 |
+| 48 | 97 | 62 |
+| 48 | 97 | 74 |
+| 48 | 97 | 86 |
+| 48 | 97 | 98 |
+| 60 | 37 | 38 |
+| 60 | 37 | 50 |
+| 60 | 37 | 62 |
+| 60 | 37 | 74 |
+| 60 | 37 | 86 |
+| 60 | 37 | 98 |
+| 60 | 49 | 38 |
+| 60 | 49 | 50 |
+| 60 | 49 | 62 |
+| 60 | 49 | 74 |
+| 60 | 49 | 86 |
+| 60 | 49 | 98 |
+| 60 | 61 | 38 |
+| 60 | 61 | 50 |
+| 60 | 61 | 62 |
+| 60 | 61 | 74 |
+| 60 | 61 | 86 |
+| 60 | 61 | 98 |
+| 60 | 73 | 38 |
+| 60 | 73 | 50 |
+| 60 | 73 | 62 |
+| 60 | 73 | 74 |
+| 60 | 73 | 86 |
+| 60 | 73 | 98 |
+| 60 | 85 | 38 |
+| 60 | 85 | 50 |
+| 60 | 85 | 62 |
+| 60 | 85 | 74 |
+| 60 | 85 | 86 |
+| 60 | 85 | 98 |
+| 60 | 97 | 38 |
+| 60 | 97 | 50 |
+| 60 | 97 | 62 |
+| 60 | 97 | 74 |
+| 60 | 97 | 86 |
+| 60 | 97 | 98 |
+| 72 | 37 | 38 |
+| 72 | 37 | 50 |
+| 72 | 37 | 62 |
+| 72 | 37 | 74 |
+| 72 | 37 | 86 |
+| 72 | 37 | 98 |
+| 72 | 49 | 38 |
+| 72 | 49 | 50 |
+| 72 | 49 | 62 |
+
+** define sequencer fn (that takes any millisecond length) and record
+#+BEGIN_SRC clojure :tangle yes
+(defn sequencer-any-ms [midis ms]
+  (map #(do (Thread/sleep ms) (sampled-piano %)) midis))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer-any-ms
+
+#+BEGIN_SRC clojure
+(recording-start "~/Desktop/dissonant-tris1.wav")
+(sequencer-any-ms (flatten (take 81 refined-flat-tris)) 100)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(recording-stop)
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Desktop/dissonant-tris1.wav
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (flatten (take 81 refined-flat-tris)) 100)
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(rand-seq-debug (vec (range 10)) 3)
+#+END_SRC
+
+#+RESULTS:
+| 2 | 3 | 4 |
+
+#+BEGIN_SRC clojure
+(rand-seq-debug (vec refined-flat-tris) 3)
+#+END_SRC
+
+#+RESULTS:
+| 48 | 86 | 102 |
+| 48 | 98 |  42 |
+| 48 | 98 |  54 |
+
+#+BEGIN_SRC clojure :results output
+(sequencer-any-ms (flatten (rand-seq-debug (vec refined-flat-tris) 81)) 100)
+#+END_SRC
+
+#+RESULTS:
+: START: 1370 end: 1400
+
+#+BEGIN_SRC clojure
+;;(shuffle [0 1 2])
+(shuffle [[0 1 2] [12 13 14] [24 25 26]])
+#+END_SRC
+
+#+RESULTS:
+| 12 | 13 | 14 |
+| 24 | 25 | 26 |
+|  0 |  1 |  2 |
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (take 1000 (flatten (shuffle refined-flat-tris))) 100)
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 8223> #<synth-node(live): overtone.inst.973/sampled-piano 8224> #<synth-node(live): overtone.inst.973/sampled-piano 8225> #<synth-node(live): overtone.inst.973/sampled-piano 8226> #<synth-node(live): overtone.inst.973/sampled-piano 8227> #<synth-node(live): overtone.inst.973/sampled-piano 8228> #<synth-node(live): overtone.inst.973/sampled-piano 8229> #<synth-node(live): overtone.inst.973/sampled-piano 8230> #<synth-node(live): overtone.inst.973/sampled-piano 8231> #<synth-node(live): overtone.inst.973/sampled-piano 8232> #<synth-node(live): overtone.inst.973/sampled-piano 8233> #<synth-node(live): overtone.inst.973/sampled-piano 8234> #<synth-node(live): overtone.inst.973/sampled-piano 8235> #<synth-node(live): overtone.inst.973/sampled-piano 8236> #<synth-node(live): overtone.inst.973/sampled-piano 8237> #<synth-node(live): overtone.inst.973/sampled-piano 8238> #<synth-node(live): overtone.inst.973/sampled-piano 8239> #<synth-node(live): overtone.inst.973/sampled-piano 8240> #<synth-node(live): overtone.inst.973/sampled-piano 8241> #<synth-node(live): overtone.inst.973/sampled-piano 8242> #<synth-node(live): overtone.inst.973/sampled-piano 8243> #<synth-node(live): overtone.inst.973/sampled-piano 8244> #<synth-node(live): overtone.inst.973/sampled-piano 8245> #<synth-node(live): overtone.inst.973/sampled-piano 8246> #<synth-node(live): overtone.inst.973/sampled-piano 8247> #<synth-node(live): overtone.inst.973/sampled-piano 8248> #<synth-node(live): overtone.inst.973/sampled-piano 8249> #<synth-node(live): overtone.inst.973/sampled-piano 8250> #<synth-node(live): overtone.inst.973/sampled-piano 8251> #<synth-node(live): overtone.inst.973/sampled-piano 8252> #<synth-node(live): overtone.inst.973/sampled-piano 8253> #<synth-node(live): overtone.inst.973/sampled-piano 8254> #<synth-node(live): overtone.inst.973/sampled-piano 8255> #<synth-node(live): overtone.inst.973/sampled-piano 8256> #<synth-node(live): overtone.inst.973/sampled-piano 8257> #<synth-node(live): overtone.inst.973/sampled-piano 8258> #<synth-node(live): overtone.inst.973/sampled-piano 8259> #<synth-node(live): overtone.inst.973/sampled-piano 8260> #<synth-node(live): overtone.inst.973/sampled-piano 8261> #<synth-node(live): overtone.inst.973/sampled-piano 8262> #<synth-node(live): overtone.inst.973/sampled-piano 8263> #<synth-node(live): overtone.inst.973/sampled-piano 8264> #<synth-node(live): overtone.inst.973/sampled-piano 8265> #<synth-node(live): overtone.inst.973/sampled-piano 8266> #<synth-node(live): overtone.inst.973/sampled-piano 8267> #<synth-node(live): overtone.inst.973/sampled-piano 8268> #<synth-node(live): overtone.inst.973/sampled-piano 8269> #<synth-node(live): overtone.inst.973/sampled-piano 8270> #<synth-node(live): overtone.inst.973/sampled-piano 8271> #<synth-node(live): overtone.inst.973/sampled-piano 8272> #<synth-node(live): overtone.inst.973/sampled-piano 8273> #<synth-node(live): overtone.inst.973/sampled-piano 8274> #<synth-node(live): overtone.inst.973/sampled-piano 8275> #<synth-node(live): overtone.inst.973/sampled-piano 8276> #<synth-node(live): overtone.inst.973/sampled-piano 8277> #<synth-node(live): overtone.inst.973/sampled-piano 8278> #<synth-node(live): overtone.inst.973/sampled-piano 8279> #<synth-node(live): overtone.inst.973/sampled-piano 8280> #<synth-node(live): overtone.inst.973/sampled-piano 8281> #<synth-node(live): overtone.inst.973/sampled-piano 8282> #<synth-node(live): overtone.inst.973/sampled-piano 8283> #<synth-node(live): overtone.inst.973/sampled-piano 8284> #<synth-node(live): overtone.inst.973/sampled-piano 8285> #<synth-node(live): overtone.inst.973/sampled-piano 8286> #<synth-node(live): overtone.inst.973/sampled-piano 8287> #<synth-node(live): overtone.inst.973/sampled-piano 8288> #<synth-node(live): overtone.inst.973/sampled-piano 8289> #<synth-node(live): overtone.inst.973/sampled-piano 8290> #<synth-node(live): overtone.inst.973/sampled-piano 8291> #<synth-node(live): overtone.inst.973/sampled-piano 8292> #<synth-node(live): overtone.inst.973/sampled-piano 8293> #<synth-node(live): overtone.inst.973/sampled-piano 8294> #<synth-node(live): overtone.inst.973/sampled-piano 8295> #<synth-node(live): overtone.inst.973/sampled-piano 8296> #<synth-node(live): overtone.inst.973/sampled-piano 8297> #<synth-node(live): overtone.inst.973/sampled-piano 8298> #<synth-node(live): overtone.inst.973/sampled-piano 8299> #<synth-node(live): overtone.inst.973/sampled-piano 8300> #<synth-node(live): overtone.inst.973/sampled-piano 8301> #<synth-node(live): overtone.inst.973/sampled-piano 8302> #<synth-node(live): overtone.inst.973/sampled-piano 8303> #<synth-node(live): overtone.inst.973/sampled-piano 8304> #<synth-node(live): overtone.inst.973/sampled-piano 8305> #<synth-node(live): overtone.inst.973/sampled-piano 8306> #<synth-node(live): overtone.inst.973/sampled-piano 8307> #<synth-node(live): overtone.inst.973/sampled-piano 8308> #<synth-node(live): overtone.inst.973/sampled-piano 8309> #<synth-node(live): overtone.inst.973/sampled-piano 8310> #<synth-node(live): overtone.inst.973/sampled-piano 8311> #<synth-node(live): overtone.inst.973/sampled-piano 8312> #<synth-node(live): overtone.inst.973/sampled-piano 8313> #<synth-node(live): overtone.inst.973/sampled-piano 8314> #<synth-node(live): overtone.inst.973/sampled-piano 8315> #<synth-node(live): overtone.inst.973/sampled-piano 8316> #<synth-node(live): overtone.inst.973/sampled-piano 8317> #<synth-node(live): overtone.inst.973/sampled-piano 8318> #<synth-node(live): overtone.inst.973/sampled-piano 8319> #<synth-node(live): overtone.inst.973/sampled-piano 8320> #<synth-node(live): overtone.inst.973/sampled-piano 8321> #<synth-node(loading): overtone.inst.973/sampled-piano 8322>)
+
+#+BEGIN_SRC clojure
+
+(recording-start "/Users/a/Google Drive/wav-file-uploads/shuffled-arpeggios2.wav" )
+(sequencer-any-ms (take 1000 (flatten (shuffle refined-flat-tris))) 100)
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+(recording-stop)
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Google Drive/wav-file-uploads/shuffled-arpeggios2.wav
+
+#+BEGIN_SRC clojure
+(repeatedly 10 #(rand-int 12))
+#+END_SRC
+
+#+RESULTS:
+| 2 | 1 | 0 | 9 | 1 | 5 | 9 | 5 | 9 | 11 |
+
+
+#+BEGIN_SRC clojure
+(repeatedly 10 #(+ 36 (rand-int 36)))
+#+END_SRC
+
+#+RESULTS:
+| 68 | 63 | 49 | 53 | 69 | 68 | 71 | 38 | 52 | 70 |
+
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (vec (repeatedly 10 #(+ 36 (rand-int 36)))) 100)
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 13457> #<synth-node(live): overtone.inst.973/sampled-piano 13458> #<synth-node(live): overtone.inst.973/sampled-piano 13459> #<synth-node(live): overtone.inst.973/sampled-piano 13460> #<synth-node(live): overtone.inst.973/sampled-piano 13461> #<synth-node(live): overtone.inst.973/sampled-piano 13462> #<synth-node(live): overtone.inst.973/sampled-piano 13463> #<synth-node(live): overtone.inst.973/sampled-piano 13464> #<synth-node(live): overtone.inst.973/sampled-piano 13465> #<synth-node(loading): overtone.inst.973/sampled-piano 13466>)
+
+** give weighted random values to sampled-piano "level"
+#+BEGIN_SRC clojure :results output
+(doc sampled-piano)
+#+END_SRC
+
+#+RESULTS:
+: -------------------------
+: overtone.inst.sampled-piano/sampled-piano
+: ([note level rate loop? attack decay sustain release curve gate])
+:   nil
+
+#+BEGIN_SRC clojure
+(sampled-piano 60 (rand))
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtone.inst.973/sampled-piano 13449>
+
+
+#+BEGIN_SRC clojure
+(repeatedly 10 #(weighted-choose {2 0.1, 1 0.9}))
+#+END_SRC
+
+#+RESULTS:
+| 1 | 1 | 1 | 2 | 2 | 1 | 1 | 1 | 1 | 1 |
+
+** Konrad Hinsen's 'uniform' function
+#+BEGIN_SRC clojure
+(defn uniform
+  "Return a distribution in which each of the elements of coll
+   has the same probability."
+  [coll]
+  (let [n (count coll)
+	p (/ 1 n)]
+    (into {} (for [x (seq coll)] [x p]))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/uniform
+
+#+BEGIN_SRC clojure
+(uniform [0 1 2 3])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1/4 | 1 | 1/4 | 2 | 1/4 | 3 | 1/4 |
+
+#+BEGIN_SRC clojure
+;; {0 1/4, 1 1/4, 2 1/4, 3 1/4}
+(weighted-choose {1 0.5, 2 0.3, 3 0.125, 4 0.075})
+#+END_SRC
+
+#+RESULTS:
+: 2
+
+#+BEGIN_SRC clojure
+(weighted-choose {1 1/4, 2 1/4 , 3 1/4, 4 1/4})
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(weighted-choose {1 (float 1/4), 2 (float 1/4) , 3 (float 1/4), 4 (float 1/4)})
+
+#+END_SRC
+
+#+RESULTS:
+: 4
+
+#+BEGIN_SRC clojure
+(into {} (for [[k v] (uniform [0 1 2 3])] [k (float v)]))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 0.25 | 1 | 0.25 | 2 | 0.25 | 3 | 0.25 |
+
+#+BEGIN_SRC clojure
+(weighted-choose (into {} (for [[k v] (uniform [0 1 2 3])] [k (float v)])))
+
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+** define dynamic ranges and weightings
+
+#+BEGIN_SRC clojure
+(defn convert-vals-to-floats [m] (into {} (for [[k v] m] [k (float v)])))
+#+END_SRC
+
+#+RESULTS:
+: #'user/convert-vals-to-floats
+
+#+BEGIN_SRC clojure
+(def dynamics-dist (uniform [0 1 2 3]))
+#+END_SRC
+
+#+RESULTS:
+: #'user/dynamics-dist
+
+#+BEGIN_SRC clojure
+dynamics-dist
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1/4 | 1 | 1/4 | 2 | 1/4 | 3 | 1/4 |
+
+
+#+BEGIN_SRC clojure
+(def dynamics-dist-floats (convert-vals-to-floats dynamics-dist))
+#+END_SRC
+
+#+RESULTS:
+: #'user/dynamics-dist-floats
+
+#+BEGIN_SRC clojure
+(def new-dynamics-dist-floats {0.1 0.25, 0.4 0.25, 0.6 0.4, 0.9 0.1})
+#+END_SRC
+
+#+RESULTS:
+: #'user/new-dynamics-dist-floats
+
+** define a sequencer using dynamics-piano
+#+BEGIN_SRC clojure
+(repeatedly 10 #(weighted-choose new-dynamics-dist-floats))
+#+END_SRC
+
+#+RESULTS:
+| 0.4 | 0.6 | 0.2 | 0.2 | 0.2 | 0.6 | 0.6 | 0.2 | 0.4 | 0.4 |
+
+
+#+BEGIN_SRC clojure
+(sampled-piano 60 (weighted-choose new-dynamics-dist-floats))
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtone.inst.973/sampled-piano 13456>
 
 
 
+#+BEGIN_SRC clojure
+(defn sequencer-500-dynamics [midis]
+  (map #(do (Thread/sleep 500)
+            (sampled-piano % (weighted-choose new-dynamics-dist-floats))
+            midis)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer-500-dynamics
+
+
+#+BEGIN_SRC clojure :tangle yes
+(defn sequencer-any-ms [midis ms]
+  (map #(do (Thread/sleep ms) (sampled-piano % (weighted-choose new-dynamics-dist-floats))) midis))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer-any-ms
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (vec (repeatedly 100 #(+ 36 (rand-int 36)))) 100)
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 13577> #<synth-node(live): overtone.inst.973/sampled-piano 13578> #<synth-node(live): overtone.inst.973/sampled-piano 13579> #<synth-node(live): overtone.inst.973/sampled-piano 13580> #<synth-node(live): overtone.inst.973/sampled-piano 13581> #<synth-node(live): overtone.inst.973/sampled-piano 13582> #<synth-node(live): overtone.inst.973/sampled-piano 13583> #<synth-node(live): overtone.inst.973/sampled-piano 13584> #<synth-node(live): overtone.inst.973/sampled-piano 13585> #<synth-node(live): overtone.inst.973/sampled-piano 13586> #<synth-node(live): overtone.inst.973/sampled-piano 13587> #<synth-node(live): overtone.inst.973/sampled-piano 13588> #<synth-node(live): overtone.inst.973/sampled-piano 13589> #<synth-node(live): overtone.inst.973/sampled-piano 13590> #<synth-node(live): overtone.inst.973/sampled-piano 13591> #<synth-node(live): overtone.inst.973/sampled-piano 13592> #<synth-node(live): overtone.inst.973/sampled-piano 13593> #<synth-node(live): overtone.inst.973/sampled-piano 13594> #<synth-node(live): overtone.inst.973/sampled-piano 13595> #<synth-node(live): overtone.inst.973/sampled-piano 13596> #<synth-node(live): overtone.inst.973/sampled-piano 13597> #<synth-node(live): overtone.inst.973/sampled-piano 13598> #<synth-node(live): overtone.inst.973/sampled-piano 13599> #<synth-node(live): overtone.inst.973/sampled-piano 13600> #<synth-node(live): overtone.inst.973/sampled-piano 13601> #<synth-node(live): overtone.inst.973/sampled-piano 13602> #<synth-node(live): overtone.inst.973/sampled-piano 13603> #<synth-node(live): overtone.inst.973/sampled-piano 13604> #<synth-node(live): overtone.inst.973/sampled-piano 13605> #<synth-node(live): overtone.inst.973/sampled-piano 13606> #<synth-node(live): overtone.inst.973/sampled-piano 13607> #<synth-node(live): overtone.inst.973/sampled-piano 13608> #<synth-node(live): overtone.inst.973/sampled-piano 13609> #<synth-node(live): overtone.inst.973/sampled-piano 13610> #<synth-node(live): overtone.inst.973/sampled-piano 13611> #<synth-node(live): overtone.inst.973/sampled-piano 13612> #<synth-node(live): overtone.inst.973/sampled-piano 13613> #<synth-node(live): overtone.inst.973/sampled-piano 13614> #<synth-node(live): overtone.inst.973/sampled-piano 13615> #<synth-node(live): overtone.inst.973/sampled-piano 13616> #<synth-node(live): overtone.inst.973/sampled-piano 13617> #<synth-node(live): overtone.inst.973/sampled-piano 13618> #<synth-node(live): overtone.inst.973/sampled-piano 13619> #<synth-node(live): overtone.inst.973/sampled-piano 13620> #<synth-node(live): overtone.inst.973/sampled-piano 13621> #<synth-node(live): overtone.inst.973/sampled-piano 13622> #<synth-node(live): overtone.inst.973/sampled-piano 13623> #<synth-node(live): overtone.inst.973/sampled-piano 13624> #<synth-node(live): overtone.inst.973/sampled-piano 13625> #<synth-node(live): overtone.inst.973/sampled-piano 13626> #<synth-node(live): overtone.inst.973/sampled-piano 13627> #<synth-node(live): overtone.inst.973/sampled-piano 13628> #<synth-node(live): overtone.inst.973/sampled-piano 13629> #<synth-node(live): overtone.inst.973/sampled-piano 13630> #<synth-node(live): overtone.inst.973/sampled-piano 13631> #<synth-node(live): overtone.inst.973/sampled-piano 13632> #<synth-node(live): overtone.inst.973/sampled-piano 13633> #<synth-node(live): overtone.inst.973/sampled-piano 13634> #<synth-node(live): overtone.inst.973/sampled-piano 13635> #<synth-node(live): overtone.inst.973/sampled-piano 13636> #<synth-node(live): overtone.inst.973/sampled-piano 13637> #<synth-node(live): overtone.inst.973/sampled-piano 13638> #<synth-node(live): overtone.inst.973/sampled-piano 13639> #<synth-node(live): overtone.inst.973/sampled-piano 13640> #<synth-node(live): overtone.inst.973/sampled-piano 13641> #<synth-node(live): overtone.inst.973/sampled-piano 13642> #<synth-node(live): overtone.inst.973/sampled-piano 13643> #<synth-node(live): overtone.inst.973/sampled-piano 13644> #<synth-node(live): overtone.inst.973/sampled-piano 13645> #<synth-node(live): overtone.inst.973/sampled-piano 13646> #<synth-node(live): overtone.inst.973/sampled-piano 13647> #<synth-node(live): overtone.inst.973/sampled-piano 13648> #<synth-node(live): overtone.inst.973/sampled-piano 13649> #<synth-node(live): overtone.inst.973/sampled-piano 13650> #<synth-node(live): overtone.inst.973/sampled-piano 13651> #<synth-node(live): overtone.inst.973/sampled-piano 13652> #<synth-node(live): overtone.inst.973/sampled-piano 13653> #<synth-node(live): overtone.inst.973/sampled-piano 13654> #<synth-node(live): overtone.inst.973/sampled-piano 13655> #<synth-node(live): overtone.inst.973/sampled-piano 13656> #<synth-node(live): overtone.inst.973/sampled-piano 13657> #<synth-node(live): overtone.inst.973/sampled-piano 13658> #<synth-node(live): overtone.inst.973/sampled-piano 13659> #<synth-node(live): overtone.inst.973/sampled-piano 13660> #<synth-node(live): overtone.inst.973/sampled-piano 13661> #<synth-node(live): overtone.inst.973/sampled-piano 13662> #<synth-node(live): overtone.inst.973/sampled-piano 13663> #<synth-node(live): overtone.inst.973/sampled-piano 13664> #<synth-node(live): overtone.inst.973/sampled-piano 13665> #<synth-node(live): overtone.inst.973/sampled-piano 13666> #<synth-node(live): overtone.inst.973/sampled-piano 13667> #<synth-node(live): overtone.inst.973/sampled-piano 13668> #<synth-node(live): overtone.inst.973/sampled-piano 13669> #<synth-node(live): overtone.inst.973/sampled-piano 13670> #<synth-node(live): overtone.inst.973/sampled-piano 13671> #<synth-node(live): overtone.inst.973/sampled-piano 13672> #<synth-node(live): overtone.inst.973/sampled-piano 13673> #<synth-node(live): overtone.inst.973/sampled-piano 13674> #<synth-node(live): overtone.inst.973/sampled-piano 13675> #<synth-node(loading): overtone.inst.973/sampled-piano 13676>)
+
+** struggle with reversing key values and inserting into a map
+#+BEGIN_SRC clojure
+(map reverse (partition 2 [0 1 2 3]))
+#+END_SRC
+
+#+RESULTS:
+| 1 | 0 |
+| 3 | 2 |
+
+#+BEGIN_SRC clojure
+(partition 2 (uniform [0 1 2 3]))
+#+END_SRC
+
+#+RESULTS:
+| (0 1/4) | (1 1/4) |
+| (2 1/4) | (3 1/4) |
+
+#+BEGIN_SRC clojure
+(map reverse (partition 2 (uniform [0 1 2 3])))
+#+END_SRC
+
+#+RESULTS:
+| (1 1/4) | (0 1/4) |
+| (3 1/4) | (2 1/4) |
+
+#+BEGIN_SRC clojure
+(type (map reverse (partition 2 (uniform [0 1 2 3]))))
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.LazySeq
+
+#+BEGIN_SRC clojure
+(type (vec (map reverse (partition 2 (uniform [0 1 2 3])))))
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.PersistentVector
+
+#+BEGIN_SRC clojure
+
+(into {} (vec (map reverse (partition 2 (uniform [0 1 2 3])))))
+#+END_SRC
+
+#+RESULTS:
+| 1 | 1/4 | 0 | 1/4 | 3 | 1/4 | 2 | 1/4 |
+
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(type (first (into {} (vec (map reverse (partition 2 (uniform [0 1 2 3])))))))
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.MapEntry
+
+#+BEGIN_SRC clojure
+(type (map reverse (partition 2 (flatten (vec (uniform [0 1 2]))))))
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.LazySeq
+
+#+BEGIN_SRC clojure
+
+(type (first (map reverse (partition 2 (flatten (vec (uniform [0 1 2])))))))
+
+#+END_SRC
+
+#+RESULTS:
+: clojure.lang.PersistentList
+
+#+BEGIN_SRC clojure
+(into {} (map reverse (partition 2 (uniform [0 1 2 3]))))
+#+END_SRC
+
+#+RESULTS:
+| 1 | 1/4 | 0 | 1/4 | 3 | 1/4 | 2 | 1/4 |
+
+
+
+#+RESULTS:
 
