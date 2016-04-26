@@ -2137,7 +2137,7 @@ the scenes and not lock up the repl?
 
 ** make sound, import sound, record sound
 *** play piano chords using doseq and sampled-piano
-  #+BEGIN_SRC clojure :session getting-started :tangle yes
+  #+BEGIN_SRC clojure :tangle yes
 (defn play-piano-chord [a-chord]
         (doseq [note a-chord] (sampled-piano note)))
 
@@ -2145,10 +2145,7 @@ the scenes and not lock up the repl?
  #+END_SRC
 
   #+RESULTS:
-  : #'user/play-piano-chord
-#+BEGIN_SRC clojure
-(play-piano-chord [60 64 67])
-#+END_SRC
+  : #'overtone.music.pitch/play-piano-chord
 
 #+RESULTS:
 : nil
@@ -3301,13 +3298,14 @@ Note, are or how are these functions that sleep blocking??
 #+END_SRC
 
 #+RESULTS:
-: #'user/chord-sequencer
+: #'overtone.music.pitch/chord-sequencer
 
 #+BEGIN_SRC clojure
 (chord-sequencer [[24 59 74] [25 60 75]])
 #+END_SRC
 
 #+RESULTS:
+
 
 ** chord-sequencer-fn--HOF that takes a millisecond amt and returns a play chord fn
 #+BEGIN_SRC clojure
@@ -4900,7 +4898,6 @@ samp
 #+RESULTS:
 : #'user/refined-samp
 
-
 ** remove nils from refined-samp
 #+BEGIN_SRC clojure
 (def refined-samp (remove nil? refined-samp))
@@ -5336,11 +5333,11 @@ samp
 |  0 |  1 |  2 |
 
 #+BEGIN_SRC clojure
-(sequencer-any-ms (take 1000 (flatten (shuffle refined-flat-tris))) 100)
+(sequencer-any-ms (take 100 (flatten (shuffle refined-flat-tris))) 100)
 #+END_SRC
 
 #+RESULTS:
-: '(#<synth-node(live): overtone.inst.973/sampled-piano 8223> #<synth-node(live): overtone.inst.973/sampled-piano 8224> #<synth-node(live): overtone.inst.973/sampled-piano 8225> #<synth-node(live): overtone.inst.973/sampled-piano 8226> #<synth-node(live): overtone.inst.973/sampled-piano 8227> #<synth-node(live): overtone.inst.973/sampled-piano 8228> #<synth-node(live): overtone.inst.973/sampled-piano 8229> #<synth-node(live): overtone.inst.973/sampled-piano 8230> #<synth-node(live): overtone.inst.973/sampled-piano 8231> #<synth-node(live): overtone.inst.973/sampled-piano 8232> #<synth-node(live): overtone.inst.973/sampled-piano 8233> #<synth-node(live): overtone.inst.973/sampled-piano 8234> #<synth-node(live): overtone.inst.973/sampled-piano 8235> #<synth-node(live): overtone.inst.973/sampled-piano 8236> #<synth-node(live): overtone.inst.973/sampled-piano 8237> #<synth-node(live): overtone.inst.973/sampled-piano 8238> #<synth-node(live): overtone.inst.973/sampled-piano 8239> #<synth-node(live): overtone.inst.973/sampled-piano 8240> #<synth-node(live): overtone.inst.973/sampled-piano 8241> #<synth-node(live): overtone.inst.973/sampled-piano 8242> #<synth-node(live): overtone.inst.973/sampled-piano 8243> #<synth-node(live): overtone.inst.973/sampled-piano 8244> #<synth-node(live): overtone.inst.973/sampled-piano 8245> #<synth-node(live): overtone.inst.973/sampled-piano 8246> #<synth-node(live): overtone.inst.973/sampled-piano 8247> #<synth-node(live): overtone.inst.973/sampled-piano 8248> #<synth-node(live): overtone.inst.973/sampled-piano 8249> #<synth-node(live): overtone.inst.973/sampled-piano 8250> #<synth-node(live): overtone.inst.973/sampled-piano 8251> #<synth-node(live): overtone.inst.973/sampled-piano 8252> #<synth-node(live): overtone.inst.973/sampled-piano 8253> #<synth-node(live): overtone.inst.973/sampled-piano 8254> #<synth-node(live): overtone.inst.973/sampled-piano 8255> #<synth-node(live): overtone.inst.973/sampled-piano 8256> #<synth-node(live): overtone.inst.973/sampled-piano 8257> #<synth-node(live): overtone.inst.973/sampled-piano 8258> #<synth-node(live): overtone.inst.973/sampled-piano 8259> #<synth-node(live): overtone.inst.973/sampled-piano 8260> #<synth-node(live): overtone.inst.973/sampled-piano 8261> #<synth-node(live): overtone.inst.973/sampled-piano 8262> #<synth-node(live): overtone.inst.973/sampled-piano 8263> #<synth-node(live): overtone.inst.973/sampled-piano 8264> #<synth-node(live): overtone.inst.973/sampled-piano 8265> #<synth-node(live): overtone.inst.973/sampled-piano 8266> #<synth-node(live): overtone.inst.973/sampled-piano 8267> #<synth-node(live): overtone.inst.973/sampled-piano 8268> #<synth-node(live): overtone.inst.973/sampled-piano 8269> #<synth-node(live): overtone.inst.973/sampled-piano 8270> #<synth-node(live): overtone.inst.973/sampled-piano 8271> #<synth-node(live): overtone.inst.973/sampled-piano 8272> #<synth-node(live): overtone.inst.973/sampled-piano 8273> #<synth-node(live): overtone.inst.973/sampled-piano 8274> #<synth-node(live): overtone.inst.973/sampled-piano 8275> #<synth-node(live): overtone.inst.973/sampled-piano 8276> #<synth-node(live): overtone.inst.973/sampled-piano 8277> #<synth-node(live): overtone.inst.973/sampled-piano 8278> #<synth-node(live): overtone.inst.973/sampled-piano 8279> #<synth-node(live): overtone.inst.973/sampled-piano 8280> #<synth-node(live): overtone.inst.973/sampled-piano 8281> #<synth-node(live): overtone.inst.973/sampled-piano 8282> #<synth-node(live): overtone.inst.973/sampled-piano 8283> #<synth-node(live): overtone.inst.973/sampled-piano 8284> #<synth-node(live): overtone.inst.973/sampled-piano 8285> #<synth-node(live): overtone.inst.973/sampled-piano 8286> #<synth-node(live): overtone.inst.973/sampled-piano 8287> #<synth-node(live): overtone.inst.973/sampled-piano 8288> #<synth-node(live): overtone.inst.973/sampled-piano 8289> #<synth-node(live): overtone.inst.973/sampled-piano 8290> #<synth-node(live): overtone.inst.973/sampled-piano 8291> #<synth-node(live): overtone.inst.973/sampled-piano 8292> #<synth-node(live): overtone.inst.973/sampled-piano 8293> #<synth-node(live): overtone.inst.973/sampled-piano 8294> #<synth-node(live): overtone.inst.973/sampled-piano 8295> #<synth-node(live): overtone.inst.973/sampled-piano 8296> #<synth-node(live): overtone.inst.973/sampled-piano 8297> #<synth-node(live): overtone.inst.973/sampled-piano 8298> #<synth-node(live): overtone.inst.973/sampled-piano 8299> #<synth-node(live): overtone.inst.973/sampled-piano 8300> #<synth-node(live): overtone.inst.973/sampled-piano 8301> #<synth-node(live): overtone.inst.973/sampled-piano 8302> #<synth-node(live): overtone.inst.973/sampled-piano 8303> #<synth-node(live): overtone.inst.973/sampled-piano 8304> #<synth-node(live): overtone.inst.973/sampled-piano 8305> #<synth-node(live): overtone.inst.973/sampled-piano 8306> #<synth-node(live): overtone.inst.973/sampled-piano 8307> #<synth-node(live): overtone.inst.973/sampled-piano 8308> #<synth-node(live): overtone.inst.973/sampled-piano 8309> #<synth-node(live): overtone.inst.973/sampled-piano 8310> #<synth-node(live): overtone.inst.973/sampled-piano 8311> #<synth-node(live): overtone.inst.973/sampled-piano 8312> #<synth-node(live): overtone.inst.973/sampled-piano 8313> #<synth-node(live): overtone.inst.973/sampled-piano 8314> #<synth-node(live): overtone.inst.973/sampled-piano 8315> #<synth-node(live): overtone.inst.973/sampled-piano 8316> #<synth-node(live): overtone.inst.973/sampled-piano 8317> #<synth-node(live): overtone.inst.973/sampled-piano 8318> #<synth-node(live): overtone.inst.973/sampled-piano 8319> #<synth-node(live): overtone.inst.973/sampled-piano 8320> #<synth-node(live): overtone.inst.973/sampled-piano 8321> #<synth-node(loading): overtone.inst.973/sampled-piano 8322>)
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 14287> #<synth-node(live): overtone.inst.973/sampled-piano 14288> #<synth-node(live): overtone.inst.973/sampled-piano 14289> #<synth-node(live): overtone.inst.973/sampled-piano 14290> #<synth-node(live): overtone.inst.973/sampled-piano 14291> #<synth-node(live): overtone.inst.973/sampled-piano 14292> #<synth-node(live): overtone.inst.973/sampled-piano 14293> #<synth-node(live): overtone.inst.973/sampled-piano 14294> #<synth-node(live): overtone.inst.973/sampled-piano 14295> #<synth-node(live): overtone.inst.973/sampled-piano 14296> #<synth-node(live): overtone.inst.973/sampled-piano 14297> #<synth-node(live): overtone.inst.973/sampled-piano 14298> #<synth-node(live): overtone.inst.973/sampled-piano 14299> #<synth-node(live): overtone.inst.973/sampled-piano 14300> #<synth-node(live): overtone.inst.973/sampled-piano 14301> #<synth-node(live): overtone.inst.973/sampled-piano 14302> #<synth-node(live): overtone.inst.973/sampled-piano 14303> #<synth-node(live): overtone.inst.973/sampled-piano 14304> #<synth-node(live): overtone.inst.973/sampled-piano 14305> #<synth-node(live): overtone.inst.973/sampled-piano 14306> #<synth-node(live): overtone.inst.973/sampled-piano 14307> #<synth-node(live): overtone.inst.973/sampled-piano 14308> #<synth-node(live): overtone.inst.973/sampled-piano 14309> #<synth-node(live): overtone.inst.973/sampled-piano 14310> #<synth-node(live): overtone.inst.973/sampled-piano 14311> #<synth-node(live): overtone.inst.973/sampled-piano 14312> #<synth-node(live): overtone.inst.973/sampled-piano 14313> #<synth-node(live): overtone.inst.973/sampled-piano 14314> #<synth-node(live): overtone.inst.973/sampled-piano 14315> #<synth-node(live): overtone.inst.973/sampled-piano 14316> #<synth-node(live): overtone.inst.973/sampled-piano 14317> #<synth-node(live): overtone.inst.973/sampled-piano 14318> #<synth-node(live): overtone.inst.973/sampled-piano 14319> #<synth-node(live): overtone.inst.973/sampled-piano 14320> #<synth-node(live): overtone.inst.973/sampled-piano 14321> #<synth-node(live): overtone.inst.973/sampled-piano 14322> #<synth-node(live): overtone.inst.973/sampled-piano 14323> #<synth-node(live): overtone.inst.973/sampled-piano 14324> #<synth-node(live): overtone.inst.973/sampled-piano 14325> #<synth-node(live): overtone.inst.973/sampled-piano 14326> #<synth-node(live): overtone.inst.973/sampled-piano 14327> #<synth-node(live): overtone.inst.973/sampled-piano 14328> #<synth-node(live): overtone.inst.973/sampled-piano 14329> #<synth-node(live): overtone.inst.973/sampled-piano 14330> #<synth-node(live): overtone.inst.973/sampled-piano 14331> #<synth-node(live): overtone.inst.973/sampled-piano 14332> #<synth-node(live): overtone.inst.973/sampled-piano 14333> #<synth-node(live): overtone.inst.973/sampled-piano 14334> #<synth-node(live): overtone.inst.973/sampled-piano 14335> #<synth-node(live): overtone.inst.973/sampled-piano 14336> #<synth-node(live): overtone.inst.973/sampled-piano 14337> #<synth-node(live): overtone.inst.973/sampled-piano 14338> #<synth-node(live): overtone.inst.973/sampled-piano 14339> #<synth-node(live): overtone.inst.973/sampled-piano 14340> #<synth-node(live): overtone.inst.973/sampled-piano 14341> #<synth-node(live): overtone.inst.973/sampled-piano 14342> #<synth-node(live): overtone.inst.973/sampled-piano 14343> #<synth-node(live): overtone.inst.973/sampled-piano 14344> #<synth-node(live): overtone.inst.973/sampled-piano 14345> #<synth-node(live): overtone.inst.973/sampled-piano 14346> #<synth-node(live): overtone.inst.973/sampled-piano 14347> #<synth-node(live): overtone.inst.973/sampled-piano 14348> #<synth-node(live): overtone.inst.973/sampled-piano 14349> #<synth-node(live): overtone.inst.973/sampled-piano 14350> #<synth-node(live): overtone.inst.973/sampled-piano 14351> #<synth-node(live): overtone.inst.973/sampled-piano 14352> #<synth-node(live): overtone.inst.973/sampled-piano 14353> #<synth-node(live): overtone.inst.973/sampled-piano 14354> #<synth-node(live): overtone.inst.973/sampled-piano 14355> #<synth-node(live): overtone.inst.973/sampled-piano 14356> #<synth-node(live): overtone.inst.973/sampled-piano 14357> #<synth-node(live): overtone.inst.973/sampled-piano 14358> #<synth-node(live): overtone.inst.973/sampled-piano 14359> #<synth-node(live): overtone.inst.973/sampled-piano 14360> #<synth-node(live): overtone.inst.973/sampled-piano 14361> #<synth-node(live): overtone.inst.973/sampled-piano 14362> #<synth-node(live): overtone.inst.973/sampled-piano 14363> #<synth-node(live): overtone.inst.973/sampled-piano 14364> #<synth-node(live): overtone.inst.973/sampled-piano 14365> #<synth-node(live): overtone.inst.973/sampled-piano 14366> #<synth-node(live): overtone.inst.973/sampled-piano 14367> #<synth-node(live): overtone.inst.973/sampled-piano 14368> #<synth-node(live): overtone.inst.973/sampled-piano 14369> #<synth-node(live): overtone.inst.973/sampled-piano 14370> #<synth-node(live): overtone.inst.973/sampled-piano 14371> #<synth-node(live): overtone.inst.973/sampled-piano 14372> #<synth-node(live): overtone.inst.973/sampled-piano 14373> #<synth-node(live): overtone.inst.973/sampled-piano 14374> #<synth-node(live): overtone.inst.973/sampled-piano 14375> #<synth-node(live): overtone.inst.973/sampled-piano 14376> #<synth-node(live): overtone.inst.973/sampled-piano 14377> #<synth-node(live): overtone.inst.973/sampled-piano 14378> #<synth-node(live): overtone.inst.973/sampled-piano 14379> #<synth-node(live): overtone.inst.973/sampled-piano 14380> #<synth-node(live): overtone.inst.973/sampled-piano 14381> #<synth-node(live): overtone.inst.973/sampled-piano 14382> #<synth-node(live): overtone.inst.973/sampled-piano 14383> #<synth-node(live): overtone.inst.973/sampled-piano 14384> #<synth-node(live): overtone.inst.973/sampled-piano 14385> #<synth-node(loading): overtone.inst.973/sampled-piano 14386>)
 
 #+BEGIN_SRC clojure
 
@@ -5378,7 +5375,7 @@ samp
 #+END_SRC
 
 #+RESULTS:
-: '(#<synth-node(live): overtone.inst.973/sampled-piano 13457> #<synth-node(live): overtone.inst.973/sampled-piano 13458> #<synth-node(live): overtone.inst.973/sampled-piano 13459> #<synth-node(live): overtone.inst.973/sampled-piano 13460> #<synth-node(live): overtone.inst.973/sampled-piano 13461> #<synth-node(live): overtone.inst.973/sampled-piano 13462> #<synth-node(live): overtone.inst.973/sampled-piano 13463> #<synth-node(live): overtone.inst.973/sampled-piano 13464> #<synth-node(live): overtone.inst.973/sampled-piano 13465> #<synth-node(loading): overtone.inst.973/sampled-piano 13466>)
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 13877> #<synth-node(live): overtone.inst.973/sampled-piano 13878> #<synth-node(live): overtone.inst.973/sampled-piano 13879> #<synth-node(live): overtone.inst.973/sampled-piano 13880> #<synth-node(live): overtone.inst.973/sampled-piano 13881> #<synth-node(live): overtone.inst.973/sampled-piano 13882> #<synth-node(live): overtone.inst.973/sampled-piano 13883> #<synth-node(live): overtone.inst.973/sampled-piano 13884> #<synth-node(live): overtone.inst.973/sampled-piano 13885> #<synth-node(loading): overtone.inst.973/sampled-piano 13886>)
 
 ** give weighted random values to sampled-piano "level"
 #+BEGIN_SRC clojure :results output
@@ -5462,88 +5459,6 @@ samp
 #+RESULTS:
 : 1
 
-** define dynamic ranges and weightings
-
-#+BEGIN_SRC clojure
-(defn convert-vals-to-floats [m] (into {} (for [[k v] m] [k (float v)])))
-#+END_SRC
-
-#+RESULTS:
-: #'user/convert-vals-to-floats
-
-#+BEGIN_SRC clojure
-(def dynamics-dist (uniform [0 1 2 3]))
-#+END_SRC
-
-#+RESULTS:
-: #'user/dynamics-dist
-
-#+BEGIN_SRC clojure
-dynamics-dist
-#+END_SRC
-
-#+RESULTS:
-| 0 | 1/4 | 1 | 1/4 | 2 | 1/4 | 3 | 1/4 |
-
-
-#+BEGIN_SRC clojure
-(def dynamics-dist-floats (convert-vals-to-floats dynamics-dist))
-#+END_SRC
-
-#+RESULTS:
-: #'user/dynamics-dist-floats
-
-#+BEGIN_SRC clojure
-(def new-dynamics-dist-floats {0.1 0.25, 0.4 0.25, 0.6 0.4, 0.9 0.1})
-#+END_SRC
-
-#+RESULTS:
-: #'user/new-dynamics-dist-floats
-
-** define a sequencer using dynamics-piano
-#+BEGIN_SRC clojure
-(repeatedly 10 #(weighted-choose new-dynamics-dist-floats))
-#+END_SRC
-
-#+RESULTS:
-| 0.4 | 0.6 | 0.2 | 0.2 | 0.2 | 0.6 | 0.6 | 0.2 | 0.4 | 0.4 |
-
-
-#+BEGIN_SRC clojure
-(sampled-piano 60 (weighted-choose new-dynamics-dist-floats))
-#+END_SRC
-
-#+RESULTS:
-: #<synth-node[loading]: overtone.inst.973/sampled-piano 13456>
-
-
-
-#+BEGIN_SRC clojure
-(defn sequencer-500-dynamics [midis]
-  (map #(do (Thread/sleep 500)
-            (sampled-piano % (weighted-choose new-dynamics-dist-floats))
-            midis)))
-#+END_SRC
-
-#+RESULTS:
-: #'user/sequencer-500-dynamics
-
-
-#+BEGIN_SRC clojure :tangle yes
-(defn sequencer-any-ms [midis ms]
-  (map #(do (Thread/sleep ms) (sampled-piano % (weighted-choose new-dynamics-dist-floats))) midis))
-#+END_SRC
-
-#+RESULTS:
-: #'user/sequencer-any-ms
-
-#+BEGIN_SRC clojure
-(sequencer-any-ms (vec (repeatedly 100 #(+ 36 (rand-int 36)))) 100)
-#+END_SRC
-
-#+RESULTS:
-: '(#<synth-node(live): overtone.inst.973/sampled-piano 13577> #<synth-node(live): overtone.inst.973/sampled-piano 13578> #<synth-node(live): overtone.inst.973/sampled-piano 13579> #<synth-node(live): overtone.inst.973/sampled-piano 13580> #<synth-node(live): overtone.inst.973/sampled-piano 13581> #<synth-node(live): overtone.inst.973/sampled-piano 13582> #<synth-node(live): overtone.inst.973/sampled-piano 13583> #<synth-node(live): overtone.inst.973/sampled-piano 13584> #<synth-node(live): overtone.inst.973/sampled-piano 13585> #<synth-node(live): overtone.inst.973/sampled-piano 13586> #<synth-node(live): overtone.inst.973/sampled-piano 13587> #<synth-node(live): overtone.inst.973/sampled-piano 13588> #<synth-node(live): overtone.inst.973/sampled-piano 13589> #<synth-node(live): overtone.inst.973/sampled-piano 13590> #<synth-node(live): overtone.inst.973/sampled-piano 13591> #<synth-node(live): overtone.inst.973/sampled-piano 13592> #<synth-node(live): overtone.inst.973/sampled-piano 13593> #<synth-node(live): overtone.inst.973/sampled-piano 13594> #<synth-node(live): overtone.inst.973/sampled-piano 13595> #<synth-node(live): overtone.inst.973/sampled-piano 13596> #<synth-node(live): overtone.inst.973/sampled-piano 13597> #<synth-node(live): overtone.inst.973/sampled-piano 13598> #<synth-node(live): overtone.inst.973/sampled-piano 13599> #<synth-node(live): overtone.inst.973/sampled-piano 13600> #<synth-node(live): overtone.inst.973/sampled-piano 13601> #<synth-node(live): overtone.inst.973/sampled-piano 13602> #<synth-node(live): overtone.inst.973/sampled-piano 13603> #<synth-node(live): overtone.inst.973/sampled-piano 13604> #<synth-node(live): overtone.inst.973/sampled-piano 13605> #<synth-node(live): overtone.inst.973/sampled-piano 13606> #<synth-node(live): overtone.inst.973/sampled-piano 13607> #<synth-node(live): overtone.inst.973/sampled-piano 13608> #<synth-node(live): overtone.inst.973/sampled-piano 13609> #<synth-node(live): overtone.inst.973/sampled-piano 13610> #<synth-node(live): overtone.inst.973/sampled-piano 13611> #<synth-node(live): overtone.inst.973/sampled-piano 13612> #<synth-node(live): overtone.inst.973/sampled-piano 13613> #<synth-node(live): overtone.inst.973/sampled-piano 13614> #<synth-node(live): overtone.inst.973/sampled-piano 13615> #<synth-node(live): overtone.inst.973/sampled-piano 13616> #<synth-node(live): overtone.inst.973/sampled-piano 13617> #<synth-node(live): overtone.inst.973/sampled-piano 13618> #<synth-node(live): overtone.inst.973/sampled-piano 13619> #<synth-node(live): overtone.inst.973/sampled-piano 13620> #<synth-node(live): overtone.inst.973/sampled-piano 13621> #<synth-node(live): overtone.inst.973/sampled-piano 13622> #<synth-node(live): overtone.inst.973/sampled-piano 13623> #<synth-node(live): overtone.inst.973/sampled-piano 13624> #<synth-node(live): overtone.inst.973/sampled-piano 13625> #<synth-node(live): overtone.inst.973/sampled-piano 13626> #<synth-node(live): overtone.inst.973/sampled-piano 13627> #<synth-node(live): overtone.inst.973/sampled-piano 13628> #<synth-node(live): overtone.inst.973/sampled-piano 13629> #<synth-node(live): overtone.inst.973/sampled-piano 13630> #<synth-node(live): overtone.inst.973/sampled-piano 13631> #<synth-node(live): overtone.inst.973/sampled-piano 13632> #<synth-node(live): overtone.inst.973/sampled-piano 13633> #<synth-node(live): overtone.inst.973/sampled-piano 13634> #<synth-node(live): overtone.inst.973/sampled-piano 13635> #<synth-node(live): overtone.inst.973/sampled-piano 13636> #<synth-node(live): overtone.inst.973/sampled-piano 13637> #<synth-node(live): overtone.inst.973/sampled-piano 13638> #<synth-node(live): overtone.inst.973/sampled-piano 13639> #<synth-node(live): overtone.inst.973/sampled-piano 13640> #<synth-node(live): overtone.inst.973/sampled-piano 13641> #<synth-node(live): overtone.inst.973/sampled-piano 13642> #<synth-node(live): overtone.inst.973/sampled-piano 13643> #<synth-node(live): overtone.inst.973/sampled-piano 13644> #<synth-node(live): overtone.inst.973/sampled-piano 13645> #<synth-node(live): overtone.inst.973/sampled-piano 13646> #<synth-node(live): overtone.inst.973/sampled-piano 13647> #<synth-node(live): overtone.inst.973/sampled-piano 13648> #<synth-node(live): overtone.inst.973/sampled-piano 13649> #<synth-node(live): overtone.inst.973/sampled-piano 13650> #<synth-node(live): overtone.inst.973/sampled-piano 13651> #<synth-node(live): overtone.inst.973/sampled-piano 13652> #<synth-node(live): overtone.inst.973/sampled-piano 13653> #<synth-node(live): overtone.inst.973/sampled-piano 13654> #<synth-node(live): overtone.inst.973/sampled-piano 13655> #<synth-node(live): overtone.inst.973/sampled-piano 13656> #<synth-node(live): overtone.inst.973/sampled-piano 13657> #<synth-node(live): overtone.inst.973/sampled-piano 13658> #<synth-node(live): overtone.inst.973/sampled-piano 13659> #<synth-node(live): overtone.inst.973/sampled-piano 13660> #<synth-node(live): overtone.inst.973/sampled-piano 13661> #<synth-node(live): overtone.inst.973/sampled-piano 13662> #<synth-node(live): overtone.inst.973/sampled-piano 13663> #<synth-node(live): overtone.inst.973/sampled-piano 13664> #<synth-node(live): overtone.inst.973/sampled-piano 13665> #<synth-node(live): overtone.inst.973/sampled-piano 13666> #<synth-node(live): overtone.inst.973/sampled-piano 13667> #<synth-node(live): overtone.inst.973/sampled-piano 13668> #<synth-node(live): overtone.inst.973/sampled-piano 13669> #<synth-node(live): overtone.inst.973/sampled-piano 13670> #<synth-node(live): overtone.inst.973/sampled-piano 13671> #<synth-node(live): overtone.inst.973/sampled-piano 13672> #<synth-node(live): overtone.inst.973/sampled-piano 13673> #<synth-node(live): overtone.inst.973/sampled-piano 13674> #<synth-node(live): overtone.inst.973/sampled-piano 13675> #<synth-node(loading): overtone.inst.973/sampled-piano 13676>)
-
 ** struggle with reversing key values and inserting into a map
 #+BEGIN_SRC clojure
 (map reverse (partition 2 [0 1 2 3]))
@@ -5624,6 +5539,370 @@ dynamics-dist
 | 1 | 1/4 | 0 | 1/4 | 3 | 1/4 | 2 | 1/4 |
 
 
+
+#+RESULTS:
+
+** define dynamic ranges and weightings for sampled-piano sequencer
+
+#+BEGIN_SRC clojure
+(defn convert-vals-to-floats [m] (into {} (for [[k v] m] [k (float v)])))
+#+END_SRC
+
+#+RESULTS:
+: #'user/convert-vals-to-floats
+
+#+BEGIN_SRC clojure
+(def dynamics-dist (uniform [0 1 2 3]))
+#+END_SRC
+
+#+RESULTS:
+: #'user/dynamics-dist
+
+#+BEGIN_SRC clojure
+dynamics-dist
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1/4 | 1 | 1/4 | 2 | 1/4 | 3 | 1/4 |
+
+
+#+BEGIN_SRC clojure
+(def dynamics-dist-floats (convert-vals-to-floats dynamics-dist))
+#+END_SRC
+
+#+RESULTS:
+: #'user/dynamics-dist-floats
+
+#+BEGIN_SRC clojure
+(def new-dynamics-dist-floats {0.1 0.25, 0.4 0.25, 0.6 0.4, 0.9 0.1})
+#+END_SRC
+
+#+RESULTS:
+: #'user/new-dynamics-dist-floats
+
+
+** define a sequencer using dynamics-piano
+#+BEGIN_SRC clojure
+(repeatedly 10 #(weighted-choose new-dynamics-dist-floats))
+#+END_SRC
+
+#+RESULTS:
+| 0.4 | 0.6 | 0.2 | 0.2 | 0.2 | 0.6 | 0.6 | 0.2 | 0.4 | 0.4 |
+
+
+#+BEGIN_SRC clojure
+(sampled-piano 60 (weighted-choose new-dynamics-dist-floats))
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: overtone.inst.973/sampled-piano 13456>
+
+
+
+#+BEGIN_SRC clojure
+(defn sequencer-500-dynamics [midis]
+  (map #(do (Thread/sleep 500)
+            (sampled-piano % (weighted-choose new-dynamics-dist-floats))
+            midis)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer-500-dynamics
+
+
+#+BEGIN_SRC clojure :tangle yes
+(defn sequencer-any-ms [midis ms]
+  (map #(do (Thread/sleep ms) (sampled-piano % (weighted-choose new-dynamics-dist-floats))) midis))
+#+END_SRC
+
+#+RESULTS:
+: #'user/sequencer-any-ms
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (vec (repeatedly 100 #(+ 36 (rand-int 36)))) 100)
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 13777> #<synth-node(live): overtone.inst.973/sampled-piano 13778> #<synth-node(live): overtone.inst.973/sampled-piano 13779> #<synth-node(live): overtone.inst.973/sampled-piano 13780> #<synth-node(live): overtone.inst.973/sampled-piano 13781> #<synth-node(live): overtone.inst.973/sampled-piano 13782> #<synth-node(live): overtone.inst.973/sampled-piano 13783> #<synth-node(live): overtone.inst.973/sampled-piano 13784> #<synth-node(live): overtone.inst.973/sampled-piano 13785> #<synth-node(live): overtone.inst.973/sampled-piano 13786> #<synth-node(live): overtone.inst.973/sampled-piano 13787> #<synth-node(live): overtone.inst.973/sampled-piano 13788> #<synth-node(live): overtone.inst.973/sampled-piano 13789> #<synth-node(live): overtone.inst.973/sampled-piano 13790> #<synth-node(live): overtone.inst.973/sampled-piano 13791> #<synth-node(live): overtone.inst.973/sampled-piano 13792> #<synth-node(live): overtone.inst.973/sampled-piano 13793> #<synth-node(live): overtone.inst.973/sampled-piano 13794> #<synth-node(live): overtone.inst.973/sampled-piano 13795> #<synth-node(live): overtone.inst.973/sampled-piano 13796> #<synth-node(live): overtone.inst.973/sampled-piano 13797> #<synth-node(live): overtone.inst.973/sampled-piano 13798> #<synth-node(live): overtone.inst.973/sampled-piano 13799> #<synth-node(live): overtone.inst.973/sampled-piano 13800> #<synth-node(live): overtone.inst.973/sampled-piano 13801> #<synth-node(live): overtone.inst.973/sampled-piano 13802> #<synth-node(live): overtone.inst.973/sampled-piano 13803> #<synth-node(live): overtone.inst.973/sampled-piano 13804> #<synth-node(live): overtone.inst.973/sampled-piano 13805> #<synth-node(live): overtone.inst.973/sampled-piano 13806> #<synth-node(live): overtone.inst.973/sampled-piano 13807> #<synth-node(live): overtone.inst.973/sampled-piano 13808> #<synth-node(live): overtone.inst.973/sampled-piano 13809> #<synth-node(live): overtone.inst.973/sampled-piano 13810> #<synth-node(live): overtone.inst.973/sampled-piano 13811> #<synth-node(live): overtone.inst.973/sampled-piano 13812> #<synth-node(live): overtone.inst.973/sampled-piano 13813> #<synth-node(live): overtone.inst.973/sampled-piano 13814> #<synth-node(live): overtone.inst.973/sampled-piano 13815> #<synth-node(live): overtone.inst.973/sampled-piano 13816> #<synth-node(live): overtone.inst.973/sampled-piano 13817> #<synth-node(live): overtone.inst.973/sampled-piano 13818> #<synth-node(live): overtone.inst.973/sampled-piano 13819> #<synth-node(live): overtone.inst.973/sampled-piano 13820> #<synth-node(live): overtone.inst.973/sampled-piano 13821> #<synth-node(live): overtone.inst.973/sampled-piano 13822> #<synth-node(live): overtone.inst.973/sampled-piano 13823> #<synth-node(live): overtone.inst.973/sampled-piano 13824> #<synth-node(live): overtone.inst.973/sampled-piano 13825> #<synth-node(live): overtone.inst.973/sampled-piano 13826> #<synth-node(live): overtone.inst.973/sampled-piano 13827> #<synth-node(live): overtone.inst.973/sampled-piano 13828> #<synth-node(live): overtone.inst.973/sampled-piano 13829> #<synth-node(live): overtone.inst.973/sampled-piano 13830> #<synth-node(live): overtone.inst.973/sampled-piano 13831> #<synth-node(live): overtone.inst.973/sampled-piano 13832> #<synth-node(live): overtone.inst.973/sampled-piano 13833> #<synth-node(live): overtone.inst.973/sampled-piano 13834> #<synth-node(live): overtone.inst.973/sampled-piano 13835> #<synth-node(live): overtone.inst.973/sampled-piano 13836> #<synth-node(live): overtone.inst.973/sampled-piano 13837> #<synth-node(live): overtone.inst.973/sampled-piano 13838> #<synth-node(live): overtone.inst.973/sampled-piano 13839> #<synth-node(live): overtone.inst.973/sampled-piano 13840> #<synth-node(live): overtone.inst.973/sampled-piano 13841> #<synth-node(live): overtone.inst.973/sampled-piano 13842> #<synth-node(live): overtone.inst.973/sampled-piano 13843> #<synth-node(live): overtone.inst.973/sampled-piano 13844> #<synth-node(live): overtone.inst.973/sampled-piano 13845> #<synth-node(live): overtone.inst.973/sampled-piano 13846> #<synth-node(live): overtone.inst.973/sampled-piano 13847> #<synth-node(live): overtone.inst.973/sampled-piano 13848> #<synth-node(live): overtone.inst.973/sampled-piano 13849> #<synth-node(live): overtone.inst.973/sampled-piano 13850> #<synth-node(live): overtone.inst.973/sampled-piano 13851> #<synth-node(live): overtone.inst.973/sampled-piano 13852> #<synth-node(live): overtone.inst.973/sampled-piano 13853> #<synth-node(live): overtone.inst.973/sampled-piano 13854> #<synth-node(live): overtone.inst.973/sampled-piano 13855> #<synth-node(live): overtone.inst.973/sampled-piano 13856> #<synth-node(live): overtone.inst.973/sampled-piano 13857> #<synth-node(live): overtone.inst.973/sampled-piano 13858> #<synth-node(live): overtone.inst.973/sampled-piano 13859> #<synth-node(live): overtone.inst.973/sampled-piano 13860> #<synth-node(live): overtone.inst.973/sampled-piano 13861> #<synth-node(live): overtone.inst.973/sampled-piano 13862> #<synth-node(live): overtone.inst.973/sampled-piano 13863> #<synth-node(live): overtone.inst.973/sampled-piano 13864> #<synth-node(live): overtone.inst.973/sampled-piano 13865> #<synth-node(live): overtone.inst.973/sampled-piano 13866> #<synth-node(live): overtone.inst.973/sampled-piano 13867> #<synth-node(live): overtone.inst.973/sampled-piano 13868> #<synth-node(live): overtone.inst.973/sampled-piano 13869> #<synth-node(live): overtone.inst.973/sampled-piano 13870> #<synth-node(live): overtone.inst.973/sampled-piano 13871> #<synth-node(live): overtone.inst.973/sampled-piano 13872> #<synth-node(live): overtone.inst.973/sampled-piano 13873> #<synth-node(live): overtone.inst.973/sampled-piano 13874> #<synth-node(live): overtone.inst.973/sampled-piano 13875> #<synth-node(loading): overtone.inst.973/sampled-piano 13876>)
+
+#+BEGIN_SRC clojure
+(rand-seq-debug (vec refined-flat-tris) 10)
+#+END_SRC
+
+#+RESULTS:
+| 84 | 51 |  42 |
+| 84 | 51 |  54 |
+| 84 | 51 |  66 |
+| 84 | 51 |  78 |
+| 84 | 51 |  90 |
+| 84 | 51 | 102 |
+| 84 | 63 |  42 |
+| 84 | 63 |  54 |
+| 84 | 63 |  66 |
+| 84 | 63 |  78 |
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (take 100 (flatten (rand-seq-debug (vec refined-flat-tris) 100))) 100)
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 14487> #<synth-node(live): overtone.inst.973/sampled-piano 14488> #<synth-node(live): overtone.inst.973/sampled-piano 14489> #<synth-node(live): overtone.inst.973/sampled-piano 14490> #<synth-node(live): overtone.inst.973/sampled-piano 14491> #<synth-node(live): overtone.inst.973/sampled-piano 14492> #<synth-node(live): overtone.inst.973/sampled-piano 14493> #<synth-node(live): overtone.inst.973/sampled-piano 14494> #<synth-node(live): overtone.inst.973/sampled-piano 14495> #<synth-node(live): overtone.inst.973/sampled-piano 14496> #<synth-node(live): overtone.inst.973/sampled-piano 14497> #<synth-node(live): overtone.inst.973/sampled-piano 14498> #<synth-node(live): overtone.inst.973/sampled-piano 14499> #<synth-node(live): overtone.inst.973/sampled-piano 14500> #<synth-node(live): overtone.inst.973/sampled-piano 14501> #<synth-node(live): overtone.inst.973/sampled-piano 14502> #<synth-node(live): overtone.inst.973/sampled-piano 14503> #<synth-node(live): overtone.inst.973/sampled-piano 14504> #<synth-node(live): overtone.inst.973/sampled-piano 14505> #<synth-node(live): overtone.inst.973/sampled-piano 14506> #<synth-node(live): overtone.inst.973/sampled-piano 14507> #<synth-node(live): overtone.inst.973/sampled-piano 14508> #<synth-node(live): overtone.inst.973/sampled-piano 14509> #<synth-node(live): overtone.inst.973/sampled-piano 14510> #<synth-node(live): overtone.inst.973/sampled-piano 14511> #<synth-node(live): overtone.inst.973/sampled-piano 14512> #<synth-node(live): overtone.inst.973/sampled-piano 14513> #<synth-node(live): overtone.inst.973/sampled-piano 14514> #<synth-node(live): overtone.inst.973/sampled-piano 14515> #<synth-node(live): overtone.inst.973/sampled-piano 14516> #<synth-node(live): overtone.inst.973/sampled-piano 14517> #<synth-node(live): overtone.inst.973/sampled-piano 14518> #<synth-node(live): overtone.inst.973/sampled-piano 14519> #<synth-node(live): overtone.inst.973/sampled-piano 14520> #<synth-node(live): overtone.inst.973/sampled-piano 14521> #<synth-node(live): overtone.inst.973/sampled-piano 14522> #<synth-node(live): overtone.inst.973/sampled-piano 14523> #<synth-node(live): overtone.inst.973/sampled-piano 14524> #<synth-node(live): overtone.inst.973/sampled-piano 14525> #<synth-node(live): overtone.inst.973/sampled-piano 14526> #<synth-node(live): overtone.inst.973/sampled-piano 14527> #<synth-node(live): overtone.inst.973/sampled-piano 14528> #<synth-node(live): overtone.inst.973/sampled-piano 14529> #<synth-node(live): overtone.inst.973/sampled-piano 14530> #<synth-node(live): overtone.inst.973/sampled-piano 14531> #<synth-node(live): overtone.inst.973/sampled-piano 14532> #<synth-node(live): overtone.inst.973/sampled-piano 14533> #<synth-node(live): overtone.inst.973/sampled-piano 14534> #<synth-node(live): overtone.inst.973/sampled-piano 14535> #<synth-node(live): overtone.inst.973/sampled-piano 14536> #<synth-node(live): overtone.inst.973/sampled-piano 14537> #<synth-node(live): overtone.inst.973/sampled-piano 14538> #<synth-node(live): overtone.inst.973/sampled-piano 14539> #<synth-node(live): overtone.inst.973/sampled-piano 14540> #<synth-node(live): overtone.inst.973/sampled-piano 14541> #<synth-node(live): overtone.inst.973/sampled-piano 14542> #<synth-node(live): overtone.inst.973/sampled-piano 14543> #<synth-node(live): overtone.inst.973/sampled-piano 14544> #<synth-node(live): overtone.inst.973/sampled-piano 14545> #<synth-node(live): overtone.inst.973/sampled-piano 14546> #<synth-node(live): overtone.inst.973/sampled-piano 14547> #<synth-node(live): overtone.inst.973/sampled-piano 14548> #<synth-node(live): overtone.inst.973/sampled-piano 14549> #<synth-node(live): overtone.inst.973/sampled-piano 14550> #<synth-node(live): overtone.inst.973/sampled-piano 14551> #<synth-node(live): overtone.inst.973/sampled-piano 14552> #<synth-node(live): overtone.inst.973/sampled-piano 14553> #<synth-node(live): overtone.inst.973/sampled-piano 14554> #<synth-node(live): overtone.inst.973/sampled-piano 14555> #<synth-node(live): overtone.inst.973/sampled-piano 14556> #<synth-node(live): overtone.inst.973/sampled-piano 14557> #<synth-node(live): overtone.inst.973/sampled-piano 14558> #<synth-node(live): overtone.inst.973/sampled-piano 14559> #<synth-node(live): overtone.inst.973/sampled-piano 14560> #<synth-node(live): overtone.inst.973/sampled-piano 14561> #<synth-node(live): overtone.inst.973/sampled-piano 14562> #<synth-node(live): overtone.inst.973/sampled-piano 14563> #<synth-node(live): overtone.inst.973/sampled-piano 14564> #<synth-node(live): overtone.inst.973/sampled-piano 14565> #<synth-node(live): overtone.inst.973/sampled-piano 14566> #<synth-node(live): overtone.inst.973/sampled-piano 14567> #<synth-node(live): overtone.inst.973/sampled-piano 14568> #<synth-node(live): overtone.inst.973/sampled-piano 14569> #<synth-node(live): overtone.inst.973/sampled-piano 14570> #<synth-node(live): overtone.inst.973/sampled-piano 14571> #<synth-node(live): overtone.inst.973/sampled-piano 14572> #<synth-node(live): overtone.inst.973/sampled-piano 14573> #<synth-node(live): overtone.inst.973/sampled-piano 14574> #<synth-node(live): overtone.inst.973/sampled-piano 14575> #<synth-node(live): overtone.inst.973/sampled-piano 14576> #<synth-node(live): overtone.inst.973/sampled-piano 14577> #<synth-node(live): overtone.inst.973/sampled-piano 14578> #<synth-node(live): overtone.inst.973/sampled-piano 14579> #<synth-node(live): overtone.inst.973/sampled-piano 14580> #<synth-node(live): overtone.inst.973/sampled-piano 14581> #<synth-node(live): overtone.inst.973/sampled-piano 14582> #<synth-node(live): overtone.inst.973/sampled-piano 14583> #<synth-node(live): overtone.inst.973/sampled-piano 14584> #<synth-node(live): overtone.inst.973/sampled-piano 14585> #<synth-node(loading): overtone.inst.973/sampled-piano 14586>)
+
+#+BEGIN_SRC clojure
+(sequencer-any-ms (take 99 (flatten (shuffle (rand-seq-debug (vec refined-flat-tris) 100)))) 100)
+#+END_SRC
+
+#+RESULTS:
+: '(#<synth-node(live): overtone.inst.973/sampled-piano 14597> #<synth-node(live): overtone.inst.973/sampled-piano 14598> #<synth-node(live): overtone.inst.973/sampled-piano 14599> #<synth-node(live): overtone.inst.973/sampled-piano 14600> #<synth-node(live): overtone.inst.973/sampled-piano 14601> #<synth-node(live): overtone.inst.973/sampled-piano 14602> #<synth-node(live): overtone.inst.973/sampled-piano 14603> #<synth-node(live): overtone.inst.973/sampled-piano 14604> #<synth-node(live): overtone.inst.973/sampled-piano 14605> #<synth-node(live): overtone.inst.973/sampled-piano 14606> #<synth-node(live): overtone.inst.973/sampled-piano 14607> #<synth-node(live): overtone.inst.973/sampled-piano 14608> #<synth-node(live): overtone.inst.973/sampled-piano 14609> #<synth-node(live): overtone.inst.973/sampled-piano 14610> #<synth-node(live): overtone.inst.973/sampled-piano 14611> #<synth-node(live): overtone.inst.973/sampled-piano 14612> #<synth-node(live): overtone.inst.973/sampled-piano 14613> #<synth-node(live): overtone.inst.973/sampled-piano 14614> #<synth-node(live): overtone.inst.973/sampled-piano 14615> #<synth-node(live): overtone.inst.973/sampled-piano 14616> #<synth-node(live): overtone.inst.973/sampled-piano 14617> #<synth-node(live): overtone.inst.973/sampled-piano 14618> #<synth-node(live): overtone.inst.973/sampled-piano 14619> #<synth-node(live): overtone.inst.973/sampled-piano 14620> #<synth-node(live): overtone.inst.973/sampled-piano 14621> #<synth-node(live): overtone.inst.973/sampled-piano 14622> #<synth-node(live): overtone.inst.973/sampled-piano 14623> #<synth-node(live): overtone.inst.973/sampled-piano 14624> #<synth-node(live): overtone.inst.973/sampled-piano 14625> #<synth-node(live): overtone.inst.973/sampled-piano 14626> #<synth-node(live): overtone.inst.973/sampled-piano 14627> #<synth-node(live): overtone.inst.973/sampled-piano 14628> #<synth-node(live): overtone.inst.973/sampled-piano 14629> #<synth-node(live): overtone.inst.973/sampled-piano 14630> #<synth-node(live): overtone.inst.973/sampled-piano 14631> #<synth-node(live): overtone.inst.973/sampled-piano 14632> #<synth-node(live): overtone.inst.973/sampled-piano 14633> #<synth-node(live): overtone.inst.973/sampled-piano 14634> #<synth-node(live): overtone.inst.973/sampled-piano 14635> #<synth-node(live): overtone.inst.973/sampled-piano 14636> #<synth-node(live): overtone.inst.973/sampled-piano 14637> #<synth-node(live): overtone.inst.973/sampled-piano 14638> #<synth-node(live): overtone.inst.973/sampled-piano 14639> #<synth-node(live): overtone.inst.973/sampled-piano 14640> #<synth-node(live): overtone.inst.973/sampled-piano 14641> #<synth-node(live): overtone.inst.973/sampled-piano 14642> #<synth-node(live): overtone.inst.973/sampled-piano 14643> #<synth-node(live): overtone.inst.973/sampled-piano 14644> #<synth-node(live): overtone.inst.973/sampled-piano 14645> #<synth-node(live): overtone.inst.973/sampled-piano 14646> #<synth-node(live): overtone.inst.973/sampled-piano 14647> #<synth-node(live): overtone.inst.973/sampled-piano 14648> #<synth-node(live): overtone.inst.973/sampled-piano 14649> #<synth-node(live): overtone.inst.973/sampled-piano 14650> #<synth-node(live): overtone.inst.973/sampled-piano 14651> #<synth-node(live): overtone.inst.973/sampled-piano 14652> #<synth-node(live): overtone.inst.973/sampled-piano 14653> #<synth-node(live): overtone.inst.973/sampled-piano 14654> #<synth-node(live): overtone.inst.973/sampled-piano 14655> #<synth-node(live): overtone.inst.973/sampled-piano 14656> #<synth-node(live): overtone.inst.973/sampled-piano 14657> #<synth-node(live): overtone.inst.973/sampled-piano 14658> #<synth-node(live): overtone.inst.973/sampled-piano 14659> #<synth-node(live): overtone.inst.973/sampled-piano 14660> #<synth-node(live): overtone.inst.973/sampled-piano 14661> #<synth-node(live): overtone.inst.973/sampled-piano 14662> #<synth-node(live): overtone.inst.973/sampled-piano 14663> #<synth-node(live): overtone.inst.973/sampled-piano 14664> #<synth-node(live): overtone.inst.973/sampled-piano 14665> #<synth-node(live): overtone.inst.973/sampled-piano 14666> #<synth-node(live): overtone.inst.973/sampled-piano 14667> #<synth-node(live): overtone.inst.973/sampled-piano 14668> #<synth-node(live): overtone.inst.973/sampled-piano 14669> #<synth-node(live): overtone.inst.973/sampled-piano 14670> #<synth-node(live): overtone.inst.973/sampled-piano 14671> #<synth-node(live): overtone.inst.973/sampled-piano 14672> #<synth-node(live): overtone.inst.973/sampled-piano 14673> #<synth-node(live): overtone.inst.973/sampled-piano 14674> #<synth-node(live): overtone.inst.973/sampled-piano 14675> #<synth-node(live): overtone.inst.973/sampled-piano 14676> #<synth-node(live): overtone.inst.973/sampled-piano 14677> #<synth-node(live): overtone.inst.973/sampled-piano 14678> #<synth-node(live): overtone.inst.973/sampled-piano 14679> #<synth-node(live): overtone.inst.973/sampled-piano 14680> #<synth-node(live): overtone.inst.973/sampled-piano 14681> #<synth-node(live): overtone.inst.973/sampled-piano 14682> #<synth-node(live): overtone.inst.973/sampled-piano 14683> #<synth-node(live): overtone.inst.973/sampled-piano 14684> #<synth-node(live): overtone.inst.973/sampled-piano 14685> #<synth-node(live): overtone.inst.973/sampled-piano 14686> #<synth-node(live): overtone.inst.973/sampled-piano 14687> #<synth-node(live): overtone.inst.973/sampled-piano 14688> #<synth-node(live): overtone.inst.973/sampled-piano 14689> #<synth-node(live): overtone.inst.973/sampled-piano 14690> #<synth-node(live): overtone.inst.973/sampled-piano 14691> #<synth-node(live): overtone.inst.973/sampled-piano 14692> #<synth-node(live): overtone.inst.973/sampled-piano 14693> #<synth-node(live): overtone.inst.973/sampled-piano 14694> #<synth-node(loading): overtone.inst.973/sampled-piano 14695>)
+
+
+
+
+
+* how are you going to use the results of selecting pairs to generate music?
+** use probability with X-Y pairs
+
+*** use a cond
+#+BEGIN_SRC clojure
+(let [a [0 1 3] b [0 1 4]]
+  (cond [a (weighted-choose {[0 1 3] (float 1/4), [0 1 4] (float 1/4) , [0 1 5] (float 1/4), [0 1 6] (float 1/4)})
+         b (weighted-choose {[0 1 4] (float 1/4), [0 1 5] (float 1/4) , [0 1 6] (float 1/4), [0 2 4] (float 1/4)})]))
+
+#+END_SRC
+
+*** use a case
+#+BEGIN_SRC clojure
+(let [a (rand-nth [[0 1 3] [0 1 4] [0 2 6]])]
+  (case a
+    [0 1 3] [0 1 4]
+    [0 1 4] [0 1 5]
+    [0 2 6] [0 1 2]
+    ))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+
+*** return the X and the Y set with a case
+#+BEGIN_SRC clojure
+(let [a (rand-nth [[0 1 3] [0 1 4] [0 2 6]])
+      b (case a
+          [0 1 3] [0 1 4]
+          [0 1 4] [0 1 5]
+          [0 2 6] [0 1 2]
+          )]
+  [a b])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 2 | 6 |
+| 0 | 1 | 2 |
+
+*** use weighted-choose for the Y pairing
+#+BEGIN_SRC clojure
+(let [a (rand-nth [[0 1 3] [0 1 4] [0 2 6]])
+      b (case a
+          [0 1 3] (weighted-choose {[0 1 4] 0.1, [0 4 8] 0.9})
+          [0 1 4] (weighted-choose {[0 1 6] 0.1, [0 2 4] 0.9})
+          [0 2 6] (weighted-choose {[0 3 7] 0.1, [0 2 5] 0.9})
+          )]
+  [a b])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 2 | 6 |
+| 0 | 2 | 5 |
+
+*** generate 10 X-Y pairs to see probabilities in effect
+#+BEGIN_SRC clojure
+(repeatedly 10 #(let [a (rand-nth [[0 1 3] [0 1 4] [0 2 6]])
+      b (case a
+          [0 1 3] (weighted-choose {[0 1 4] 0.2, [0 4 8] 0.8})
+          [0 1 4] (weighted-choose {[0 1 6] 0.25, [0 2 4] 0.75})
+          [0 2 6] (weighted-choose {[0 3 7] 0.35, [0 2 5] 0.65})
+          )]
+  [a b]))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 3) | (0 1 4) |
+| (0 1 4) | (0 2 4) |
+| (0 1 4) | (0 2 4) |
+| (0 1 4) | (0 1 6) |
+| (0 1 4) | (0 2 4) |
+| (0 2 6) | (0 3 7) |
+| (0 1 3) | (0 4 8) |
+| (0 1 4) | (0 2 4) |
+| (0 2 6) | (0 2 5) |
+| (0 1 4) | (0 1 6) |
+
+* automate recording a bunch of files realizing these chord progressions
+** using buffers a la Sam Aaron
+#+BEGIN_SRC clojure
+(def my-bus (audio-bus))
+
+(def num-buffer-channels 1)
+
+(def b (buffer (* 44100 10) num-buffer-channels))
+#+END_SRC
+
+#+RESULTS:
+: #'user/my-bus#'user/num-buffer-channels#'user/b
+
+#+BEGIN_SRC clojure
+(defsynth noisemaker [freq 220 out-bus 0] 
+(out out-bus (lf-tri:ar freq)))
+
+(defsynth recorder []
+(let [signal (in:ar my-bus) ]
+(record-buf:ar [signal] b)))
+
+#+END_SRC
+
+#+RESULTS:
+: #<synth: noisemaker>#<synth: recorder>
+
+#+BEGIN_SRC clojure
+(noisemaker)
+#+END_SRC
+
+#+RESULTS:
+: #<synth-node[loading]: user/noisemaker 14698>
+
+#+BEGIN_SRC clojure
+(stop)
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+#+BEGIN_SRC clojure
+(play-piano-chord (invert-chord (chord :C4 :major) 1))
+
+#+END_SRC
+
+#+RESULTS:
+* cycle over inversions of various libraries of chords
+** simplest c major inversion
+#+BEGIN_SRC clojure
+(for [n (range 4)] (do (play-piano-chord (invert-chord (chord 60 :major) n)) (Thread/sleep 1000)))
+#+END_SRC
+** 
+
+
+#+BEGIN_SRC clojure :session cdb1
+(def chord-symbol-keys
+{:1         #{0}
+     :5         #{0 7}
+     :+5        #{0 4 8}
+     :m+5       #{0 3 8}
+     :sus2      #{0 2 7}
+     :sus4      #{0 5 7}
+     :6         #{0 4 7 9}
+     :m6        #{0 3 7 9}
+     :7sus2     #{0 2 7 10}
+     :7sus4     #{0 5 7 10}
+     :7-5       #{0 4 6 10}
+     :m7-5      #{0 3 6 10}
+     :7+5       #{0 4 8 10}
+     :m7+5      #{0 3 8 10}
+     :9         #{0 4 7 10 14}
+     :m9        #{0 3 7 10 14}
+     :m7+9      #{0 3 7 10 14}
+     :maj9      #{0 4 7 11 14}
+     :9sus4     #{0 5 7 10 14}
+     :6*9       #{0 4 7 9 14}
+     :m6*9      #{0 3 9 7 14}
+     :7-9       #{0 4 7 10 13}
+     :m7-9      #{0 3 7 10 13}
+     :7-10      #{0 4 7 10 15}
+     :9+5       #{0 10 13}
+     :m9+5      #{0 10 14}
+     :7+5-9     #{0 4 8 10 13}
+     :m7+5-9    #{0 3 8 10 13}
+     :11        #{0 4 7 10 14 17}
+     :m11       #{0 3 7 10 14 17}
+     :maj11     #{0 4 7 11 14 17}
+     :11+       #{0 4 7 10 14 18}
+     :m11+      #{0 3 7 10 14 18}
+     :13        #{0 4 7 10 14 17 21}
+     :m13       #{0 3 7 10 14 17 21}
+     :major      nil
+     :M          nil
+     :minor      nil
+     :m          nil
+     :major7     nil
+     :dom7       nil
+     :7          nil
+     :M7         nil
+     :minor7     nil
+     :m7         nil
+     :augmented  nil
+     :a          nil
+     :diminished nil
+     :dim        nil
+     :i          nil
+     :diminished7 nil
+     :dim7       nil
+     :i7         nil})
+#+END_SRC
+
+#+RESULTS:
+: #'overtone.music.pitch/chord-symbol-keys
+
+
+
+#+BEGIN_SRC clojure :session cdb1
+(def chord-symbol-names (for [[k v] chord-symbol-keys] [k]))
+#+END_SRC
+
+#+RESULTS:
+: #'overtone.music.pitch/chord-symbol-names
+
+#+BEGIN_SRC clojure :session cdb1
+(for [inv (take 20 chord-symbol-names) n (range 1)] [inv n])
+#+END_SRC
+
+#+RESULTS:
+| (:7sus4)     | 0 |
+| (:9+5)       | 0 |
+| (:M)         | 0 |
+| (:m13)       | 0 |
+| (:7sus2)     | 0 |
+| (:m11+)      | 0 |
+| (:dim7)      | 0 |
+| (:m7+9)      | 0 |
+| (:11)        | 0 |
+| (:7+5)       | 0 |
+| (:m7+5)      | 0 |
+| (:augmented) | 0 |
+| (:dim)       | 0 |
+| (:7-9)       | 0 |
+| (:7-10)      | 0 |
+| (:m)         | 0 |
+| (:m7-9)      | 0 |
+| (:i7)        | 0 |
+| (:major7)    | 0 |
+| (:13)        | 0 |
+
+
+#+BEGIN_SRC clojure
+(for [inv (take 1 chord-symbol-names) n (range 2)] (sort (invert-chord (chord 60 (first inv)) n)))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 65 | 67 | 70 |
+| 65 | 67 | 70 | 72 |
+
+#+BEGIN_SRC clojure :results output
+;; evaluate in the repl for printing purposes
+(for [inv (take 5 chord-symbol-names) n (range 4)]
+  (let [chord-instance (sort (invert-chord (chord 60 (first inv)) n))]
+    (do 
+        (println (str inv " ") chord-instance)
+        (play-piano-chord chord-instance)
+        (Thread/sleep 1000))))
+#+END_SRC
 
 #+RESULTS:
 
