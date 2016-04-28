@@ -1570,6 +1570,9 @@ INSERT INTO hexachords (midi1, midi2, midi3, midi4, midi5, midi6) VALUES (0, 1, 
 
 #+END_SRC
 ** using 'for' sequence comprehensions
+:PROPERTIES:
+:topic:    sequence comprehensions
+:END:
 #+BEGIN_SRC clojure
 (for [zero [0 12 24]
       one [1 13 25]
@@ -3307,19 +3310,21 @@ Note, are or how are these functions that sleep blocking??
 #+RESULTS:
 
 
-** chord-sequencer-fn--HOF that takes a millisecond amt and returns a play chord fn
+** [#A] chord-sequencer-fn--HOF that takes a millisecond amt and returns a play chord fn
 #+BEGIN_SRC clojure
 (defn chord-sequencer-fn [ms]
   (fn [midis] (map #(do (Thread/sleep ms) (play-piano-chord %)) midis)))
 #+END_SRC
 
 #+RESULTS:
+: #'user/chord-sequencer-fn
 
 #+BEGIN_SRC clojure
 ((chord-sequencer-fn 2000) [[24 59 74] [25 60 75]])
 #+END_SRC
 
 #+RESULTS:
+
 
 
 #+BEGIN_SRC clojure
@@ -4766,6 +4771,10 @@ pc-octaves
 : #'user/tris-octaves[[0 12 24 36 48 60 72 84 96] [1 13 25 37 49 61 73 85 97] [2 14 26 38 50 62 74 86 98]]
 
 ** define a nested for loop function to destructure and cartesian product across a set collection
+:PROPERTIES:
+:function_name: big-one
+:END:
+
 #+BEGIN_SRC clojure :tangle yes
 (defn big-one [octave-collec] 
   (for [oc octave-collec]
@@ -5782,16 +5791,558 @@ dynamics-dist
 #+END_SRC
 
 #+RESULTS:
+** record 2 seconds
+#+BEGIN_SRC clojure
+(let [midis (first [[60 64 67] [61 65 69]])
+      track-name (str "~/Desktop/" midis ".wav")]
+  (recording-start track-name)
+  (play-piano-chord midis)
+  (Thread/sleep 2000)
+  (recording-stop))
+#+END_SRC
+
+#+RESULTS:
+: /Users/a/Desktop/[60 64 67].wav
+
+#+BEGIN_SRC clojure
+(defn record-tracks [dir duration]
+(let [pcset [0 1 4] chords (map #(+ 60 %) pcset)
+  (for [midis chords
+(str "/Users/a/Documents/working-directory/genaudios/" midis "(" pcset ").wav")
+#+END_SRC
+
+#+BEGIN_SRC clojure
+((fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) [0 1 4])
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 64 |
+| 61 | 62 | 65 |
+| 62 | 63 | 66 |
+
+#+BEGIN_SRC clojure
+(let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) [[0 1 4] [0 1 6]])]
+(apply concat all-events))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 64 |
+| 61 | 62 | 65 |
+| 62 | 63 | 66 |
+| 60 | 61 | 66 |
+| 61 | 62 | 67 |
+| 62 | 63 | 68 |
+** first "place-holder" function
+*** writes lazy-seq into filename
+#+BEGIN_SRC clojure
+(defn place-holder [pcsets dir duration]
+  (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+      (let [track-name (str dir midis ".wav")]
+        (recording-start track-name)
+        (play-piano-chord midis) 
+        (Thread/sleep duration)
+        (recording-stop)))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/place-holder
+
+
+#+BEGIN_SRC clojure
+(place-holder [[0 1 2] [0 1 4]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+#+END_SRC
+
+#+BEGIN_SRC clojure
+((fn [pcsets dir duration]
+  (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+      (let [track-name (str dir midis ".wav")] [track-name])))) [[0 1 3]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+
+#+END_SRC
+
+#+RESULTS:
+| /Users/a/Documents/working-directory/genaudios/clojure.lang.LazySeq@15d3d.wav |
+| /Users/a/Documents/working-directory/genaudios/clojure.lang.LazySeq@1611e.wav |
+| /Users/a/Documents/working-directory/genaudios/clojure.lang.LazySeq@164ff.wav |
+*** begin to solve problem of writing set-name vs. clojure object name
+#+BEGIN_SRC clojure
+((fn [pcsets] (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+      flat-events (apply concat all-events)]
+flat-events)) [[0 1 3]])
+
+
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 63 |
+| 61 | 62 | 64 |
+| 62 | 63 | 65 |
+
+
+#+BEGIN_SRC clojure
+((fn [pcsets dir duration]
+  (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+       midis))) [[0 1 3]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 63 |
+| 61 | 62 | 64 |
+| 62 | 63 | 65 |
+
+#+BEGIN_SRC clojure
+((fn [pcsets dir duration]
+  (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+    midis))) [[0 1 3]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 63 |
+| 61 | 62 | 64 |
+| 62 | 63 | 65 |
+*** call vec on the midis to get the vector into the name
+#+BEGIN_SRC clojure
+((fn [pcsets dir duration]
+  (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+    (let [track-name (str dir (str (vec midis)) ".wav")] [track-name])))) [[0 1 3]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+#+END_SRC
+
+#+RESULTS:
+| /Users/a/Documents/working-directory/genaudios/[60 61 63].wav |
+| /Users/a/Documents/working-directory/genaudios/[61 62 64].wav |
+| /Users/a/Documents/working-directory/genaudios/[62 63 65].wav |
+
+#+BEGIN_SRC clojure
+(defn place-holder [pcsets dir duration]
+  (let [all-events (map (fn [pcset] (for [n (range 3)] (map #(+ (+ n 60) %) pcset))) pcsets)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+      (let [track-name (str dir (str (vec midis)) ".wav")]
+        (recording-start track-name)
+        (play-piano-chord midis)
+        (Thread/sleep duration)
+        (recording-stop)))))
+#+END_SRC
+
+#+RESULTS:
+: #'user/place-holder
+
+#+BEGIN_SRC clojure
+;; will actually record
+;; (place-holder [[0 1 2] [0 1 3]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+#+END_SRC
+
+#+RESULTS:
+*** try to work set-class name into title
+#+BEGIN_SRC clojure
+(defn place-holder [pcsets] (map (fn [pcset]
+  (let [all-events ((fn [pcs] (for [n (range 3)] (map #(+ (+ n 60) %) pcs))) pcset)
+flat-events (apply concat all-events]] )) pcsets))
+
+        ;; (recording-start track-name)
+        ;; (play-piano-chord midis)
+        ;; (Thread/sleep duration)
+        ;; (recording-stop)))))
+#+END_SRC
+
+#+RESULTS:
+| (60 61 62) | (61 62 63) | (62 63 64) |
+| (60 61 63) | (61 62 64) | (62 63 65) |
+
+#+BEGIN_SRC clojure
+(place-holder [[0 1 2] [0 1 4]] "/Users/a/Documents/working-directory/genaudios/" 2000)
+#+END_SRC
+
+#+RESULTS:
+*** refactor place-holder function to take just one pcset argument
+#+BEGIN_SRC clojure
+(defn include-setname [pcset]
+  (let [all-events ((fn [pcs] (for [n (range 3)] (map #(+ (+ n 60) %) pcs))) pcset)
+        flat-events (apply concat all-events)]
+    (for [midis flat-events]
+      (let [track-name (str "/Users/a/Documents/working-directory/genaudios/" (str (vec midis)) "(" (str pcset) ")" ".wav")]
+        [track-name]))))
+        ;; (recording-start track-name)
+        ;; (play-piano-chord midis)
+        ;; (Thread/sleep 2500)
+        ;; (recording-stop)
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/include-setname
+
+#+BEGIN_SRC clojure
+(include-setname [[0 1 4]])
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+((fn include-setname [pcset]
+  (let [all-events ((fn [pcs] (for [n (range 3)] (map #(+ (+ n 60) %) pcs))) pcset)]
+    all-events)) [0 1 2])
+        ;; (recording-start track-name)
+        ;; (play-piano-chord midis)
+        ;; (Thread/sleep 2500)
+        ;; (recording-stop)
+
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 62 |
+| 61 | 62 | 63 |
+| 62 | 63 | 64 |
+
+#+BEGIN_SRC clojure
+((fn [pcset]
+   (let [all-events ((fn [pcs] (for [n (range 3)] (map #(+ (+ n 60) %) pcs))) pcset)]
+     (for [midis all-events]
+       (let [track-name (str "/Users/a/Documents/working-directory/genaudios/" (str (vec midis)) "(" pcset ")" ".wav")] [track-name])))) [0 1 2])
+
+        ;; (recording-start track-name)
+        ;; (play-piano-chord midis)
+        ;; (Thread/sleep duration)
+        ;; (recording-stop)))))
+#+END_SRC
+
+#+RESULTS:
+| /Users/a/Documents/working-directory/genaudios/[60 61 62]([0 1 2]).wav |
+| /Users/a/Documents/working-directory/genaudios/[61 62 63]([0 1 2]).wav |
+| /Users/a/Documents/working-directory/genaudios/[62 63 64]([0 1 2]).wav |
+*** 
+
+
+#+RESULTS:
+: #'user/include-setname
+
+#+BEGIN_SRC clojure
+(map (fn [pcset]
+  (let [all-events ((fn [pcs] (for [n (range 3)] (map #(+ (+ n 60) %) pcs))) pcset)] all-events)) [[0 1 2] [0 1 3]])
+
+        ;; (recording-start track-name)
+        ;; (play-piano-chord midis)
+        ;; (Thread/sleep duration)
+        ;; (recording-stop)))))
+#+END_SRC
+
+#+RESULTS:
+| (60 61 62) | (61 62 63) | (62 63 64) |
+| (60 61 63) | (61 62 64) | (62 63 65) |
+*** define include-setname--to be refactored
+
+#+BEGIN_SRC clojure
+(defn include-setname [pcset duration tn-range]
+  (let [all-events ((fn [pcs] (for [n (range tn-range )] (map #(+ (+ n 60) %) pcs))) pcset)]
+    (for [midis all-events]
+      (let [track-name (str "/Users/a/Documents/working-directory/genaudios/" (str (vec midis)) "(" pcset ")" ".wav")]
+        (recording-start track-name)
+        (play-piano-chord midis)
+        (Thread/sleep duration)
+        (recording-stop)))))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(include-setname [0 1 2] 2000 2)
+#+END_SRC
+
+#+RESULTS:
+| /Users/a/Documents/working-directory/genaudios/[60 61 62]([0 1 2]).wav | /Users/a/Documents/working-directory/genaudios/[61 62 63]([0 1 2]).wav |
+
+#+BEGIN_SRC clojure
+(map #(include-setname % 2000 12) [[0 1 2] [0 1 3]])
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(map #(include-setname % 2000 1) trichords)
+#+END_SRC
+
+#+BEGIN_SRC clojure
+[trichords tetrachords pentachords hexachords]
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2)       | (0 1 3)       | (0 1 4)       | (0 1 5)       | (0 1 6)       | (0 2 4)       | (0 2 5)       | (0 2 6)       | (0 2 7)       | (0 3 6)       | (0 3 7)       | (0 4 8)       |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |                |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |
+| (0 1 2 3)     | (0 1 2 4)     | (0 1 3 4)     | (0 1 2 5)     | (0 1 2 6)     | (0 1 2 7)     | (0 1 4 5)     | (0 1 5 6)     | (0 1 6 7)     | (0 2 3 5)     | (0 1 3 5)     | (0 2 3 6)     | (0 1 3 6)     | (0 2 3 7)     | (0 1 3 7)     | (0 1 4 6)     | (0 1 5 7)     | (0 3 4 7)     | (0 1 4 7)     | (0 1 4 8)     | (0 1 5 8)     | (0 2 4 6)     | (0 2 4 7)     | (0 2 5 7)     | (0 2 4 8)     | (0 2 6 8)     | (0 3 5 8)     | (0 2 5 8)     | (0 3 6 9)     |               |               |               |               |               |                |               |               |               |               |               |               |               |               |               |               |               |               |               |               |               |
+| (0 1 2 3 4)   | (0 1 2 3 5)   | (0 1 2 4 5)   | (0 1 2 3 6)   | (0 1 2 3 7)   | (0 1 2 5 6)   | (0 1 2 6 7)   | (0 2 3 4 6)   | (0 1 2 4 6)   | (0 1 3 4 6)   | (0 2 3 4 7)   | (0 1 3 5 6)   | (0 1 2 4 8)   | (0 1 2 5 7)   | (0 1 2 6 8)   | (0 1 3 4 7)   | (0 1 3 4 8)   | (0 1 4 5 7)   | (0 1 3 6 7)   | (0 1 3 7 8)   | (0 1 4 5 8)   | (0 1 4 7 8)   | (0 2 3 5 7)   | (0 1 3 5 7)   | (0 2 3 5 8)   | (0 2 4 5 8)   | (0 1 3 5 8)   | (0 2 3 6 8)   | (0 1 3 6 8)   | (0 1 4 6 8)   | (0 1 3 6 9)   | (0 1 4 6 9)   | (0 2 4 6 8)   | (0 2 4 6 9)   | (0 2 4 7 9)    | (0 1 2 4 7)   | (0 3 4 5 8)   | (0 1 2 5 8)   |               |               |               |               |               |               |               |               |               |               |               |               |
+| (0 1 2 3 4 5) | (0 1 2 3 4 6) | (0 1 2 3 5 6) | (0 1 2 4 5 6) | (0 1 2 3 6 7) | (0 1 2 5 6 7) | (0 1 2 6 7 8) | (0 2 3 4 5 7) | (0 1 2 3 5 7) | (0 1 3 4 5 7) | (0 1 2 4 5 7) | (0 1 2 4 6 7) | (0 1 3 4 6 7) | (0 1 3 4 5 8) | (0 1 2 4 5 8) | (0 1 4 5 6 8) | (0 1 2 4 7 8) | (0 1 2 5 7 8) | (0 1 3 4 7 8) | (0 1 4 5 8 9) | (0 2 3 4 6 8) | (0 1 2 4 6 8) | (0 2 3 5 6 8) | (0 1 3 4 6 8) | (0 1 3 5 6 8) | (0 1 3 5 7 8) | (0 1 3 4 6 9) | (0 1 3 5 6 9) | (0 1 3 6 8 9) | (0 1 3 6 7 9) | (0 1 3 5 8 9) | (0 2 4 5 7 9) | (0 2 3 5 7 9) | (0 1 3 5 7 9) | (0 2 4 6 8 10) | (0 1 2 3 4 7) | (0 1 2 3 4 8) | (0 1 2 3 7 8) | (0 2 3 4 5 8) | (0 1 2 3 5 8) | (0 1 2 3 6 8) | (0 1 2 3 6 9) | (0 1 2 5 6 8) | (0 1 2 5 6 9) | (0 2 3 4 6 9) | (0 1 2 4 6 9) | (0 1 2 4 7 9) | (0 1 2 5 7 9) | (0 1 3 4 7 9) | (0 1 4 6 7 9) |
+
+#+BEGIN_SRC clojure
+(apply concat [trichords tetrachords pentachords hexachords])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |   |   |    |
+| 0 | 1 | 3 |   |   |    |
+| 0 | 1 | 4 |   |   |    |
+| 0 | 1 | 5 |   |   |    |
+| 0 | 1 | 6 |   |   |    |
+| 0 | 2 | 4 |   |   |    |
+| 0 | 2 | 5 |   |   |    |
+| 0 | 2 | 6 |   |   |    |
+| 0 | 2 | 7 |   |   |    |
+| 0 | 3 | 6 |   |   |    |
+| 0 | 3 | 7 |   |   |    |
+| 0 | 4 | 8 |   |   |    |
+| 0 | 1 | 2 | 3 |   |    |
+| 0 | 1 | 2 | 4 |   |    |
+| 0 | 1 | 3 | 4 |   |    |
+| 0 | 1 | 2 | 5 |   |    |
+| 0 | 1 | 2 | 6 |   |    |
+| 0 | 1 | 2 | 7 |   |    |
+| 0 | 1 | 4 | 5 |   |    |
+| 0 | 1 | 5 | 6 |   |    |
+| 0 | 1 | 6 | 7 |   |    |
+| 0 | 2 | 3 | 5 |   |    |
+| 0 | 1 | 3 | 5 |   |    |
+| 0 | 2 | 3 | 6 |   |    |
+| 0 | 1 | 3 | 6 |   |    |
+| 0 | 2 | 3 | 7 |   |    |
+| 0 | 1 | 3 | 7 |   |    |
+| 0 | 1 | 4 | 6 |   |    |
+| 0 | 1 | 5 | 7 |   |    |
+| 0 | 3 | 4 | 7 |   |    |
+| 0 | 1 | 4 | 7 |   |    |
+| 0 | 1 | 4 | 8 |   |    |
+| 0 | 1 | 5 | 8 |   |    |
+| 0 | 2 | 4 | 6 |   |    |
+| 0 | 2 | 4 | 7 |   |    |
+| 0 | 2 | 5 | 7 |   |    |
+| 0 | 2 | 4 | 8 |   |    |
+| 0 | 2 | 6 | 8 |   |    |
+| 0 | 3 | 5 | 8 |   |    |
+| 0 | 2 | 5 | 8 |   |    |
+| 0 | 3 | 6 | 9 |   |    |
+| 0 | 1 | 2 | 3 | 4 |    |
+| 0 | 1 | 2 | 3 | 5 |    |
+| 0 | 1 | 2 | 4 | 5 |    |
+| 0 | 1 | 2 | 3 | 6 |    |
+| 0 | 1 | 2 | 3 | 7 |    |
+| 0 | 1 | 2 | 5 | 6 |    |
+| 0 | 1 | 2 | 6 | 7 |    |
+| 0 | 2 | 3 | 4 | 6 |    |
+| 0 | 1 | 2 | 4 | 6 |    |
+| 0 | 1 | 3 | 4 | 6 |    |
+| 0 | 2 | 3 | 4 | 7 |    |
+| 0 | 1 | 3 | 5 | 6 |    |
+| 0 | 1 | 2 | 4 | 8 |    |
+| 0 | 1 | 2 | 5 | 7 |    |
+| 0 | 1 | 2 | 6 | 8 |    |
+| 0 | 1 | 3 | 4 | 7 |    |
+| 0 | 1 | 3 | 4 | 8 |    |
+| 0 | 1 | 4 | 5 | 7 |    |
+| 0 | 1 | 3 | 6 | 7 |    |
+| 0 | 1 | 3 | 7 | 8 |    |
+| 0 | 1 | 4 | 5 | 8 |    |
+| 0 | 1 | 4 | 7 | 8 |    |
+| 0 | 2 | 3 | 5 | 7 |    |
+| 0 | 1 | 3 | 5 | 7 |    |
+| 0 | 2 | 3 | 5 | 8 |    |
+| 0 | 2 | 4 | 5 | 8 |    |
+| 0 | 1 | 3 | 5 | 8 |    |
+| 0 | 2 | 3 | 6 | 8 |    |
+| 0 | 1 | 3 | 6 | 8 |    |
+| 0 | 1 | 4 | 6 | 8 |    |
+| 0 | 1 | 3 | 6 | 9 |    |
+| 0 | 1 | 4 | 6 | 9 |    |
+| 0 | 2 | 4 | 6 | 8 |    |
+| 0 | 2 | 4 | 6 | 9 |    |
+| 0 | 2 | 4 | 7 | 9 |    |
+| 0 | 1 | 2 | 4 | 7 |    |
+| 0 | 3 | 4 | 5 | 8 |    |
+| 0 | 1 | 2 | 5 | 8 |    |
+| 0 | 1 | 2 | 3 | 4 |  5 |
+| 0 | 1 | 2 | 3 | 4 |  6 |
+| 0 | 1 | 2 | 3 | 5 |  6 |
+| 0 | 1 | 2 | 4 | 5 |  6 |
+| 0 | 1 | 2 | 3 | 6 |  7 |
+| 0 | 1 | 2 | 5 | 6 |  7 |
+| 0 | 1 | 2 | 6 | 7 |  8 |
+| 0 | 2 | 3 | 4 | 5 |  7 |
+| 0 | 1 | 2 | 3 | 5 |  7 |
+| 0 | 1 | 3 | 4 | 5 |  7 |
+| 0 | 1 | 2 | 4 | 5 |  7 |
+| 0 | 1 | 2 | 4 | 6 |  7 |
+| 0 | 1 | 3 | 4 | 6 |  7 |
+| 0 | 1 | 3 | 4 | 5 |  8 |
+| 0 | 1 | 2 | 4 | 5 |  8 |
+| 0 | 1 | 4 | 5 | 6 |  8 |
+| 0 | 1 | 2 | 4 | 7 |  8 |
+| 0 | 1 | 2 | 5 | 7 |  8 |
+| 0 | 1 | 3 | 4 | 7 |  8 |
+| 0 | 1 | 4 | 5 | 8 |  9 |
+| 0 | 2 | 3 | 4 | 6 |  8 |
+| 0 | 1 | 2 | 4 | 6 |  8 |
+| 0 | 2 | 3 | 5 | 6 |  8 |
+| 0 | 1 | 3 | 4 | 6 |  8 |
+| 0 | 1 | 3 | 5 | 6 |  8 |
+| 0 | 1 | 3 | 5 | 7 |  8 |
+| 0 | 1 | 3 | 4 | 6 |  9 |
+| 0 | 1 | 3 | 5 | 6 |  9 |
+| 0 | 1 | 3 | 6 | 8 |  9 |
+| 0 | 1 | 3 | 6 | 7 |  9 |
+| 0 | 1 | 3 | 5 | 8 |  9 |
+| 0 | 2 | 4 | 5 | 7 |  9 |
+| 0 | 2 | 3 | 5 | 7 |  9 |
+| 0 | 1 | 3 | 5 | 7 |  9 |
+| 0 | 2 | 4 | 6 | 8 | 10 |
+| 0 | 1 | 2 | 3 | 4 |  7 |
+| 0 | 1 | 2 | 3 | 4 |  8 |
+| 0 | 1 | 2 | 3 | 7 |  8 |
+| 0 | 2 | 3 | 4 | 5 |  8 |
+| 0 | 1 | 2 | 3 | 5 |  8 |
+| 0 | 1 | 2 | 3 | 6 |  8 |
+| 0 | 1 | 2 | 3 | 6 |  9 |
+| 0 | 1 | 2 | 5 | 6 |  8 |
+| 0 | 1 | 2 | 5 | 6 |  9 |
+| 0 | 2 | 3 | 4 | 6 |  9 |
+| 0 | 1 | 2 | 4 | 6 |  9 |
+| 0 | 1 | 2 | 4 | 7 |  9 |
+| 0 | 1 | 2 | 5 | 7 |  9 |
+| 0 | 1 | 3 | 4 | 7 |  9 |
+| 0 | 1 | 4 | 6 | 7 |  9 |
+
+#+BEGIN_SRC clojure
+(map #(include-setname % 2000 1) (apply concat [trichords tetrachords pentachords hexachords])) 
+#+END_SRC
 * cycle over inversions of various libraries of chords
-** simplest c major inversion
+** play simplest c major inversion
 #+BEGIN_SRC clojure
 (for [n (range 4)] (do (play-piano-chord (invert-chord (chord 60 :major) n)) (Thread/sleep 1000)))
 #+END_SRC
-** 
+
+#+RESULTS:
+
+** overtone functions for inverting
+#+BEGIN_SRC clojure
+(defn invert
+  "Invert a sequence of notes using either the first note as the
+  stationary pivot point or the optional second argument."
+  [notes & [pivot]]
+  (let [pivot (or pivot (first notes))]
+    (for [n notes] (- pivot (- n pivot)))))
+#+END_SRC
+
+#+BEGIN_SRC clojure
+(invert [60 64 67 71])
+#+END_SRC
+
+#+RESULTS:
+| 60 | 56 | 53 | 49 |
 
 
-#+BEGIN_SRC clojure :session cdb1
-(def chord-symbol-keys
+#+BEGIN_SRC clojure
+(defn invert-chord
+  "Move a chord voicing up or down.
+
+    ;first inversion
+    (invert-chord [60 64 67] 1) ;=> (64 67 72)
+
+    ; second inversion
+    (invert-chord [60 64 67] 2) ;=> (67 72 76)
+  "
+  [notes shift]
+  (cond
+    (pos? shift) (recur (inc-first notes 12) (dec shift))
+    (neg? shift) (recur (dec-last notes 12) (inc shift))
+    (zero? shift) notes))
+#+END_SRC
+
+
+#+BEGIN_SRC clojure
+;; defined as private but made public
+(defn inc-first
+  "Remove the first element, increment it by n, and append to seq."
+  [elems n]
+  (concat (next elems) [(+ n (first elems))]))
+
+(defn dec-last
+  "Remove the last element, decrement it by n, and prepend to seq."
+  [elems n]
+  (concat [(- (last elems) n)] (next elems)))
+#+END_SRC
+
+#+RESULTS:
+: #'user/inc-first#'user/dec-last
+
+
+
+
+#+RESULTS:
+| 60 | 67 | 64 |
+| 67 | 64 | 72 |
+| 64 | 72 | 79 |
+| 72 | 79 | 76 |
+
+** calling invert-chord with a number of rotations beyond the set-cardinality is weird?
+#+BEGIN_SRC clojure
+((fn [notes shift]
+   (cond
+     (pos? shift) (recur (inc-first notes 12) (dec shift))
+     (zero? shift) notes))
+ [60 64 67] 3)
+#+END_SRC
+
+#+RESULTS:
+| 72 | 76 | 79 |
+
+
+#+BEGIN_SRC clojure
+(for [n (range 4)] ((fn [notes shift]
+   (cond
+     (pos? shift) (recur (inc-first notes 12) (dec shift))
+     (zero? shift) notes))
+ [60 64 67] n))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 64 | 67 |
+| 64 | 67 | 72 |
+| 67 | 72 | 76 |
+| 72 | 76 | 79 |
+
+#+BEGIN_SRC clojure
+(for [n [0 1 2 3]] (sort (invert-chord (chord :C4 :major) n)))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 64 | 67 |
+| 64 | 67 | 72 |
+| 64 | 72 | 79 |
+| 72 | 76 | 79 |
+
+#+BEGIN_SRC clojure
+(for [n [0 1 2 3]] (sort (invert-chord [60 64 67] n)))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 64 | 67 |
+| 64 | 67 | 72 |
+| 67 | 72 | 76 |
+| 72 | 76 | 79 |
+
+#+BEGIN_SRC clojure
+(for [n [0 1 2 3]] (invert-chord (sort (chord :C4 :major)) n))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 64 | 67 |
+| 64 | 67 | 72 |
+| 67 | 72 | 76 |
+| 72 | 76 | 79 |
+
+** chord-symbol-keys and chord-symbol-names
+#+BEGIN_SRC clojure
+(def my-chord-symbol-keys
 {:1         #{0}
      :5         #{0 7}
      :+5        #{0 4 8}
@@ -5800,6 +6351,7 @@ dynamics-dist
      :sus4      #{0 5 7}
      :6         #{0 4 7 9}
      :m6        #{0 3 7 9}
+     :min-maj7  #{0 3 7 11} ;; added by WFO
      :7sus2     #{0 2 7 10}
      :7sus4     #{0 5 7 10}
      :7-5       #{0 4 6 10}
@@ -5816,16 +6368,17 @@ dynamics-dist
      :7-9       #{0 4 7 10 13}
      :m7-9      #{0 3 7 10 13}
      :7-10      #{0 4 7 10 15}
-     :9+5       #{0 10 13}
-     :m9+5      #{0 10 14}
+     :9+5       #{0 4 8 10 14} ;; changed from: #{0 10 13}
+     :m9+5      #{0 3 8 10 14} ;; changed from #{0 10 14}
      :7+5-9     #{0 4 8 10 13}
      :m7+5-9    #{0 3 8 10 13}
      :11        #{0 4 7 10 14 17}
      :m11       #{0 3 7 10 14 17}
-     :maj11     #{0 4 7 11 14 17}
+     :maj7+11   #{0 4 7 11 14 18} ;; changed from maj11
      :11+       #{0 4 7 10 14 18}
      :m11+      #{0 3 7 10 14 18}
      :13        #{0 4 7 10 14 17 21}
+     :7+9-13     #{0 4 7 10 15 20} ;; added by WFO
      :m13       #{0 3 7 10 14 17 21}
      :major      nil
      :M          nil
@@ -5850,15 +6403,57 @@ dynamics-dist
 #+RESULTS:
 : #'overtone.music.pitch/chord-symbol-keys
 
-
-
 #+BEGIN_SRC clojure :session cdb1
 (def chord-symbol-names (for [[k v] chord-symbol-keys] [k]))
 #+END_SRC
 
 #+RESULTS:
 : #'overtone.music.pitch/chord-symbol-names
+#+BEGIN_SRC clojure
+;; major 3 major 7
+[0 3 5 7]
+[0 3 5 7 9]
+[0 3 5 7 9 11]
+[0 3 5 7 9 11 13]
 
+;;minor 3 minor 7
+[0 3 5 7]
+[0 3 5 7 9]
+[0 3 5 7 9 11]
+[0 3 5 7 9 11 13]
+
+;; minor 3 major 7
+[0 3 5 7]
+[0 3 5 7 9]
+[0 3 5 7 9 11]
+[0 3 5 7 9 11 13]
+
+;; dominant 7
+[0 3 5 7]
+[0 3 5 7 9]
+[0 3 5 7 9 11]
+[0 3 5 7 9 11 13]
+
+;; chromatic alterations
+[0 3 5 7 -9]
+[0 3 5 7 +9]
+
+[0 3 5 7 -9 11]
+[0 3 5 7 +9 11]
+[0 3 5 7 -9 +11]
+[0 3 5 7 +9 +11]
+
+[0 3 5 7 -9 11 13]
+[0 3 5 7 -9 11 -13]
+[0 3 5 7 +9 11 13]
+[0 3 5 7 +9 11 -13]
+[0 3 5 7 -9 +11 13]
+[0 3 5 7 +9 +11 -13]
+
+
+
+#+END_SRC
+** view first 20 chord symbol names
 #+BEGIN_SRC clojure :session cdb1
 (for [inv (take 20 chord-symbol-names) n (range 1)] [inv n])
 #+END_SRC
@@ -5887,12 +6482,30 @@ dynamics-dist
 
 
 #+BEGIN_SRC clojure
-(for [inv (take 1 chord-symbol-names) n (range 2)] (sort (invert-chord (chord 60 (first inv)) n)))
+(for [inv (take 10 chord-symbol-names) n (range 2)] (sort (invert-chord (chord 60 (first inv)) n)))
 #+END_SRC
 
 #+RESULTS:
-| 60 | 65 | 67 | 70 |
-| 65 | 67 | 70 | 72 |
+| 60 | 65 | 67 | 70 |    |    |    |
+| 65 | 67 | 70 | 72 |    |    |    |
+| 60 | 70 | 73 |    |    |    |    |
+| 70 | 72 | 73 |    |    |    |    |
+| 60 | 64 | 67 |    |    |    |    |
+| 64 | 67 | 72 |    |    |    |    |
+| 60 | 63 | 67 | 70 | 74 | 77 | 81 |
+| 63 | 67 | 70 | 72 | 74 | 77 | 81 |
+| 60 | 62 | 67 | 70 |    |    |    |
+| 62 | 67 | 70 | 72 |    |    |    |
+| 60 | 63 | 67 | 70 | 74 | 78 |    |
+| 63 | 67 | 70 | 72 | 74 | 78 |    |
+| 60 | 63 | 66 | 69 |    |    |    |
+| 63 | 66 | 69 | 72 |    |    |    |
+| 60 | 63 | 67 | 70 | 74 |    |    |
+| 63 | 67 | 70 | 72 | 74 |    |    |
+| 60 | 64 | 67 | 70 | 74 | 77 |    |
+| 64 | 67 | 70 | 72 | 74 | 77 |    |
+| 60 | 64 | 68 | 70 |    |    |    |
+| 64 | 68 | 70 | 72 |    |    |    |
 
 #+BEGIN_SRC clojure :results output
 ;; evaluate in the repl for printing purposes
@@ -5905,4 +6518,567 @@ dynamics-dist
 #+END_SRC
 
 #+RESULTS:
+
+** create a general chord-listener function
+#+BEGIN_SRC clojure :results output
+(defn chord-listener1 [& num-chord-types 30 num-inversions 1 midi-root 60 ms 1500]
+  "return a series of chords"
+(for [inv (take num-chord-types chord-symbol-names) n (range num-inversions)]
+  (let [chord-instance (sort (invert-chord (chord midi-root (first inv)) n))]
+    (do 
+        (println (str inv " ") chord-instance)
+        (play-piano-chord chord-instance)
+        (Thread/sleep ms)))))
+#+END_SRC
+
+#+RESULTS:
+
+#+BEGIN_SRC clojure
+*ns*
+#+END_SRC
+
+#+RESULTS:
+: #namespace[user]
+
+#+BEGIN_SRC clojure
+(in-ns 'user)
+#+END_SRC
+
+#+RESULTS:
+: #namespace[user]
+
+#+BEGIN_SRC clojure
+(defn def-arg [name & {:my-string "Fuckall"}] (str "hey" my-string name))
+
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/def-arg
+
+#+BEGIN_SRC clojure
+(def-arg "bill")
+#+END_SRC
+
+#+RESULTS:
+: heybill
+
+#+BEGIN_SRC clojure
+(defn def-arg [name & {:keys [my-string] :or {my-string "fuckall "}}] (str "hey " my-string name))
+
+
+#+END_SRC
+
+#+RESULTS:
+: #'user/def-arg
+
+#+BEGIN_SRC clojure
+(def-arg "bill")
+#+END_SRC
+
+#+RESULTS:
+: hey fuckall bill
+
+#+BEGIN_SRC clojure :results output
+(defn chord-listener1 [& {:keys [num-chord-types num-inversions midi-root ms] :or {num-chord-types 30 num-inversions 1 midi-root 60 ms 1500}}]
+  "return a series of chords"
+(for [inv (take num-chord-types chord-symbol-names) n (range num-inversions)]
+  (let [chord-instance (sort (invert-chord (chord (+ midi-root (rand-int 12)) (first inv)) n))]
+    (do 
+        (println (str inv " ") chord-instance)
+        (play-piano-chord chord-instance)
+        (Thread/sleep ms)))))
+#+END_SRC
+
+#+RESULTS:
+
+** 
+#+BEGIN_SRC clojure
+(invert-chord [0 1 2] 1)
+#+END_SRC
+
+#+RESULTS:
+| 1 | 2 | 12 |
+
+#+BEGIN_SRC clojure
+(let [pcset [0 1 2]]
+(for [n (range (count pcset))] [(invert-chord pcset n)]))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2)   |
+| (1 2 12)  |
+| (2 12 13) |
+
+#+BEGIN_SRC clojure
+(let [pcset [0 1 2 3]]
+(for [n (range (count pcset))] [(invert-chord (map #(+ 60 %) pcset) n)]))
+#+END_SRC
+
+#+RESULTS:
+| (60 61 62 63) |
+| (61 62 63 72) |
+| (62 63 72 73) |
+| (63 72 73 74) |
+
+#+BEGIN_SRC clojure
+(
+#+END_SRC
+
+
+
+** evaluate chord-listener1 in repl
+#+BEGIN_SRC clojure
+;; (chord-listener1)
+;; (chord-listener1 :num-chord-types 5 :num-inversions 2)
+#+END_SRC
+#+BEGIN_SRC clojure
+(stop)
+#+END_SRC
+
+* refactor include-setname
+** Refactored version should:
+
+- break out individual pieces of functionality
+  - specifically, reconsider all the ways to generate the chord-events
+    - current version uses "baked-in" approach that simply transposes
+      some given pcset a number times specified when called
+** chord events have been aggregated into sets in a variety of ways:
+
+using sequence comprehension to generate various octave displacements
+#+BEGIN_SRC clojure
+(for [zero [0 12]
+      one [1 13]
+      three [3 15]]
+       [zero one three])
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  3 |
+|  0 |  1 | 15 |
+|  0 | 13 |  3 |
+|  0 | 13 | 15 |
+| 12 |  1 |  3 |
+| 12 |  1 | 15 |
+| 12 | 13 |  3 |
+| 12 | 13 | 15 |
+
+using a for loop to map various Tn over a some given set
+#+BEGIN_SRC clojure
+(for [n (range 12)] (map #(+ n %) [0 1 2]))
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  2 |
+|  1 |  2 |  3 |
+|  2 |  3 |  4 |
+|  3 |  4 |  5 |
+|  4 |  5 |  6 |
+|  5 |  6 |  7 |
+|  6 |  7 |  8 |
+|  7 |  8 |  9 |
+|  8 |  9 | 10 |
+|  9 | 10 | 11 |
+| 10 | 11 | 12 |
+| 11 | 12 | 13 |
+
+calling invert-chord over some given set
+#+BEGIN_SRC clojure
+(let [pcset [0 1 2 3]]
+(for [n (range (count pcset))] (invert-chord (map #(+ 60 %) pcset) n)))
+#+END_SRC
+
+#+RESULTS:
+| 60 | 61 | 62 | 63 |
+| 61 | 62 | 63 | 72 |
+| 62 | 63 | 72 | 73 |
+| 63 | 72 | 73 | 74 |
+
+** consider octave voicing templates
+*** 3 octaves * 2-note voicing = 9 
+
+#+BEGIN_SRC clojure
+(for [a (range 0 3) b (range 0 3)] [a b])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 0 |
+| 0 | 1 |
+| 0 | 2 |
+| 1 | 0 |
+| 1 | 1 |
+| 1 | 2 |
+| 2 | 0 |
+| 2 | 1 |
+| 2 | 2 |
+
+*** outline a four-octave range from G1 to F#4 (lowest line bass to highest line treble clef)
+#+BEGIN_SRC clojure
+(let [lowest (overtone.music.pitch/note :G1) highest (overtone.music.pitch/note :G5)] [highest lowest (- highest lowest)])
+#+END_SRC
+
+#+RESULTS:
+| 79 | 31 | 48 |
+
+
+|     0 |     1 |     2 |     3 |
+|-------+-------+-------+-------|
+| 31-42 | 43-54 | 55-66 | 67-78 |
+
+#+BEGIN_SRC clojure
+(play-piano-chord [
+                   31
+                   ;; 35
+                   ;; 38
+                   ;; 43
+                   47
+                   ;; 50
+                   ;; 54
+                   ;; 57
+                   62
+                   67
+                   71
+                   74
+                   ;; 78
+                   ;; 79
+
+                   ])
+
+#+END_SRC
+
+#+RESULTS:
+: nil
+
+*** count number of octave-voicings for tri, tetra, penta, hexa
+#+BEGIN_SRC clojure
+(count (for [a (range 0 4) b (range 0 4) c (range 0 4)] [a b c]))
+#+END_SRC
+
+#+RESULTS:
+: 64
+
+#+BEGIN_SRC clojure
+(count (for [a (range 0 4) b (range 0 4) c (range 0 4) d (range 0 4)] [a b c d]))
+#+END_SRC
+
+#+RESULTS:
+: 256
+
+
+#+BEGIN_SRC clojure
+(count (for [a (range 0 4) b (range 0 4) c (range 0 4) d (range 0 4) e (range 0 4)] [a b c d e]))
+#+END_SRC
+
+#+RESULTS:
+: 1024
+
+#+BEGIN_SRC clojure
+(count (for [a (range 0 4) b (range 0 4) c (range 0 4) d (range 0 4) e (range 0 4) f (range 0 4)] [a b c d e f]))
+#+END_SRC
+
+#+RESULTS:
+: 4096
+
+** octave displacement comprehensions
+*** three octaves for three pcs--define templates
+#+BEGIN_SRC clojure
+(for [a (range 0 3) b (range 0 3) c (range 0 3)] [a b c])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 0 | 0 |
+| 0 | 0 | 1 |
+| 0 | 0 | 2 |
+| 0 | 1 | 0 |
+| 0 | 1 | 1 |
+| 0 | 1 | 2 |
+| 0 | 2 | 0 |
+| 0 | 2 | 1 |
+| 0 | 2 | 2 |
+| 1 | 0 | 0 |
+| 1 | 0 | 1 |
+| 1 | 0 | 2 |
+| 1 | 1 | 0 |
+| 1 | 1 | 1 |
+| 1 | 1 | 2 |
+| 1 | 2 | 0 |
+| 1 | 2 | 1 |
+| 1 | 2 | 2 |
+| 2 | 0 | 0 |
+| 2 | 0 | 1 |
+| 2 | 0 | 2 |
+| 2 | 1 | 0 |
+| 2 | 1 | 1 |
+| 2 | 1 | 2 |
+| 2 | 2 | 0 |
+| 2 | 2 | 1 |
+| 2 | 2 | 2 |
+
+#+BEGIN_SRC clojure
+(def templates (for [a (range 0 3) b (range 0 3) c (range 0 3)] [a b c]))
+#+END_SRC
+
+#+RESULTS:
+: #'user/templates
+
+#+BEGIN_SRC clojure
+;; fails
+(let [[a b c] [0 1 1]
+      pcset [0 1 3]]
+  (#(vec (+ (* a 12) %1)
+         (+ (* b 12) %2)
+         (+ (* c 12) %3)) pcset))
+#+END_SRC
+
+#+RESULTS:
+
+*** destructure a map correctly!
+#+BEGIN_SRC clojure
+(for [x [0 1 2] ] (* x 10))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 10 | 20 |
+
+#+BEGIN_SRC clojure
+(for [[x y z] [[0 1 2]] ] [(* x 10) (* y 10) (* z 10)])
+#+END_SRC
+
+#+RESULTS:
+| 0 | 10 | 20 |
+
+#+BEGIN_SRC clojure
+(let [[a b c] [0 1 1]]
+(for [[x y z] [[0 1 2]]] [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))]))
+#+END_SRC
+
+#+RESULTS:
+| 0 | 13 | 14 |
+
+#+BEGIN_SRC clojure
+(for [[a b c] [[0 0 0] [1 1 1]]]
+  (for [[x y z] [[0 1 2]]]
+    [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))]))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2)    |
+| (12 13 14) |
+
+*** use templates and nested 'for' comprehension to destructure
+#+BEGIN_SRC clojure
+(for [[a b c] templates]
+  (for [[x y z] [[0 1 2]]]
+    [[a b c] [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))]]))
+#+END_SRC
+
+#+RESULTS:
+| ((0 0 0) (0 1 2))    |
+| ((0 0 1) (0 1 14))   |
+| ((0 0 2) (0 1 26))   |
+| ((0 1 0) (0 13 2))   |
+| ((0 1 1) (0 13 14))  |
+| ((0 1 2) (0 13 26))  |
+| ((0 2 0) (0 25 2))   |
+| ((0 2 1) (0 25 14))  |
+| ((0 2 2) (0 25 26))  |
+| ((1 0 0) (12 1 2))   |
+| ((1 0 1) (12 1 14))  |
+| ((1 0 2) (12 1 26))  |
+| ((1 1 0) (12 13 2))  |
+| ((1 1 1) (12 13 14)) |
+| ((1 1 2) (12 13 26)) |
+| ((1 2 0) (12 25 2))  |
+| ((1 2 1) (12 25 14)) |
+| ((1 2 2) (12 25 26)) |
+| ((2 0 0) (24 1 2))   |
+| ((2 0 1) (24 1 14))  |
+| ((2 0 2) (24 1 26))  |
+| ((2 1 0) (24 13 2))  |
+| ((2 1 1) (24 13 14)) |
+| ((2 1 2) (24 13 26)) |
+| ((2 2 0) (24 25 2))  |
+| ((2 2 1) (24 25 14)) |
+| ((2 2 2) (24 25 26)) |
+
+#+BEGIN_SRC clojure
+trichords
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+| 0 | 1 | 3 |
+| 0 | 1 | 4 |
+| 0 | 1 | 5 |
+| 0 | 1 | 6 |
+| 0 | 2 | 4 |
+| 0 | 2 | 5 |
+| 0 | 2 | 6 |
+| 0 | 2 | 7 |
+| 0 | 3 | 6 |
+| 0 | 3 | 7 |
+| 0 | 4 | 8 |
+
+*** see all trichords with all templates
+#+BEGIN_SRC clojure
+(for [[a b c] templates]
+  (for [[x y z] trichords]
+    [[a b c] [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))]]))
+#+END_SRC
+
+#+RESULTS:
+| ((0 0 0) (0 1 2))    | ((0 0 0) (0 1 3))    | ((0 0 0) (0 1 4))    | ((0 0 0) (0 1 5))    | ((0 0 0) (0 1 6))    | ((0 0 0) (0 2 4))    | ((0 0 0) (0 2 5))    | ((0 0 0) (0 2 6))    | ((0 0 0) (0 2 7))    | ((0 0 0) (0 3 6))    | ((0 0 0) (0 3 7))    | ((0 0 0) (0 4 8))    |
+| ((0 0 1) (0 1 14))   | ((0 0 1) (0 1 15))   | ((0 0 1) (0 1 16))   | ((0 0 1) (0 1 17))   | ((0 0 1) (0 1 18))   | ((0 0 1) (0 2 16))   | ((0 0 1) (0 2 17))   | ((0 0 1) (0 2 18))   | ((0 0 1) (0 2 19))   | ((0 0 1) (0 3 18))   | ((0 0 1) (0 3 19))   | ((0 0 1) (0 4 20))   |
+| ((0 0 2) (0 1 26))   | ((0 0 2) (0 1 27))   | ((0 0 2) (0 1 28))   | ((0 0 2) (0 1 29))   | ((0 0 2) (0 1 30))   | ((0 0 2) (0 2 28))   | ((0 0 2) (0 2 29))   | ((0 0 2) (0 2 30))   | ((0 0 2) (0 2 31))   | ((0 0 2) (0 3 30))   | ((0 0 2) (0 3 31))   | ((0 0 2) (0 4 32))   |
+| ((0 1 0) (0 13 2))   | ((0 1 0) (0 13 3))   | ((0 1 0) (0 13 4))   | ((0 1 0) (0 13 5))   | ((0 1 0) (0 13 6))   | ((0 1 0) (0 14 4))   | ((0 1 0) (0 14 5))   | ((0 1 0) (0 14 6))   | ((0 1 0) (0 14 7))   | ((0 1 0) (0 15 6))   | ((0 1 0) (0 15 7))   | ((0 1 0) (0 16 8))   |
+| ((0 1 1) (0 13 14))  | ((0 1 1) (0 13 15))  | ((0 1 1) (0 13 16))  | ((0 1 1) (0 13 17))  | ((0 1 1) (0 13 18))  | ((0 1 1) (0 14 16))  | ((0 1 1) (0 14 17))  | ((0 1 1) (0 14 18))  | ((0 1 1) (0 14 19))  | ((0 1 1) (0 15 18))  | ((0 1 1) (0 15 19))  | ((0 1 1) (0 16 20))  |
+| ((0 1 2) (0 13 26))  | ((0 1 2) (0 13 27))  | ((0 1 2) (0 13 28))  | ((0 1 2) (0 13 29))  | ((0 1 2) (0 13 30))  | ((0 1 2) (0 14 28))  | ((0 1 2) (0 14 29))  | ((0 1 2) (0 14 30))  | ((0 1 2) (0 14 31))  | ((0 1 2) (0 15 30))  | ((0 1 2) (0 15 31))  | ((0 1 2) (0 16 32))  |
+| ((0 2 0) (0 25 2))   | ((0 2 0) (0 25 3))   | ((0 2 0) (0 25 4))   | ((0 2 0) (0 25 5))   | ((0 2 0) (0 25 6))   | ((0 2 0) (0 26 4))   | ((0 2 0) (0 26 5))   | ((0 2 0) (0 26 6))   | ((0 2 0) (0 26 7))   | ((0 2 0) (0 27 6))   | ((0 2 0) (0 27 7))   | ((0 2 0) (0 28 8))   |
+| ((0 2 1) (0 25 14))  | ((0 2 1) (0 25 15))  | ((0 2 1) (0 25 16))  | ((0 2 1) (0 25 17))  | ((0 2 1) (0 25 18))  | ((0 2 1) (0 26 16))  | ((0 2 1) (0 26 17))  | ((0 2 1) (0 26 18))  | ((0 2 1) (0 26 19))  | ((0 2 1) (0 27 18))  | ((0 2 1) (0 27 19))  | ((0 2 1) (0 28 20))  |
+| ((0 2 2) (0 25 26))  | ((0 2 2) (0 25 27))  | ((0 2 2) (0 25 28))  | ((0 2 2) (0 25 29))  | ((0 2 2) (0 25 30))  | ((0 2 2) (0 26 28))  | ((0 2 2) (0 26 29))  | ((0 2 2) (0 26 30))  | ((0 2 2) (0 26 31))  | ((0 2 2) (0 27 30))  | ((0 2 2) (0 27 31))  | ((0 2 2) (0 28 32))  |
+| ((1 0 0) (12 1 2))   | ((1 0 0) (12 1 3))   | ((1 0 0) (12 1 4))   | ((1 0 0) (12 1 5))   | ((1 0 0) (12 1 6))   | ((1 0 0) (12 2 4))   | ((1 0 0) (12 2 5))   | ((1 0 0) (12 2 6))   | ((1 0 0) (12 2 7))   | ((1 0 0) (12 3 6))   | ((1 0 0) (12 3 7))   | ((1 0 0) (12 4 8))   |
+| ((1 0 1) (12 1 14))  | ((1 0 1) (12 1 15))  | ((1 0 1) (12 1 16))  | ((1 0 1) (12 1 17))  | ((1 0 1) (12 1 18))  | ((1 0 1) (12 2 16))  | ((1 0 1) (12 2 17))  | ((1 0 1) (12 2 18))  | ((1 0 1) (12 2 19))  | ((1 0 1) (12 3 18))  | ((1 0 1) (12 3 19))  | ((1 0 1) (12 4 20))  |
+| ((1 0 2) (12 1 26))  | ((1 0 2) (12 1 27))  | ((1 0 2) (12 1 28))  | ((1 0 2) (12 1 29))  | ((1 0 2) (12 1 30))  | ((1 0 2) (12 2 28))  | ((1 0 2) (12 2 29))  | ((1 0 2) (12 2 30))  | ((1 0 2) (12 2 31))  | ((1 0 2) (12 3 30))  | ((1 0 2) (12 3 31))  | ((1 0 2) (12 4 32))  |
+| ((1 1 0) (12 13 2))  | ((1 1 0) (12 13 3))  | ((1 1 0) (12 13 4))  | ((1 1 0) (12 13 5))  | ((1 1 0) (12 13 6))  | ((1 1 0) (12 14 4))  | ((1 1 0) (12 14 5))  | ((1 1 0) (12 14 6))  | ((1 1 0) (12 14 7))  | ((1 1 0) (12 15 6))  | ((1 1 0) (12 15 7))  | ((1 1 0) (12 16 8))  |
+| ((1 1 1) (12 13 14)) | ((1 1 1) (12 13 15)) | ((1 1 1) (12 13 16)) | ((1 1 1) (12 13 17)) | ((1 1 1) (12 13 18)) | ((1 1 1) (12 14 16)) | ((1 1 1) (12 14 17)) | ((1 1 1) (12 14 18)) | ((1 1 1) (12 14 19)) | ((1 1 1) (12 15 18)) | ((1 1 1) (12 15 19)) | ((1 1 1) (12 16 20)) |
+| ((1 1 2) (12 13 26)) | ((1 1 2) (12 13 27)) | ((1 1 2) (12 13 28)) | ((1 1 2) (12 13 29)) | ((1 1 2) (12 13 30)) | ((1 1 2) (12 14 28)) | ((1 1 2) (12 14 29)) | ((1 1 2) (12 14 30)) | ((1 1 2) (12 14 31)) | ((1 1 2) (12 15 30)) | ((1 1 2) (12 15 31)) | ((1 1 2) (12 16 32)) |
+| ((1 2 0) (12 25 2))  | ((1 2 0) (12 25 3))  | ((1 2 0) (12 25 4))  | ((1 2 0) (12 25 5))  | ((1 2 0) (12 25 6))  | ((1 2 0) (12 26 4))  | ((1 2 0) (12 26 5))  | ((1 2 0) (12 26 6))  | ((1 2 0) (12 26 7))  | ((1 2 0) (12 27 6))  | ((1 2 0) (12 27 7))  | ((1 2 0) (12 28 8))  |
+| ((1 2 1) (12 25 14)) | ((1 2 1) (12 25 15)) | ((1 2 1) (12 25 16)) | ((1 2 1) (12 25 17)) | ((1 2 1) (12 25 18)) | ((1 2 1) (12 26 16)) | ((1 2 1) (12 26 17)) | ((1 2 1) (12 26 18)) | ((1 2 1) (12 26 19)) | ((1 2 1) (12 27 18)) | ((1 2 1) (12 27 19)) | ((1 2 1) (12 28 20)) |
+| ((1 2 2) (12 25 26)) | ((1 2 2) (12 25 27)) | ((1 2 2) (12 25 28)) | ((1 2 2) (12 25 29)) | ((1 2 2) (12 25 30)) | ((1 2 2) (12 26 28)) | ((1 2 2) (12 26 29)) | ((1 2 2) (12 26 30)) | ((1 2 2) (12 26 31)) | ((1 2 2) (12 27 30)) | ((1 2 2) (12 27 31)) | ((1 2 2) (12 28 32)) |
+| ((2 0 0) (24 1 2))   | ((2 0 0) (24 1 3))   | ((2 0 0) (24 1 4))   | ((2 0 0) (24 1 5))   | ((2 0 0) (24 1 6))   | ((2 0 0) (24 2 4))   | ((2 0 0) (24 2 5))   | ((2 0 0) (24 2 6))   | ((2 0 0) (24 2 7))   | ((2 0 0) (24 3 6))   | ((2 0 0) (24 3 7))   | ((2 0 0) (24 4 8))   |
+| ((2 0 1) (24 1 14))  | ((2 0 1) (24 1 15))  | ((2 0 1) (24 1 16))  | ((2 0 1) (24 1 17))  | ((2 0 1) (24 1 18))  | ((2 0 1) (24 2 16))  | ((2 0 1) (24 2 17))  | ((2 0 1) (24 2 18))  | ((2 0 1) (24 2 19))  | ((2 0 1) (24 3 18))  | ((2 0 1) (24 3 19))  | ((2 0 1) (24 4 20))  |
+| ((2 0 2) (24 1 26))  | ((2 0 2) (24 1 27))  | ((2 0 2) (24 1 28))  | ((2 0 2) (24 1 29))  | ((2 0 2) (24 1 30))  | ((2 0 2) (24 2 28))  | ((2 0 2) (24 2 29))  | ((2 0 2) (24 2 30))  | ((2 0 2) (24 2 31))  | ((2 0 2) (24 3 30))  | ((2 0 2) (24 3 31))  | ((2 0 2) (24 4 32))  |
+| ((2 1 0) (24 13 2))  | ((2 1 0) (24 13 3))  | ((2 1 0) (24 13 4))  | ((2 1 0) (24 13 5))  | ((2 1 0) (24 13 6))  | ((2 1 0) (24 14 4))  | ((2 1 0) (24 14 5))  | ((2 1 0) (24 14 6))  | ((2 1 0) (24 14 7))  | ((2 1 0) (24 15 6))  | ((2 1 0) (24 15 7))  | ((2 1 0) (24 16 8))  |
+| ((2 1 1) (24 13 14)) | ((2 1 1) (24 13 15)) | ((2 1 1) (24 13 16)) | ((2 1 1) (24 13 17)) | ((2 1 1) (24 13 18)) | ((2 1 1) (24 14 16)) | ((2 1 1) (24 14 17)) | ((2 1 1) (24 14 18)) | ((2 1 1) (24 14 19)) | ((2 1 1) (24 15 18)) | ((2 1 1) (24 15 19)) | ((2 1 1) (24 16 20)) |
+| ((2 1 2) (24 13 26)) | ((2 1 2) (24 13 27)) | ((2 1 2) (24 13 28)) | ((2 1 2) (24 13 29)) | ((2 1 2) (24 13 30)) | ((2 1 2) (24 14 28)) | ((2 1 2) (24 14 29)) | ((2 1 2) (24 14 30)) | ((2 1 2) (24 14 31)) | ((2 1 2) (24 15 30)) | ((2 1 2) (24 15 31)) | ((2 1 2) (24 16 32)) |
+| ((2 2 0) (24 25 2))  | ((2 2 0) (24 25 3))  | ((2 2 0) (24 25 4))  | ((2 2 0) (24 25 5))  | ((2 2 0) (24 25 6))  | ((2 2 0) (24 26 4))  | ((2 2 0) (24 26 5))  | ((2 2 0) (24 26 6))  | ((2 2 0) (24 26 7))  | ((2 2 0) (24 27 6))  | ((2 2 0) (24 27 7))  | ((2 2 0) (24 28 8))  |
+| ((2 2 1) (24 25 14)) | ((2 2 1) (24 25 15)) | ((2 2 1) (24 25 16)) | ((2 2 1) (24 25 17)) | ((2 2 1) (24 25 18)) | ((2 2 1) (24 26 16)) | ((2 2 1) (24 26 17)) | ((2 2 1) (24 26 18)) | ((2 2 1) (24 26 19)) | ((2 2 1) (24 27 18)) | ((2 2 1) (24 27 19)) | ((2 2 1) (24 28 20)) |
+| ((2 2 2) (24 25 26)) | ((2 2 2) (24 25 27)) | ((2 2 2) (24 25 28)) | ((2 2 2) (24 25 29)) | ((2 2 2) (24 25 30)) | ((2 2 2) (24 26 28)) | ((2 2 2) (24 26 29)) | ((2 2 2) (24 26 30)) | ((2 2 2) (24 26 31)) | ((2 2 2) (24 27 30)) | ((2 2 2) (24 27 31)) | ((2 2 2) (24 28 32)) |
+
+*** 
+#+BEGIN_SRC clojure
+(for [[a b c] templates]
+  (for [[x y z] trichords]
+    (sort [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))])))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2)    | (0 1 3)    | (0 1 4)    | (0 1 5)    | (0 1 6)    | (0 2 4)    | (0 2 5)    | (0 2 6)    | (0 2 7)    | (0 3 6)    | (0 3 7)    | (0 4 8)    |
+| (0 1 14)   | (0 1 15)   | (0 1 16)   | (0 1 17)   | (0 1 18)   | (0 2 16)   | (0 2 17)   | (0 2 18)   | (0 2 19)   | (0 3 18)   | (0 3 19)   | (0 4 20)   |
+| (0 1 26)   | (0 1 27)   | (0 1 28)   | (0 1 29)   | (0 1 30)   | (0 2 28)   | (0 2 29)   | (0 2 30)   | (0 2 31)   | (0 3 30)   | (0 3 31)   | (0 4 32)   |
+| (0 2 13)   | (0 3 13)   | (0 4 13)   | (0 5 13)   | (0 6 13)   | (0 4 14)   | (0 5 14)   | (0 6 14)   | (0 7 14)   | (0 6 15)   | (0 7 15)   | (0 8 16)   |
+| (0 13 14)  | (0 13 15)  | (0 13 16)  | (0 13 17)  | (0 13 18)  | (0 14 16)  | (0 14 17)  | (0 14 18)  | (0 14 19)  | (0 15 18)  | (0 15 19)  | (0 16 20)  |
+| (0 13 26)  | (0 13 27)  | (0 13 28)  | (0 13 29)  | (0 13 30)  | (0 14 28)  | (0 14 29)  | (0 14 30)  | (0 14 31)  | (0 15 30)  | (0 15 31)  | (0 16 32)  |
+| (0 2 25)   | (0 3 25)   | (0 4 25)   | (0 5 25)   | (0 6 25)   | (0 4 26)   | (0 5 26)   | (0 6 26)   | (0 7 26)   | (0 6 27)   | (0 7 27)   | (0 8 28)   |
+| (0 14 25)  | (0 15 25)  | (0 16 25)  | (0 17 25)  | (0 18 25)  | (0 16 26)  | (0 17 26)  | (0 18 26)  | (0 19 26)  | (0 18 27)  | (0 19 27)  | (0 20 28)  |
+| (0 25 26)  | (0 25 27)  | (0 25 28)  | (0 25 29)  | (0 25 30)  | (0 26 28)  | (0 26 29)  | (0 26 30)  | (0 26 31)  | (0 27 30)  | (0 27 31)  | (0 28 32)  |
+| (1 2 12)   | (1 3 12)   | (1 4 12)   | (1 5 12)   | (1 6 12)   | (2 4 12)   | (2 5 12)   | (2 6 12)   | (2 7 12)   | (3 6 12)   | (3 7 12)   | (4 8 12)   |
+| (1 12 14)  | (1 12 15)  | (1 12 16)  | (1 12 17)  | (1 12 18)  | (2 12 16)  | (2 12 17)  | (2 12 18)  | (2 12 19)  | (3 12 18)  | (3 12 19)  | (4 12 20)  |
+| (1 12 26)  | (1 12 27)  | (1 12 28)  | (1 12 29)  | (1 12 30)  | (2 12 28)  | (2 12 29)  | (2 12 30)  | (2 12 31)  | (3 12 30)  | (3 12 31)  | (4 12 32)  |
+| (2 12 13)  | (3 12 13)  | (4 12 13)  | (5 12 13)  | (6 12 13)  | (4 12 14)  | (5 12 14)  | (6 12 14)  | (7 12 14)  | (6 12 15)  | (7 12 15)  | (8 12 16)  |
+| (12 13 14) | (12 13 15) | (12 13 16) | (12 13 17) | (12 13 18) | (12 14 16) | (12 14 17) | (12 14 18) | (12 14 19) | (12 15 18) | (12 15 19) | (12 16 20) |
+| (12 13 26) | (12 13 27) | (12 13 28) | (12 13 29) | (12 13 30) | (12 14 28) | (12 14 29) | (12 14 30) | (12 14 31) | (12 15 30) | (12 15 31) | (12 16 32) |
+| (2 12 25)  | (3 12 25)  | (4 12 25)  | (5 12 25)  | (6 12 25)  | (4 12 26)  | (5 12 26)  | (6 12 26)  | (7 12 26)  | (6 12 27)  | (7 12 27)  | (8 12 28)  |
+| (12 14 25) | (12 15 25) | (12 16 25) | (12 17 25) | (12 18 25) | (12 16 26) | (12 17 26) | (12 18 26) | (12 19 26) | (12 18 27) | (12 19 27) | (12 20 28) |
+| (12 25 26) | (12 25 27) | (12 25 28) | (12 25 29) | (12 25 30) | (12 26 28) | (12 26 29) | (12 26 30) | (12 26 31) | (12 27 30) | (12 27 31) | (12 28 32) |
+| (1 2 24)   | (1 3 24)   | (1 4 24)   | (1 5 24)   | (1 6 24)   | (2 4 24)   | (2 5 24)   | (2 6 24)   | (2 7 24)   | (3 6 24)   | (3 7 24)   | (4 8 24)   |
+| (1 14 24)  | (1 15 24)  | (1 16 24)  | (1 17 24)  | (1 18 24)  | (2 16 24)  | (2 17 24)  | (2 18 24)  | (2 19 24)  | (3 18 24)  | (3 19 24)  | (4 20 24)  |
+| (1 24 26)  | (1 24 27)  | (1 24 28)  | (1 24 29)  | (1 24 30)  | (2 24 28)  | (2 24 29)  | (2 24 30)  | (2 24 31)  | (3 24 30)  | (3 24 31)  | (4 24 32)  |
+| (2 13 24)  | (3 13 24)  | (4 13 24)  | (5 13 24)  | (6 13 24)  | (4 14 24)  | (5 14 24)  | (6 14 24)  | (7 14 24)  | (6 15 24)  | (7 15 24)  | (8 16 24)  |
+| (13 14 24) | (13 15 24) | (13 16 24) | (13 17 24) | (13 18 24) | (14 16 24) | (14 17 24) | (14 18 24) | (14 19 24) | (15 18 24) | (15 19 24) | (16 20 24) |
+| (13 24 26) | (13 24 27) | (13 24 28) | (13 24 29) | (13 24 30) | (14 24 28) | (14 24 29) | (14 24 30) | (14 24 31) | (15 24 30) | (15 24 31) | (16 24 32) |
+| (2 24 25)  | (3 24 25)  | (4 24 25)  | (5 24 25)  | (6 24 25)  | (4 24 26)  | (5 24 26)  | (6 24 26)  | (7 24 26)  | (6 24 27)  | (7 24 27)  | (8 24 28)  |
+| (14 24 25) | (15 24 25) | (16 24 25) | (17 24 25) | (18 24 25) | (16 24 26) | (17 24 26) | (18 24 26) | (19 24 26) | (18 24 27) | (19 24 27) | (20 24 28) |
+| (24 25 26) | (24 25 27) | (24 25 28) | (24 25 29) | (24 25 30) | (24 26 28) | (24 26 29) | (24 26 30) | (24 26 31) | (24 27 30) | (24 27 31) | (24 28 32) |
+
+#+BEGIN_SRC clojure
+(for [[a b c] templates]
+  (for [[x y z] [[0 1 2]]]
+    (sort [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))])))
+#+END_SRC
+
+#+RESULTS:
+| (0 1 2)    |
+| (0 1 14)   |
+| (0 1 26)   |
+| (0 2 13)   |
+| (0 13 14)  |
+| (0 13 26)  |
+| (0 2 25)   |
+| (0 14 25)  |
+| (0 25 26)  |
+| (1 2 12)   |
+| (1 12 14)  |
+| (1 12 26)  |
+| (2 12 13)  |
+| (12 13 14) |
+| (12 13 26) |
+| (2 12 25)  |
+| (12 14 25) |
+| (12 25 26) |
+| (1 2 24)   |
+| (1 14 24)  |
+| (1 24 26)  |
+| (2 13 24)  |
+| (13 14 24) |
+| (13 24 26) |
+| (2 24 25)  |
+| (14 24 25) |
+| (24 25 26) |
+
+#+BEGIN_SRC clojure
+(partition 3 (flatten (for [[a b c] templates]
+  (for [[x y z] [[0 1 2]]]
+    (sort [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))])))))
+#+END_SRC
+
+#+RESULTS:
+|  0 |  1 |  2 |
+|  0 |  1 | 14 |
+|  0 |  1 | 26 |
+|  0 |  2 | 13 |
+|  0 | 13 | 14 |
+|  0 | 13 | 26 |
+|  0 |  2 | 25 |
+|  0 | 14 | 25 |
+|  0 | 25 | 26 |
+|  1 |  2 | 12 |
+|  1 | 12 | 14 |
+|  1 | 12 | 26 |
+|  2 | 12 | 13 |
+| 12 | 13 | 14 |
+| 12 | 13 | 26 |
+|  2 | 12 | 25 |
+| 12 | 14 | 25 |
+| 12 | 25 | 26 |
+|  1 |  2 | 24 |
+|  1 | 14 | 24 |
+|  1 | 24 | 26 |
+|  2 | 13 | 24 |
+| 13 | 14 | 24 |
+| 13 | 24 | 26 |
+|  2 | 24 | 25 |
+| 14 | 24 | 25 |
+| 24 | 25 | 26 |
+
+#+BEGIN_SRC clojure
+(let [all (map (fn [pcset] (#(mod12 %) pcset)) (partition 3 (flatten (for [[a b c] templates]
+  (for [[x y z] [[0 1 2]]]
+    (sort [(+ x (* a 12)) (+ y (* b 12)) (+ z (* c 12))]))))))
+      count-all (count all)
+      distinct (distinct all)
+      count-distinct (count distinct)] [count-all all distinct count-distinct])
+      
+#+END_SRC
+
+#+RESULTS:
+| 27 | ((0 1 2) (0 1 2) (0 1 2) (0 2 1) (0 1 2) (0 1 2) (0 2 1) (0 2 1) (0 1 2) (1 2 0) (1 0 2) (1 0 2) (2 0 1) (0 1 2) (0 1 2) (2 0 1) (0 2 1) (0 1 2) (1 2 0) (1 2 0) (1 0 2) (2 1 0) (1 2 0) (1 0 2) (2 0 1) (2 0 1) (0 1 2)) | ((0 1 2) (0 2 1) (1 2 0) (1 0 2) (2 0 1) (2 1 0)) | 6 |
+
+#+BEGIN_SRC clojure
+
+#+END_SRC
+
+#+RESULTS:
+| 0 | 1 | 2 |
+| 1 | 2 | 0 |
 
