@@ -1,2 +1,6 @@
 * Project
 Develop a program for storing and retrieving chord events from a database
+
+** Commentary
+
+Gee, it sure would be nice to be told how to make sense of this project!
