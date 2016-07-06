@@ -3,4 +3,4 @@ Develop a program for storing and retrieving chord events from a database
 
 ** Commentary
 
-Gee, it sure would be nice to be told how to make sense of this project!
+[see the steps.org file](https://github.com/cicerojones/chords/blob/master/doc/steps.org) for a detailed sequence of steps
